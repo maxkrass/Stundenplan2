@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+	<data>
+		<import type="android.support.v4.content.ContextCompat" />
+		<variable
+			name="subject"
+			type="com.maxkrass.stundenplan.objects.Subject" />
+	</data>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="48dp"
+	android:background="?android:selectableItemBackground">
+
+	<View
+		android:id="@+id/subject_color"
+		android:layout_width="24dp"
+		android:layout_height="24dp"
+		android:layout_centerVertical="true"
+		android:layout_marginStart="16dp"
+		android:layout_marginEnd="16dp"
+		android:background="@drawable/color_icon"
+		android:transitionName="subject_color"/>
+
+	<TextView
+		android:id="@+id/subject_name"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerVertical="true"
+		android:layout_marginEnd="16dp"
+		android:layout_marginStart="72dp"
+		android:text='@{subject.name, default="Subject Name"}'
+		android:textSize="16sp"
+		android:transitionName="subject_name"/>
+
+</RelativeLayout>
+
+</layout>

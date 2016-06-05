@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+<data>
+	<import type="com.maxkrass.stundenplan.objects.Teacher" />
+	<import type="android.view.View" />
+	<variable
+		name="teacher"
+		type="Teacher" />
+</data>
+	<LinearLayout
+		android:id="@+id/teacher_object_holder"
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="match_parent"
+		android:layout_height="48dp"
+		android:background="?android:selectableItemBackground"
+		android:clickable="true"
+		android:focusable="true"
+		android:orientation="horizontal"
+		android:paddingStart="8dp"
+		android:paddingEnd="8dp">
+
+		<TextView
+			android:id="@+id/teacher_name"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_vertical"
+			android:layout_marginStart="8dp"
+			android:layout_weight="1"
+			android:text="@{teacher.name}"
+			android:textSize="16sp"
+			android:transitionName="teacher_name"/>
+
+		<ImageView
+			android:id="@+id/call_teacher"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:layout_gravity="center_vertical"
+			android:background="?android:selectableItemBackgroundBorderless"
+			android:clickable="true"
+			android:focusable="true"
+			android:scaleType="center"
+			android:src="@drawable/ic_call_24dp"
+			android:transitionName="teacher_phone_icon"
+			android:visibility='@{teacher.phone.equals("") ? View.GONE : View.VISIBLE}'/>
+
+		<ImageView
+			android:id="@+id/email_teacher"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:layout_gravity="center_vertical"
+			android:background="?android:selectableItemBackgroundBorderless"
+			android:clickable="true"
+			android:focusable="true"
+			android:scaleType="center"
+			android:src="@drawable/ic_mail_24dp"
+			android:transitionName="teacher_email_icon"
+			android:visibility='@{teacher.email.equals("") ? View.GONE : View.VISIBLE}'/>
+
+	</LinearLayout>
+</layout>

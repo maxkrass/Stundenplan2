@@ -1,0 +1,49 @@
+<layout>
+
+	<data>
+		<import type="com.maxkrass.stundenplan.objects.Color" />
+		<import type="android.view.View" />
+
+		<variable
+			name="lesson"
+			type="com.maxkrass.stundenplan.objects.Lesson" />
+	</data>
+
+	<android.support.v7.widget.CardView
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:card_view="http://schemas.android.com/apk/res-auto"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:clickable="true"
+		android:focusable="true"
+		android:foreground="?android:attr/selectableItemBackground"
+		card_view:cardBackgroundColor="@{Color.values[lesson.subject.colorIndex].getColor(context)}"
+		card_view:cardCornerRadius="2dp"
+		card_view:cardElevation="2dp">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:gravity="center"
+			android:orientation="vertical">
+
+			<TextView
+				android:id="@+id/subject_abbr_label"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@{lesson.subject.abbreviation}"
+				android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+				android:textColor='#fff'/>
+
+			<TextView
+				android:id="@+id/room_label"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:visibility="@{lesson.showRoomLabel ? View.VISIBLE : View.GONE}"
+				android:text="@{lesson.location}"
+				android:textColor="#B3FFFFFF"/>
+
+		</LinearLayout>
+
+	</android.support.v7.widget.CardView>
+</layout>

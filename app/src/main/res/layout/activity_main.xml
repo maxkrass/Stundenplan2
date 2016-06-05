@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+	<android.support.design.widget.CoordinatorLayout
+		android:id="@+id/content"
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:app="http://schemas.android.com/apk/res-auto"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:clickable="true"
+		android:focusable="true"
+		android:focusableInTouchMode="true">
+
+		<!--<fragment
+			android:id="@+id/fragment_main"
+			android:name="com.maxkrass.stundenplan.fragments.MainActivityFragment"
+			xmlns:android="http://schemas.android.com/apk/res/android"
+			xmlns:tools="http://schemas.android.com/tools"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			app:layout_behavior="@string/appbar_scrolling_view_behavior"
+			tools:layout="@layout/fragment_main"/>-->
+
+		<com.maxkrass.stundenplan.views.ScalableScrollView
+			android:id="@+id/scrollview_lesson"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:fillViewport="true"
+			app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:orientation="horizontal"
+				>
+
+				<RelativeLayout
+					android:id="@+id/column_monday"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:paddingBottom="2dp"
+					android:paddingTop="4dp"/>
+
+				<View
+					android:layout_width="1dp"
+					android:layout_height="match_parent"
+					android:background="@color/divider_black"
+					android:visibility="visible"/>
+
+				<RelativeLayout
+					android:id="@+id/column_tuesday"
+					android:layout_width="0dp"
+					android:layout_height="fill_parent"
+					android:layout_weight="1"
+					android:paddingBottom="2dp"
+					android:paddingTop="4dp"/>
+
+				<View
+					android:layout_width="1dp"
+					android:layout_height="match_parent"
+					android:background="@color/divider_black"/>
+
+				<RelativeLayout
+					android:id="@+id/column_wednesday"
+					android:layout_width="0dp"
+					android:layout_height="fill_parent"
+					android:layout_weight="1"
+					android:paddingBottom="2dp"
+					android:paddingTop="4dp"/>
+
+				<View
+					android:layout_width="1dp"
+					android:layout_height="match_parent"
+					android:background="@color/divider_black"/>
+
+				<RelativeLayout
+					android:id="@+id/column_thursday"
+					android:layout_width="0dp"
+					android:layout_height="fill_parent"
+					android:layout_weight="1"
+					android:paddingBottom="2dp"
+					android:paddingTop="4dp"/>
+
+				<View
+					android:layout_width="1dp"
+					android:layout_height="match_parent"
+					android:background="@color/divider_black"/>
+
+				<RelativeLayout
+					android:id="@+id/column_friday"
+					android:layout_width="0dp"
+					android:layout_height="fill_parent"
+					android:layout_weight="1"
+					android:paddingBottom="2dp"
+					android:paddingTop="4dp"/>
+
+			</LinearLayout>
+		</com.maxkrass.stundenplan.views.ScalableScrollView>
+
+		<android.support.design.widget.AppBarLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<Toolbar
+				android:id="@+id/main_toolbar"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:elevation="4dp"
+				android:title="@string/app_name"/>
+
+		</android.support.design.widget.AppBarLayout>
+
+		<android.support.design.widget.FloatingActionButton
+			android:id="@+id/add_lesson"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="bottom|end"
+			android:layout_marginBottom="16dp"
+			android:layout_marginEnd="16dp"
+			android:src="@drawable/ic_add_24dp"
+			app:elevation="6dp"
+			android:onClick="addLesson"
+			app:layout_behavior="@string/fab_behavior"
+			app:pressedTranslationZ="12dp"/>
+
+	</android.support.design.widget.CoordinatorLayout>
+</layout>

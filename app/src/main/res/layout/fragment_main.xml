@@ -1,0 +1,76 @@
+<ScrollView
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:context=".MainActivityFragment">
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:baselineAligned="false"
+		android:orientation="horizontal">
+
+		<RelativeLayout
+			android:id="@+id/column_monday"
+			android:layout_width="0dp"
+			android:layout_height="fill_parent"
+			android:layout_weight="1"
+			android:paddingBottom="2dp"
+			android:paddingTop="4dp"/>
+
+		<View
+			android:layout_width="1dp"
+			android:layout_height="match_parent"
+			android:background="@color/divider_black"/>
+
+		<RelativeLayout
+			android:id="@+id/column_tuesday"
+			android:layout_width="0dp"
+			android:layout_height="fill_parent"
+			android:layout_weight="1"
+			android:paddingBottom="2dp"
+			android:paddingTop="4dp"/>
+
+		<View
+			android:layout_width="1dp"
+			android:layout_height="match_parent"
+			android:background="@color/divider_black"/>
+
+		<RelativeLayout
+			android:id="@+id/column_wednesday"
+			android:layout_width="0dp"
+			android:layout_height="fill_parent"
+			android:layout_weight="1"
+			android:paddingBottom="2dp"
+			android:paddingTop="4dp"/>
+
+		<View
+			android:layout_width="1dp"
+			android:layout_height="match_parent"
+			android:background="@color/divider_black"/>
+
+		<RelativeLayout
+			android:id="@+id/column_thursday"
+			android:layout_width="0dp"
+			android:layout_height="fill_parent"
+			android:layout_weight="1"
+			android:paddingBottom="2dp"
+			android:paddingTop="4dp"/>
+
+		<View
+			android:layout_width="1dp"
+			android:layout_height="match_parent"
+			android:background="@color/divider_black"/>
+
+		<RelativeLayout
+			android:id="@+id/column_friday"
+			android:layout_width="0dp"
+			android:layout_height="fill_parent"
+			android:layout_weight="1"
+			android:paddingBottom="2dp"
+			android:paddingTop="4dp"/>
+
+	</LinearLayout>
+
+</ScrollView>

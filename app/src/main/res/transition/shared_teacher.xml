@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<transitionSet xmlns:android="http://schemas.android.com/apk/res/android">
+	<transitionSet>
+		<targets>
+			<target android:targetId="@id/view_teacher_email_icon" />
+			<target android:targetId="@id/view_teacher_phone_icon" />
+			<target android:targetId="@+id/view_teacher_app_bar_layout" />
+		</targets>
+		<changeBounds>
+			<arcMotion/>
+		</changeBounds>
+		<changeTransform />
+		<changeClipBounds />
+		<changeImageTransform />
+	</transitionSet>
+	<transitionSet>
+		<targets>
+			<target android:targetId="@+id/view_teacher_name"/>
+		</targets>
+		<transition class="com.maxkrass.stundenplan.transition.TextResize"/>
+		<changeBounds>
+			<arcMotion/>
+		</changeBounds>
+	</transitionSet>
+</transitionSet>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <item name="material_red" type="color">
+        #F44336
+    </item>
+    <item name="material_pink" type="color">
+        #E91E63
+    </item>
+    <item name="material_purple" type="color">
+        #9C27B0
+    </item>
+    <item name="material_deep_purple" type="color">
+        #673AB7
+    </item>
+    <item name="material_indigo" type="color">
+        #3F51B5
+    </item>
+    <item name="material_blue" type="color">
+        #2196F3
+    </item>
+    <item name="material_light_blue" type="color">
+        #03A9F4
+    </item>
+    <item name="material_cyan" type="color">
+        #00BCD4
+    </item>
+    <item name="material_teal" type="color">
+        #009688
+    </item>
+    <item name="material_green" type="color">
+        #4CAF50
+    </item>
+    <item name="material_light_green" type="color">
+        #8BC34A
+    </item>
+    <item name="material_lime" type="color">
+        #CDDC39
+    </item>
+    <item name="material_yellow" type="color">
+        #FFEB3B
+    </item>
+    <item name="material_amber" type="color">
+        #FFC107
+    </item>
+    <item name="material_orange" type="color">
+        #FF9800
+    </item>
+    <item name="material_deep_orange" type="color">
+        #FF5722
+    </item>
+    <item name="material_brown" type="color">
+        #795548
+    </item>
+    <item name="material_grey" type="color">
+        #9E9E9E
+    </item>
+    <item name="material_blue_grey" type="color">
+        #607D8B
+    </item>
+    <item name="material_black" type="color">
+        #000000
+    </item>
+    <item name="material_white" type="color">
+        #FFFFFF
+    </item>
+    <item name="text_start_color" type="color">
+        #757575
+    </item>
+    <item name="text_end_color" type="color">
+        #212121
+    </item>
+    <item name="grey600" type="color">
+        #757575
+    </item>
+    <item name="divider_black" type="color">
+        #1E000000
+    </item>
+    <color name="middle_black" >
+        #DE000000
+    </color>
+
+</resources>

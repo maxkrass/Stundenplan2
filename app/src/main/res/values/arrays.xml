@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="weekday">
+        <item>Mondays</item>
+        <item>Tuesdays</item>
+        <item>Wednesdays</item>
+        <item>Thursdays</item>
+        <item>Fridays</item>
+    </string-array>
+    <string-array name="dialog_options">
+        <item>Edit</item>
+        <item>Delete</item>
+    </string-array>
+    <string-array name="periods">
+        <item>1. Period</item>
+        <item>2. Period</item>
+        <item>3. Period</item>
+        <item>4. Period</item>
+        <item>5. Period</item>
+        <item>6. Period</item>
+        <item>7. Period</item>
+        <item>8. Period</item>
+        <item>9. Period</item>
+        <item>10. Period</item>
+        <item>11. Period</item>
+        <item>12. Period</item>
+    </string-array>
+</resources>
