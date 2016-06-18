@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
+
 	<android.support.design.widget.CoordinatorLayout
 		android:id="@+id/content"
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		xmlns:app="http://schemas.android.com/apk/res-auto"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
+		android:animateLayoutChanges="true"
 		android:clickable="true"
 		android:focusable="true"
 		android:focusableInTouchMode="true">
@@ -25,76 +27,183 @@
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:fillViewport="true"
+			android:background="@color/grey50"
 			app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-			<LinearLayout
+			<TableLayout
 				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:orientation="horizontal"
-				>
+				android:layout_height="match_parent">
 
-				<RelativeLayout
-					android:id="@+id/column_monday"
-					android:layout_width="0dp"
-					android:layout_height="wrap_content"
-					android:layout_weight="1"
-					android:paddingBottom="2dp"
-					android:paddingTop="4dp"/>
+				<TableRow
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content">
+
+					<FrameLayout
+						android:layout_width="0dp"
+						android:layout_weight="1"
+						android:paddingStart="8dp">
+
+						<TextView
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:text="Mo"
+							android:textAppearance="@android:style/TextAppearance.Material.Title"/>
+
+					</FrameLayout>
+
+					<View
+						android:layout_width="1dp"
+						android:layout_height="match_parent"
+						android:background="@color/divider_black"
+						android:visibility="visible"/>
+
+					<FrameLayout
+						android:layout_width="0dp"
+						android:layout_weight="1"
+						android:paddingStart="8dp">
+
+						<TextView
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:text="Di"
+							android:textAppearance="@android:style/TextAppearance.Material.Title"/>
+
+					</FrameLayout>
+
+					<View
+						android:layout_width="1dp"
+						android:layout_height="match_parent"
+						android:background="@color/divider_black"
+						android:visibility="visible"/>
+
+					<FrameLayout
+						android:layout_width="0dp"
+						android:layout_weight="1"
+						android:paddingStart="8dp">
+
+						<TextView
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:text="Mi"
+							android:textAppearance="@android:style/TextAppearance.Material.Title"/>
+
+					</FrameLayout>
+
+					<View
+						android:layout_width="1dp"
+						android:layout_height="match_parent"
+						android:background="@color/divider_black"
+						android:visibility="visible"/>
+
+					<FrameLayout
+						android:layout_width="0dp"
+						android:layout_weight="1"
+						android:paddingStart="8dp">
+
+						<TextView
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:text="Do"
+							android:textAppearance="@android:style/TextAppearance.Material.Title"/>
+
+					</FrameLayout>
+
+					<View
+						android:layout_width="1dp"
+						android:layout_height="match_parent"
+						android:background="@color/divider_black"
+						android:visibility="visible"/>
+
+					<FrameLayout
+						android:layout_width="0dp"
+						android:layout_weight="1"
+						android:paddingStart="8dp">
+
+						<TextView
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:text="Fr"
+							android:textAppearance="@android:style/TextAppearance.Material.Title"/>
+
+					</FrameLayout>
+
+				</TableRow>
+
 
 				<View
-					android:layout_width="1dp"
-					android:layout_height="match_parent"
+					android:layout_width="match_parent"
+					android:layout_height="1dp"
 					android:background="@color/divider_black"
 					android:visibility="visible"/>
 
-				<RelativeLayout
-					android:id="@+id/column_tuesday"
-					android:layout_width="0dp"
-					android:layout_height="fill_parent"
+				<TableRow
 					android:layout_weight="1"
-					android:paddingBottom="2dp"
-					android:paddingTop="4dp"/>
+					android:layout_height="0dp">
 
-				<View
-					android:layout_width="1dp"
-					android:layout_height="match_parent"
-					android:background="@color/divider_black"/>
+					<RelativeLayout
+						android:id="@+id/column_monday"
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_weight="1"
+						android:paddingBottom="2dp"
+						android:paddingTop="2dp"/>
 
-				<RelativeLayout
-					android:id="@+id/column_wednesday"
-					android:layout_width="0dp"
-					android:layout_height="fill_parent"
-					android:layout_weight="1"
-					android:paddingBottom="2dp"
-					android:paddingTop="4dp"/>
+					<View
+						android:layout_width="1dp"
+						android:layout_height="match_parent"
+						android:background="@color/divider_black"
+						android:visibility="visible"/>
 
-				<View
-					android:layout_width="1dp"
-					android:layout_height="match_parent"
-					android:background="@color/divider_black"/>
+					<RelativeLayout
+						android:id="@+id/column_tuesday"
+						android:layout_width="0dp"
+						android:layout_height="fill_parent"
+						android:layout_weight="1"
+						android:paddingBottom="2dp"
+						android:paddingTop="2dp"/>
 
-				<RelativeLayout
-					android:id="@+id/column_thursday"
-					android:layout_width="0dp"
-					android:layout_height="fill_parent"
-					android:layout_weight="1"
-					android:paddingBottom="2dp"
-					android:paddingTop="4dp"/>
+					<View
+						android:layout_width="1dp"
+						android:layout_height="match_parent"
+						android:background="@color/divider_black"/>
 
-				<View
-					android:layout_width="1dp"
-					android:layout_height="match_parent"
-					android:background="@color/divider_black"/>
+					<RelativeLayout
+						android:id="@+id/column_wednesday"
+						android:layout_width="0dp"
+						android:layout_height="fill_parent"
+						android:layout_weight="1"
+						android:paddingBottom="2dp"
+						android:paddingTop="2dp"/>
 
-				<RelativeLayout
-					android:id="@+id/column_friday"
-					android:layout_width="0dp"
-					android:layout_height="fill_parent"
-					android:layout_weight="1"
-					android:paddingBottom="2dp"
-					android:paddingTop="4dp"/>
+					<View
+						android:layout_width="1dp"
+						android:layout_height="match_parent"
+						android:background="@color/divider_black"/>
 
-			</LinearLayout>
+					<RelativeLayout
+						android:id="@+id/column_thursday"
+						android:layout_width="0dp"
+						android:layout_height="fill_parent"
+						android:layout_weight="1"
+						android:paddingBottom="2dp"
+						android:paddingTop="2dp"/>
+
+					<View
+						android:layout_width="1dp"
+						android:layout_height="match_parent"
+						android:background="@color/divider_black"/>
+
+					<RelativeLayout
+						android:id="@+id/column_friday"
+						android:layout_width="0dp"
+						android:layout_height="fill_parent"
+						android:layout_weight="1"
+						android:paddingBottom="2dp"
+						android:paddingTop="2dp"/>
+
+				</TableRow>
+
+			</TableLayout>
 		</com.maxkrass.stundenplan.views.ScalableScrollView>
 
 		<android.support.design.widget.AppBarLayout
@@ -117,9 +226,9 @@
 			android:layout_gravity="bottom|end"
 			android:layout_marginBottom="16dp"
 			android:layout_marginEnd="16dp"
+			android:onClick="addLesson"
 			android:src="@drawable/ic_add_24dp"
 			app:elevation="6dp"
-			android:onClick="addLesson"
 			app:layout_behavior="@string/fab_behavior"
 			app:pressedTranslationZ="12dp"/>
 

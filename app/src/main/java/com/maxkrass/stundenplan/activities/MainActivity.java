@@ -1,10 +1,16 @@
 package com.maxkrass.stundenplan.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.BottomSheetDialog;
+import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
-//import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ScaleGestureDetector;
@@ -30,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
+
+//import android.util.Log;
 
 public class MainActivity extends BaseActivity {
 
@@ -108,6 +116,23 @@ public class MainActivity extends BaseActivity {
 		Collections.sort(wednesdayLessons);
 		Collections.sort(thursdayLessons);
 		Collections.sort(fridayLessons);
+		switch (Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
+			case Calendar.MONDAY:
+				columnMonday.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.divider_black));
+				break;
+			case Calendar.TUESDAY:
+				columnTuesday.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.divider_black));
+				break;
+			case Calendar.WEDNESDAY:
+				columnWednesday.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.divider_black));
+				break;
+			case Calendar.THURSDAY:
+				columnThursday.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.divider_black));
+				break;
+			case Calendar.FRIDAY:
+				columnFriday.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.divider_black));
+				break;
+		}
 	}
 
 	@Override
@@ -217,6 +242,27 @@ public class MainActivity extends BaseActivity {
 		layoutParams.setMargins(fourDp, (int) Tools.getPixels((int) (startDifference * mScalingFactor), MainActivity.this), fourDp, 0);
 
 		lesson.setLayoutParams(layoutParams);
+
+		lesson.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				new AlertDialog.Builder(MainActivity.this)
+						.setTitle(l.getSubject().getName())
+						.setItems(new CharSequence[]{"Edit", "Delete"}, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								switch (which) {
+									case 1:
+										break;
+									case 2:
+										break;
+								}
+							}
+						})
+						.show();
+
+			}
+		});
 
 		switch (l.getWeekday()) {
 
