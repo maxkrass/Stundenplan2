@@ -60,6 +60,10 @@ public class Period extends SugarRecord implements Observable {
 		notifyPropertyChanged(BR.endHour);
 	}
 
+	public int getPeriodIndex() {
+		return (int) (getId() - 1);
+	}
+
 	public Period() {
 	}
 

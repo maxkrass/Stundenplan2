@@ -88,7 +88,7 @@ public class MainActivityFragment extends Fragment {
 
 		int fourDp = (int) Tools.getPixels(2, getActivity());
 
-		layoutParams.setMargins(fourDp, (int) Tools.getPixels(l.getPeriod() * 94, getActivity()), fourDp, 0);
+		layoutParams.setMargins(fourDp, (int) Tools.getPixels(l.getPeriod().getPeriodIndex() * 94, getActivity()), fourDp, 0);
 
 		lesson.setLayoutParams(layoutParams);
 

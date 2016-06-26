@@ -28,7 +28,7 @@ public class ViewSubjectActivity extends BaseActivity {
 			Transition transition = TransitionUtils.makeSharedElementEnterTransition();
 			getWindow().setSharedElementEnterTransition(transition);
 			setEnterSharedElementCallback(new EnterSharedElementCallback(this));
-			Toolbar toolbar = (Toolbar) findViewById(R.id.view_subject_toolbar);
+			Toolbar toolbar = binding.viewSubjectToolbar;
 			setActionBar(toolbar);
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}

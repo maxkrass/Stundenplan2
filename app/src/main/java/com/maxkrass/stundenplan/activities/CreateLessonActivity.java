@@ -14,6 +14,7 @@ import android.widget.Toolbar;
 import com.maxkrass.stundenplan.R;
 import com.maxkrass.stundenplan.objects.Color;
 import com.maxkrass.stundenplan.objects.Lesson;
+import com.maxkrass.stundenplan.objects.Period;
 import com.maxkrass.stundenplan.objects.Subject;
 import com.maxkrass.stundenplan.objects.Weekday;
 import com.maxkrass.stundenplan.views.CheckBoxWidget;
@@ -91,7 +92,7 @@ public class CreateLessonActivity extends BaseActivity {
 
 			lessonToSave.setSubject(selectedSubject);
 			lessonToSave.setLocation(lessonRoom.getText().toString());
-			lessonToSave.setPeriod(lessonPeriod.getSelectedItemPosition());
+			lessonToSave.setPeriod(SugarRecord.findById(Period.class, lessonPeriod.getSelectedItemPosition() + 1));
 			lessonToSave.setWeekday(Weekday.values()[lessonWeekday.getSelectedItemPosition()]);
 			lessonToSave.setDoublePeriod(doublePeriod.isChecked());
 

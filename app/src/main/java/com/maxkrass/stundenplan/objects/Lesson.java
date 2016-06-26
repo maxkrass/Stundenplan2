@@ -2,20 +2,15 @@ package com.maxkrass.stundenplan.objects;
 
 import android.support.annotation.NonNull;
 
-import com.maxkrass.stundenplan.tools.Tools;
 import com.orm.SugarRecord;
 import com.orm.dsl.Ignore;
-
-import java.util.Calendar;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class Lesson extends SugarRecord implements Comparable<Lesson> {
 	private Subject subject;
 	private Weekday weekday;
 	private String location;
 	private boolean doublePeriod;
-	private int period;
+	private Period period;
 
 	@Ignore
 	private boolean showRoomLabel = true;
@@ -63,11 +58,11 @@ public class Lesson extends SugarRecord implements Comparable<Lesson> {
 		this.location = location;
 	}
 
-	public int getPeriod() {
+	public Period getPeriod() {
 		return period;
 	}
 
-	public void setPeriod(int period) {
+	public void setPeriod(Period period) {
 		this.period = period;
 	}
 
@@ -75,7 +70,7 @@ public class Lesson extends SugarRecord implements Comparable<Lesson> {
 	public int compareTo(@NonNull Lesson l) {
 
 		if (this.weekday.equals(l.getWeekday())) {
-			return (int) Math.signum(period - l.getPeriod());
+			return (int) Math.signum(period.getId() - l.getPeriod().getId());
 		} else {
 			return this.weekday.compareTo(l.weekday);
 		}

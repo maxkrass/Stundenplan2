@@ -12,16 +12,6 @@
 		android:focusable="true"
 		android:focusableInTouchMode="true">
 
-		<!--<fragment
-			android:id="@+id/fragment_main"
-			android:name="com.maxkrass.stundenplan.fragments.MainActivityFragment"
-			xmlns:android="http://schemas.android.com/apk/res/android"
-			xmlns:tools="http://schemas.android.com/tools"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			app:layout_behavior="@string/appbar_scrolling_view_behavior"
-			tools:layout="@layout/fragment_main"/>-->
-
 		<com.maxkrass.stundenplan.views.ScalableScrollView
 			android:id="@+id/scrollview_lesson"
 			android:layout_width="match_parent"

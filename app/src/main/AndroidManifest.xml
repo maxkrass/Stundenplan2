@@ -2,6 +2,8 @@
 <manifest package="com.maxkrass.stundenplan"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
+	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
 	<application
 		android:name="com.orm.SugarApp"
 		android:allowBackup="true"
@@ -42,7 +44,15 @@
 			android:name=".activities.ViewTeacherActivity"
 			android:theme="@style/AppTheme.ViewTeacher"/>
 		<activity android:name=".activities.ViewSubjectActivity"/>
-		<activity android:name=".activities.CreateLessonActivity"/><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
+		<activity android:name=".activities.CreateLessonActivity"/>
+
+		<service android:name=".services.NotificationService"/>
+		<receiver android:name=".receiver.BootReceiver">
+			<intent-filter>
+				<action android:name="android.intent.action.BOOT_COMPLETED"/>
+			</intent-filter>
+		</receiver>
+		<!-- ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
 		<meta-data
 			android:name="com.google.android.gms.version"

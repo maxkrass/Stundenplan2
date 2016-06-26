@@ -25,6 +25,7 @@ import com.maxkrass.stundenplan.databinding.ActivityMainBinding;
 import com.maxkrass.stundenplan.databinding.LessonCardBinding;
 import com.maxkrass.stundenplan.objects.Lesson;
 import com.maxkrass.stundenplan.objects.Period;
+import com.maxkrass.stundenplan.services.NotificationService;
 import com.maxkrass.stundenplan.tools.Tools;
 import com.maxkrass.stundenplan.views.ScalableScrollView;
 import com.orm.SugarRecord;
@@ -68,10 +69,8 @@ public class MainActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		startService(new Intent(MainActivity.this, NotificationService.class));
 		final ActivityMainBinding activityMainBinding = DataBindingUtil.setContentView(MainActivity.this, R.layout.activity_main);
-		firstPeriodStartTime = Calendar.getInstance();
-		firstPeriodStartTime.set(Calendar.HOUR_OF_DAY, periods.get(0).getStartHour());
-		firstPeriodStartTime.set(Calendar.MINUTE, periods.get(0).getStartMinute());
 		fourDp = (int) Tools.getPixels(2, MainActivity.this);
 		if (SugarRecord.count(Period.class) < 1) {
 			new Period(8, 10, 8, 55).save();
@@ -88,6 +87,9 @@ public class MainActivity extends BaseActivity {
 			new Period(15, 55, 16, 40).save();
 			new Period(16, 40, 17, 25).save();
 		}
+		firstPeriodStartTime = Calendar.getInstance();
+		firstPeriodStartTime.set(Calendar.HOUR_OF_DAY, periods.get(0).getStartHour());
+		firstPeriodStartTime.set(Calendar.MINUTE, periods.get(0).getStartMinute());
 		Toolbar toolbar = activityMainBinding.mainToolbar;
 		((ViewGroup) toolbar.getParent()).setPadding(0, Tools.getStatusBarHeight(MainActivity.this), 0, 0);
 		setActionBar(toolbar);
@@ -226,14 +228,14 @@ public class MainActivity extends BaseActivity {
 		lessonCardBinding.getLesson().setShowRoomLabel(showRoomOnSingleLesson);
 
 		Calendar periodEndTime = Calendar.getInstance();
-		periodEndTime.set(Calendar.HOUR_OF_DAY, periods.get(l.getPeriod() + (l.isDoublePeriod() ? 1 : 0)).getEndHour());
-		periodEndTime.set(Calendar.MINUTE, periods.get(l.getPeriod() + (l.isDoublePeriod() ? 1 : 0)).getEndMinute());
+		periodEndTime.set(Calendar.HOUR_OF_DAY, periods.get(l.getPeriod().getPeriodIndex() + (l.isDoublePeriod() ? 1 : 0)).getEndHour());
+		periodEndTime.set(Calendar.MINUTE, periods.get(l.getPeriod().getPeriodIndex() + (l.isDoublePeriod() ? 1 : 0)).getEndMinute());
 
 		Calendar periodStartTime = Calendar.getInstance();
-		periodStartTime.set(Calendar.HOUR_OF_DAY, periods.get(l.getPeriod()).getStartHour());
-		periodStartTime.set(Calendar.MINUTE, periods.get(l.getPeriod()).getStartMinute());
+		periodStartTime.set(Calendar.HOUR_OF_DAY, periods.get(l.getPeriod().getPeriodIndex()).getStartHour());
+		periodStartTime.set(Calendar.MINUTE, periods.get(l.getPeriod().getPeriodIndex()).getStartMinute());
 
-		long startDifference = l.getPeriod() == 0 ? 0 : TimeUnit.MILLISECONDS.toMinutes(periodStartTime.getTimeInMillis() - firstPeriodStartTime.getTimeInMillis());
+		long startDifference = l.getPeriod().getPeriodIndex() == 0 ? 0 : TimeUnit.MILLISECONDS.toMinutes(periodStartTime.getTimeInMillis() - firstPeriodStartTime.getTimeInMillis());
 
 		long periodDifference = TimeUnit.MILLISECONDS.toMinutes(periodEndTime.getTimeInMillis() - periodStartTime.getTimeInMillis());
 
