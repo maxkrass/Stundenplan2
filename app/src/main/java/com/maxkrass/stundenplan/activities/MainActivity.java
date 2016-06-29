@@ -25,6 +25,7 @@ import com.maxkrass.stundenplan.databinding.ActivityMainBinding;
 import com.maxkrass.stundenplan.databinding.LessonCardBinding;
 import com.maxkrass.stundenplan.objects.Lesson;
 import com.maxkrass.stundenplan.objects.Period;
+import com.maxkrass.stundenplan.receiver.BootReceiver;
 import com.maxkrass.stundenplan.services.NotificationService;
 import com.maxkrass.stundenplan.tools.Tools;
 import com.maxkrass.stundenplan.views.ScalableScrollView;
@@ -69,7 +70,7 @@ public class MainActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		startService(new Intent(MainActivity.this, NotificationService.class));
+		sendBroadcast(new Intent(MainActivity.this, BootReceiver.class));
 		final ActivityMainBinding activityMainBinding = DataBindingUtil.setContentView(MainActivity.this, R.layout.activity_main);
 		fourDp = (int) Tools.getPixels(2, MainActivity.this);
 		if (SugarRecord.count(Period.class) < 1) {
