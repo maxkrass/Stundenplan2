@@ -4,11 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.BottomSheetDialog;
-import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.view.Menu;
@@ -26,6 +22,7 @@ import com.maxkrass.stundenplan.databinding.LessonCardBinding;
 import com.maxkrass.stundenplan.objects.Lesson;
 import com.maxkrass.stundenplan.objects.Period;
 import com.maxkrass.stundenplan.receiver.BootReceiver;
+import com.maxkrass.stundenplan.receiver.NotificationReceiver;
 import com.maxkrass.stundenplan.services.NotificationService;
 import com.maxkrass.stundenplan.tools.Tools;
 import com.maxkrass.stundenplan.views.ScalableScrollView;
@@ -70,7 +67,7 @@ public class MainActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		sendBroadcast(new Intent(MainActivity.this, BootReceiver.class));
+		startService(new Intent(MainActivity.this, NotificationService.class));
 		final ActivityMainBinding activityMainBinding = DataBindingUtil.setContentView(MainActivity.this, R.layout.activity_main);
 		fourDp = (int) Tools.getPixels(2, MainActivity.this);
 		if (SugarRecord.count(Period.class) < 1) {
@@ -162,7 +159,7 @@ public class MainActivity extends BaseActivity {
 
 			if (showRoomOnSingleLesson) {
 				lesson.findViewById(R.id.room_label).setVisibility(View.VISIBLE);
-			} else if (!lessons.get(i).isDoublePeriod()) {
+			} else if (!lessons.get(i).hasSucceedingLesson()) {
 				lesson.findViewById(R.id.room_label).setVisibility(View.GONE);
 			}
 
@@ -207,7 +204,7 @@ public class MainActivity extends BaseActivity {
 
 		originalMeasures = new TreeMap<>();
 
-		for (Lesson l : lessons) addLesson(l);
+		for (Lesson l : lessons) if (!l.isSucceedingLesson()) addLesson(l);
 
 		//Log.d(TAG, "loadAllLessons: Took " + (System.currentTimeMillis() - start) + "ms with Scale Factor: " + mScalingFactor);
 
@@ -229,8 +226,8 @@ public class MainActivity extends BaseActivity {
 		lessonCardBinding.getLesson().setShowRoomLabel(showRoomOnSingleLesson);
 
 		Calendar periodEndTime = Calendar.getInstance();
-		periodEndTime.set(Calendar.HOUR_OF_DAY, periods.get(l.getPeriod().getPeriodIndex() + (l.isDoublePeriod() ? 1 : 0)).getEndHour());
-		periodEndTime.set(Calendar.MINUTE, periods.get(l.getPeriod().getPeriodIndex() + (l.isDoublePeriod() ? 1 : 0)).getEndMinute());
+		periodEndTime.set(Calendar.HOUR_OF_DAY, periods.get(l.getPeriod().getPeriodIndex() + (l.hasSucceedingLesson() ? 1 : 0)).getEndHour());
+		periodEndTime.set(Calendar.MINUTE, periods.get(l.getPeriod().getPeriodIndex() + (l.hasSucceedingLesson() ? 1 : 0)).getEndMinute());
 
 		Calendar periodStartTime = Calendar.getInstance();
 		periodStartTime.set(Calendar.HOUR_OF_DAY, periods.get(l.getPeriod().getPeriodIndex()).getStartHour());

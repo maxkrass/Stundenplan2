@@ -94,9 +94,15 @@ public class CreateLessonActivity extends BaseActivity {
 			lessonToSave.setLocation(lessonRoom.getText().toString());
 			lessonToSave.setPeriod(SugarRecord.findById(Period.class, lessonPeriod.getSelectedItemPosition() + 1));
 			lessonToSave.setWeekday(Weekday.values()[lessonWeekday.getSelectedItemPosition()]);
-			lessonToSave.setDoublePeriod(doublePeriod.isChecked());
 
 			lessonToSave.save();
+
+			if (doublePeriod.isChecked() && lessonToSave.getPeriod().getId() < 10) {
+				lessonToSave.setId(lessonToSave.getId() + 1);
+				lessonToSave.setPeriod(SugarRecord.findById(Period.class, lessonToSave.getPeriod().getId() + 1));
+
+				lessonToSave.save();
+			}
 
 			setResult(RESULT_OK, new Intent().putExtra("lessonID", lessonToSave.getId()));
 

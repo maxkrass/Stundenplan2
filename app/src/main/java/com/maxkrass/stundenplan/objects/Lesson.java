@@ -4,14 +4,16 @@ import android.support.annotation.NonNull;
 
 import com.orm.SugarRecord;
 import com.orm.dsl.Ignore;
+import com.orm.query.Condition;
+import com.orm.query.Select;
+
+import java.util.Locale;
 
 public class Lesson extends SugarRecord implements Comparable<Lesson> {
 	private Subject subject;
 	private Weekday weekday;
 	private String location;
-	private boolean doublePeriod;
 	private Period period;
-
 	@Ignore
 	private boolean showRoomLabel = true;
 
@@ -26,12 +28,12 @@ public class Lesson extends SugarRecord implements Comparable<Lesson> {
 		this.showRoomLabel = showRoomLabel;
 	}
 
-	public boolean isDoublePeriod() {
-		return doublePeriod;
+	public boolean hasSucceedingLesson() {
+		return Select.from(Lesson.class).where(Condition.prop("subject").eq(subject)).and(Condition.prop("location").eq(location)).and(Condition.prop("weekday").eq(weekday)).and(Condition.prop("period").eq(period.getId() + 1)).first() != null;
 	}
 
-	public void setDoublePeriod(boolean doublePeriod) {
-		this.doublePeriod = doublePeriod;
+	public boolean isSucceedingLesson() {
+		return Select.from(Lesson.class).where(Condition.prop("subject").eq(subject)).and(Condition.prop("location").eq(location)).and(Condition.prop("weekday").eq(weekday)).and(Condition.prop("period").eq(period.getId() - 1)).first() != null;
 	}
 
 	public Subject getSubject() {
@@ -75,5 +77,10 @@ public class Lesson extends SugarRecord implements Comparable<Lesson> {
 			return this.weekday.compareTo(l.weekday);
 		}
 
+	}
+
+	@Override
+	public String toString() {
+		return String.format(Locale.GERMAN, "[ %s, %s, %s, %d ]", subject.getName(), weekday.name(), location, period.getId());
 	}
 }

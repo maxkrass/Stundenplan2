@@ -6,17 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.maxkrass.stundenplan.objects.Lesson;
-import com.maxkrass.stundenplan.objects.Period;
 import com.maxkrass.stundenplan.objects.Weekday;
-import com.orm.SugarRecord;
+import com.maxkrass.stundenplan.services.NotificationService;
 import com.orm.query.Select;
 
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
-
-import static android.content.Context.NOTIFICATION_SERVICE;
 
 /**
  * Max made this for Stundenplan2 on 28.06.2016.
@@ -24,22 +20,12 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class NotificationReceiver extends BroadcastReceiver {
 	private NotificationManager mNotificationManager;
+	boolean planNotification;
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Calendar calendar = GregorianCalendar.getInstance();
 
-		int currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-
-		Weekday currentWeekday = Weekday.MONDAY;                                                    // If it's the weekend we want to plan a notification for the next day available, which is monday
-
-		boolean unfinishedLessonsRemainingToday = false;
-
-		if (currentDayOfWeek > Calendar.SUNDAY && currentDayOfWeek < Calendar.SATURDAY) {
-			currentWeekday = Weekday.values()[currentDayOfWeek - 2];
-		}
-
-		List<Period> periods = SugarRecord.listAll(Period.class);
+		/*List<Period> periods = SugarRecord.listAll(Period.class);
 
 		if (periods.size() > 0) {
 
@@ -50,13 +36,11 @@ public class NotificationReceiver extends BroadcastReceiver {
 				//boolean laterThanStart = p.getStartHour() < calendar.get(Calendar.HOUR_OF_DAY) || (p.getStartHour() == calendar.get(Calendar.HOUR_OF_DAY) && p.getStartMinute() < calendar.get(Calendar.MINUTE));
 				if (earlierThanEnd) {
 					period = p;
-					unfinishedLessonsRemainingToday = true;
 					break;
 				}
 			}
 
 			if (period == null) {                                                                   // At this point, there are no remaining periods for today
-				unfinishedLessonsRemainingToday = false;
 				period = periods.get(0);                                                            // So we get the first period of the next day, so we can plan the notification
 				int indexOfTodaysWeekday = Arrays.binarySearch(Weekday.values(), currentWeekday);
 				if (indexOfTodaysWeekday + 1 > Weekday.values().length) {
@@ -74,15 +58,15 @@ public class NotificationReceiver extends BroadcastReceiver {
 
 				if (currentLesson != null) {                                                        //This will be the next lesson, either the current one or the next one today or the first one tomorrow
 
-					if (unfinishedLessonsRemainingToday) {
-
+					if (currentLesson.getPeriod().equals(period)) {
+						planNotification = false;
 					} else {
 						nextDayOfWeek(Arrays.binarySearch(Weekday.values(), currentWeekday) + 2);
 					}
 
 				}
 			}
-		}
+		}*/
 	}
 
 	public static Calendar nextDayOfWeek(int dow) {

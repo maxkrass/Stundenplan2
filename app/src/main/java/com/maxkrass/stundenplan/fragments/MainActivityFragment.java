@@ -84,7 +84,7 @@ public class MainActivityFragment extends Fragment {
 		((TextView) lesson.findViewById(R.id.room_label)).setText(l.getLocation());
 		lesson.setCardBackgroundColor(Color.values()[l.getSubject().getColorIndex()].getColor(getActivity()));
 
-		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) Tools.getPixels(l.isDoublePeriod() ? 184 : 90, getActivity()));
+		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) Tools.getPixels(l.hasSucceedingLesson() ? 184 : 90, getActivity()));
 
 		int fourDp = (int) Tools.getPixels(2, getActivity());
 

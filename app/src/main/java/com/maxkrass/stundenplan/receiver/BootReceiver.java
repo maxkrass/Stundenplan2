@@ -16,14 +16,8 @@ import java.util.Calendar;
 public class BootReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Intent rescheduleIntent = new Intent(context, BootReceiver.class);
-		context.startService(new Intent(context, NotificationService.class));
-		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
-		calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) + 1);
-		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, rescheduleIntent, 0);
-		//alarmManager.setExact(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntent);
+		if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
+			context.startService(new Intent(context, NotificationService.class));
+		}
 	}
 }
