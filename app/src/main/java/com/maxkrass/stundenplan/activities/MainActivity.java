@@ -21,8 +21,6 @@ import com.maxkrass.stundenplan.databinding.ActivityMainBinding;
 import com.maxkrass.stundenplan.databinding.LessonCardBinding;
 import com.maxkrass.stundenplan.objects.Lesson;
 import com.maxkrass.stundenplan.objects.Period;
-import com.maxkrass.stundenplan.receiver.BootReceiver;
-import com.maxkrass.stundenplan.receiver.NotificationReceiver;
 import com.maxkrass.stundenplan.services.NotificationService;
 import com.maxkrass.stundenplan.tools.Tools;
 import com.maxkrass.stundenplan.views.ScalableScrollView;
@@ -155,6 +153,8 @@ public class MainActivity extends BaseActivity {
 
 	private void resizeColumn(RelativeLayout column, List<Lesson> lessons) {
 		for (int i = 0; i < column.getChildCount(); i++) {
+			if (lessons.get(i).isSucceedingLesson())
+				continue;
 			CardView lesson = (CardView) column.getChildAt(i);
 
 			if (showRoomOnSingleLesson) {
