@@ -1,4 +1,4 @@
-package com.maxkrass.stundenplan.fragments;
+package com.maxkrass.stundenplan.dialogs;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.widget.TimePicker;
 
-import com.maxkrass.stundenplan.databinding.ActivitySettingsBinding;
+import com.maxkrass.stundenplan.databinding.FragmentSettingsBinding;
 import com.maxkrass.stundenplan.objects.Period;
 
 /**
@@ -40,8 +40,8 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
 
 	@Override
 	public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-		ActivitySettingsBinding activitySettingsBinding = DataBindingUtil.findBinding(getActivity().findViewById(id));
-		Period period = activitySettingsBinding.getPeriods().get(getArguments().getInt("period"));
+		FragmentSettingsBinding fragmentSettingsBinding = DataBindingUtil.findBinding(getActivity().findViewById(id));
+		Period period = fragmentSettingsBinding.getPeriods().get(getArguments().getInt("period"));
 		if (getArguments().getBoolean("start")) {
 			period.setStartHour(hourOfDay);
 			period.setStartMinute(minute);

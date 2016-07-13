@@ -94,7 +94,7 @@
 			android:layout_height="48dp"
 			android:background="?selectableItemBackground">
 
-			<com.maxkrass.stundenplan.views.CheckBoxWidget
+			<com.maxkrass.stundenplan.customViews.CheckBoxWidget
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:id="@+id/double_period"

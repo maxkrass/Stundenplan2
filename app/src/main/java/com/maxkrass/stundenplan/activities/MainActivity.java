@@ -1,350 +1,499 @@
 package com.maxkrass.stundenplan.activities;
 
-import android.content.DialogInterface;
+import android.Manifest;
+import android.accounts.AccountManager;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.CardView;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.ScaleGestureDetector;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.RelativeLayout;
-import android.widget.Toolbar;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.DateTime;
+import com.google.api.client.util.ExponentialBackOff;
+import com.google.api.services.calendar.CalendarScopes;
+import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.Events;
 import com.maxkrass.stundenplan.R;
 import com.maxkrass.stundenplan.databinding.ActivityMainBinding;
-import com.maxkrass.stundenplan.databinding.LessonCardBinding;
-import com.maxkrass.stundenplan.objects.Lesson;
-import com.maxkrass.stundenplan.objects.Period;
-import com.maxkrass.stundenplan.services.NotificationService;
+import com.maxkrass.stundenplan.fragments.MainActivityFragment;
+import com.maxkrass.stundenplan.fragments.ManageSubjectsFragment;
+import com.maxkrass.stundenplan.fragments.ManageTeachersFragment;
+import com.maxkrass.stundenplan.fragments.SettingsFragment;
 import com.maxkrass.stundenplan.tools.Tools;
-import com.maxkrass.stundenplan.views.ScalableScrollView;
-import com.orm.SugarRecord;
-import com.orm.query.Select;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-import java.util.Calendar;
-import java.util.Collections;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.TimeUnit;
 
-//import android.util.Log;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemClickListener, EasyPermissions.PermissionCallbacks {
 
-	private double mScalingFactor = 1;
-	private double mLastScalingFactor = 1;
-	private boolean showRoomOnSingleLesson = true;
-
-	private int fourDp;
-
-	private List<Period> periods = SugarRecord.listAll(Period.class);
-	private List<Lesson> mondayLessons;
-	private List<Lesson> tuesdayLessons;
-	private List<Lesson> wednesdayLessons;
-	private List<Lesson> thursdayLessons;
-	private List<Lesson> fridayLessons;
-	private Map<Long, Long[]> originalMeasures;
-
-	private RelativeLayout columnMonday;
-	private RelativeLayout columnTuesday;
-	private RelativeLayout columnWednesday;
-	private RelativeLayout columnThursday;
-	private RelativeLayout columnFriday;
-
-	private Calendar firstPeriodStartTime;
-
-	//private static final String TAG = "MainActivity";
+	private static final String TAG = "MainActivity";
+	final String
+			MANAGE_SUBJECTS_TAG = "manage_subjects_fragment", MANAGE_TEACHERS_TAG = "manage_teachers_fragment", MAIN_FRAGMENT_TAG = "main_fragment", SETTINGS_FRAGMENT_TAG = "settings_fragment";
+	public Toolbar toolbar;
+	ActivityMainBinding activityMainBinding;
+	Drawer result;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		startService(new Intent(MainActivity.this, NotificationService.class));
-		final ActivityMainBinding activityMainBinding = DataBindingUtil.setContentView(MainActivity.this, R.layout.activity_main);
-		fourDp = (int) Tools.getPixels(2, MainActivity.this);
-		if (SugarRecord.count(Period.class) < 1) {
-			new Period(8, 10, 8, 55).save();
-			new Period(9, 0, 9, 45).save();
-			new Period(9, 50, 10, 35).save();
-
-			new Period(11, 5, 11, 50).save();
-			new Period(11, 55, 12, 40).save();
-			new Period(12, 45, 13, 30).save();
-
-			new Period(14, 15, 15, 0).save();
-			new Period(15, 0, 15, 45).save();
-
-			new Period(15, 55, 16, 40).save();
-			new Period(16, 40, 17, 25).save();
-		}
-		firstPeriodStartTime = Calendar.getInstance();
-		firstPeriodStartTime.set(Calendar.HOUR_OF_DAY, periods.get(0).getStartHour());
-		firstPeriodStartTime.set(Calendar.MINUTE, periods.get(0).getStartMinute());
-		Toolbar toolbar = activityMainBinding.mainToolbar;
-		((ViewGroup) toolbar.getParent()).setPadding(0, Tools.getStatusBarHeight(MainActivity.this), 0, 0);
-		setActionBar(toolbar);
-		columnMonday = activityMainBinding.columnMonday;
-		columnTuesday = activityMainBinding.columnTuesday;
-		columnWednesday = activityMainBinding.columnWednesday;
-		columnThursday = activityMainBinding.columnThursday;
-		columnFriday = activityMainBinding.columnFriday;
-		ScaleGestureDetector scaleGestureDetector = new ScaleGestureDetector(this, new OnPinchListener());
-		final ScalableScrollView scalableScrollView = activityMainBinding.scrollviewLesson;
-		scalableScrollView.setScaleDetector(scaleGestureDetector);
-		scalableScrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-			@Override
-			public void onScrollChanged() {
-				if (scalableScrollView.getScrollY() == 0) activityMainBinding.addLesson.show();
-			}
-		});
-		loadAllLessons();
-		mondayLessons = Select.from(Lesson.class).where("weekday = 'MONDAY'").list();
-		tuesdayLessons = Select.from(Lesson.class).where("weekday = 'TUESDAY'").list();
-		wednesdayLessons = Select.from(Lesson.class).where("weekday = 'WEDNESDAY'").list();
-		thursdayLessons = Select.from(Lesson.class).where("weekday = 'THURSDAY'").list();
-		fridayLessons = Select.from(Lesson.class).where("weekday = 'FRIDAY'").list();
-		Collections.sort(mondayLessons);
-		Collections.sort(tuesdayLessons);
-		Collections.sort(wednesdayLessons);
-		Collections.sort(thursdayLessons);
-		Collections.sort(fridayLessons);
-		switch (Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
-			case Calendar.MONDAY:
-				columnMonday.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.divider_black));
-				break;
-			case Calendar.TUESDAY:
-				columnTuesday.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.divider_black));
-				break;
-			case Calendar.WEDNESDAY:
-				columnWednesday.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.divider_black));
-				break;
-			case Calendar.THURSDAY:
-				columnThursday.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.divider_black));
-				break;
-			case Calendar.FRIDAY:
-				columnFriday.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.divider_black));
-				break;
-		}
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == REQUEST_CODE_NEW_LESSON) {
-
-			if (resultCode == RESULT_OK) {
-
-				addLesson(SugarRecord.findById(Lesson.class, data.getLongExtra("lessonID", 0)));
-
-			}
+		activityMainBinding = DataBindingUtil.setContentView(MainActivity.this, R.layout.activity_main);
+		activityMainBinding.mainAppBarLayout.setPadding(0, Tools.getStatusBarHeight(MainActivity.this), 0, 0);
+		toolbar = activityMainBinding.mainToolbar;
+		setSupportActionBar(toolbar);
+		result = new DrawerBuilder(this)
+				.withToolbar(toolbar)
+				.inflateMenu(R.menu.drawer_menu)
+				.withOnDrawerItemClickListener(this)
+				.withDrawerLayout(com.mikepenz.materialdrawer.R.layout.material_drawer_fits_not)
+				.withTranslucentStatusBar(false)
+				.withSavedInstance(savedInstanceState)
+				.build();
+		if (savedInstanceState == null && getFragmentManager().findFragmentByTag(MAIN_FRAGMENT_TAG) == null) {
+			getFragmentManager().beginTransaction().add(R.id.fragment_container, new MainActivityFragment(), MAIN_FRAGMENT_TAG).commit();
+			Log.d(TAG, "onCreate: adding MainActivityFragment");
 
 		}
+		Log.d(TAG, "onCreate: finished onCreate");
 	}
 
-	public void addLesson(View v) {
-		startActivityForResult(new Intent(MainActivity.this, CreateLessonActivity.class), REQUEST_CODE_NEW_LESSON);
-	}
+	GoogleAccountCredential mCredential;
+	private TextView mOutputText;
+	private Button mCallApiButton;
+	ProgressDialog mProgress;
 
-	private void resizeColumn(RelativeLayout column, List<Lesson> lessons) {
-		for (int i = 0; i < column.getChildCount(); i++) {
-			if (lessons.get(i).isSucceedingLesson())
-				continue;
-			CardView lesson = (CardView) column.getChildAt(i);
+	static final int REQUEST_ACCOUNT_PICKER = 1000;
+	static final int REQUEST_AUTHORIZATION = 1001;
+	static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
+	static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
 
-			if (showRoomOnSingleLesson) {
-				lesson.findViewById(R.id.room_label).setVisibility(View.VISIBLE);
-			} else if (!lessons.get(i).hasSucceedingLesson()) {
-				lesson.findViewById(R.id.room_label).setVisibility(View.GONE);
-			}
+	private static final String BUTTON_TEXT = "Call Google Calendar API";
+	private static final String PREF_ACCOUNT_NAME = "accountName";
+	private static final String[] SCOPES = {CalendarScopes.CALENDAR_READONLY};
 
-			RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) lesson.getLayoutParams();
+	/**
+	 * Create the main activity.
+	 *
+	 * @param savedInstanceState previously saved instance data.
+	 */
+	void onCreate2(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		LinearLayout activityLayout = new LinearLayout(this);
+		LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+				LinearLayout.LayoutParams.MATCH_PARENT,
+				LinearLayout.LayoutParams.MATCH_PARENT);
+		activityLayout.setLayoutParams(lp);
+		activityLayout.setOrientation(LinearLayout.VERTICAL);
+		activityLayout.setPadding(16, 16, 16, 16);
 
-			long lessonId = lessons.get(i).getId();
+		ViewGroup.LayoutParams tlp = new ViewGroup.LayoutParams(
+				ViewGroup.LayoutParams.WRAP_CONTENT,
+				ViewGroup.LayoutParams.WRAP_CONTENT);
 
-			Long[] measures = originalMeasures.get(lessonId);
-
-			layoutParams.topMargin = (int) Tools.getPixels((int) (measures[0] * mScalingFactor), this);
-
-			layoutParams.height = (int) Tools.getPixels((int) (measures[1] * mScalingFactor), this);
-		}
-
-		column.requestLayout();
-	}
-
-	private void resizeLessons() {
-
-		//long start = System.nanoTime();
-
-		resizeColumn(columnMonday, mondayLessons);
-
-		resizeColumn(columnTuesday, tuesdayLessons);
-
-		resizeColumn(columnWednesday, wednesdayLessons);
-
-		resizeColumn(columnThursday, thursdayLessons);
-
-		resizeColumn(columnFriday, fridayLessons);
-
-		//Log.d(TAG, "resizeLessons: Took " + (System.nanoTime() - start) / 1000 + "µs with Scale Factor: " + mScalingFactor);
-	}
-
-	private void loadAllLessons() {
-
-		List<Lesson> lessons = SugarRecord.listAll(Lesson.class);
-
-		Collections.sort(lessons);
-
-		//long start = System.currentTimeMillis();
-
-		originalMeasures = new TreeMap<>();
-
-		for (Lesson l : lessons) if (!l.isSucceedingLesson()) addLesson(l);
-
-		//Log.d(TAG, "loadAllLessons: Took " + (System.currentTimeMillis() - start) + "ms with Scale Factor: " + mScalingFactor);
-
-	}
-
-	private void addLesson(final Lesson l) {
-		LessonCardBinding lessonCardBinding = LessonCardBinding.inflate(getLayoutInflater());
-
-		CardView lesson = (CardView) lessonCardBinding.getRoot();
-
-		lessonCardBinding.setLesson(l);
-		int colorIndex = l.getSubject().getColorIndex();
-
-		if (colorIndex == 12 || colorIndex == 20) {
-			lessonCardBinding.subjectAbbrLabel.setTextColor(0xDE000000);
-			lessonCardBinding.roomLabel.setTextColor(0x8A000000);
-		}
-
-		lessonCardBinding.getLesson().setShowRoomLabel(showRoomOnSingleLesson);
-
-		Calendar periodEndTime = Calendar.getInstance();
-		periodEndTime.set(Calendar.HOUR_OF_DAY, periods.get(l.getPeriod().getPeriodIndex() + (l.hasSucceedingLesson() ? 1 : 0)).getEndHour());
-		periodEndTime.set(Calendar.MINUTE, periods.get(l.getPeriod().getPeriodIndex() + (l.hasSucceedingLesson() ? 1 : 0)).getEndMinute());
-
-		Calendar periodStartTime = Calendar.getInstance();
-		periodStartTime.set(Calendar.HOUR_OF_DAY, periods.get(l.getPeriod().getPeriodIndex()).getStartHour());
-		periodStartTime.set(Calendar.MINUTE, periods.get(l.getPeriod().getPeriodIndex()).getStartMinute());
-
-		long startDifference = l.getPeriod().getPeriodIndex() == 0 ? 0 : TimeUnit.MILLISECONDS.toMinutes(periodStartTime.getTimeInMillis() - firstPeriodStartTime.getTimeInMillis());
-
-		long periodDifference = TimeUnit.MILLISECONDS.toMinutes(periodEndTime.getTimeInMillis() - periodStartTime.getTimeInMillis());
-
-		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) Tools.getPixels((int) (periodDifference * mScalingFactor), MainActivity.this));
-
-		layoutParams.setMargins(fourDp, (int) Tools.getPixels((int) (startDifference * mScalingFactor), MainActivity.this), fourDp, 0);
-
-		lesson.setLayoutParams(layoutParams);
-
-		lesson.setOnClickListener(new View.OnClickListener() {
+		mCallApiButton = new Button(this);
+		mCallApiButton.setText(BUTTON_TEXT);
+		mCallApiButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				new AlertDialog.Builder(MainActivity.this)
-						.setTitle(l.getSubject().getName())
-						.setItems(new CharSequence[]{"Edit", "Delete"}, new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								switch (which) {
-									case 1:
-										break;
-									case 2:
-										break;
-								}
-							}
-						})
-						.show();
-
+				mCallApiButton.setEnabled(false);
+				mOutputText.setText("");
+				getResultsFromApi();
+				mCallApiButton.setEnabled(true);
 			}
 		});
+		activityLayout.addView(mCallApiButton);
 
-		switch (l.getWeekday()) {
+		mOutputText = new TextView(this);
+		mOutputText.setLayoutParams(tlp);
+		mOutputText.setPadding(16, 16, 16, 16);
+		mOutputText.setVerticalScrollBarEnabled(true);
+		mOutputText.setMovementMethod(new ScrollingMovementMethod());
+		mOutputText.setText(
+				"Click the \'" + BUTTON_TEXT + "\' button to test the API.");
+		activityLayout.addView(mOutputText);
 
-			case MONDAY:
-				columnMonday.addView(lesson);
-				break;
-			case TUESDAY:
-				columnTuesday.addView(lesson);
-				break;
-			case WEDNESDAY:
-				columnWednesday.addView(lesson);
-				break;
-			case THURSDAY:
-				columnThursday.addView(lesson);
-				break;
-			case FRIDAY:
-				columnFriday.addView(lesson);
-				break;
+		mProgress = new ProgressDialog(this);
+		mProgress.setMessage("Calling Google Calendar API ...");
 
+		setContentView(activityLayout);
+
+		// Initialize credentials and service object.
+		mCredential = GoogleAccountCredential.usingOAuth2(
+				getApplicationContext(), Arrays.asList(SCOPES))
+				.setBackOff(new ExponentialBackOff());
+	}
+
+
+	/**
+	 * Attempt to call the API, after verifying that all the preconditions are
+	 * satisfied. The preconditions are: Google Play Services installed, an
+	 * account was selected and the device currently has online access. If any
+	 * of the preconditions are not satisfied, the app will prompt the user as
+	 * appropriate.
+	 */
+	private void getResultsFromApi() {
+		if (!isGooglePlayServicesAvailable()) {
+			acquireGooglePlayServices();
+		} else if (mCredential.getSelectedAccountName() == null) {
+			chooseAccount();
+		} else if (!isDeviceOnline()) {
+			mOutputText.setText("No network connection available.");
+		} else {
+			new MakeRequestTask(mCredential).execute();
+		}
+	}
+
+	/**
+	 * Attempts to set the account used with the API credentials. If an account
+	 * name was previously saved it will use that one; otherwise an account
+	 * picker dialog will be shown to the user. Note that the setting the
+	 * account to use with the credentials object requires the app to have the
+	 * GET_ACCOUNTS permission, which is requested here if it is not already
+	 * present. The AfterPermissionGranted annotation indicates that this
+	 * function will be rerun automatically whenever the GET_ACCOUNTS permission
+	 * is granted.
+	 */
+	@AfterPermissionGranted(REQUEST_PERMISSION_GET_ACCOUNTS)
+	private void chooseAccount() {
+		if (EasyPermissions.hasPermissions(
+				this, Manifest.permission.GET_ACCOUNTS)) {
+			String accountName = getPreferences(Context.MODE_PRIVATE)
+					.getString(PREF_ACCOUNT_NAME, null);
+			if (accountName != null) {
+				mCredential.setSelectedAccountName(accountName);
+				getResultsFromApi();
+			} else {
+				// Start a dialog from which the user can choose an account
+				startActivityForResult(
+						mCredential.newChooseAccountIntent(),
+						REQUEST_ACCOUNT_PICKER);
+			}
+		} else {
+			// Request the GET_ACCOUNTS permission via a user dialog
+			EasyPermissions.requestPermissions(
+					this,
+					"This app needs to access your Google account (via Contacts).",
+					REQUEST_PERMISSION_GET_ACCOUNTS,
+					Manifest.permission.GET_ACCOUNTS);
+		}
+	}
+
+	/**
+	 * Called when an activity launched here (specifically, AccountPicker
+	 * and authorization) exits, giving you the requestCode you started it with,
+	 * the resultCode it returned, and any additional data from it.
+	 *
+	 * @param requestCode code indicating which activity result is incoming.
+	 * @param resultCode  code indicating the result of the incoming
+	 *                    activity result.
+	 * @param data        Intent (containing result data) returned by incoming
+	 *                    activity result.
+	 */
+	@Override
+	protected void onActivityResult(
+			int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (requestCode) {
+			case REQUEST_GOOGLE_PLAY_SERVICES:
+				if (resultCode != RESULT_OK) {
+					mOutputText.setText(
+							"This app requires Google Play Services. Please install " +
+									"Google Play Services on your device and relaunch this app.");
+				} else {
+					getResultsFromApi();
+				}
+				break;
+			case REQUEST_ACCOUNT_PICKER:
+				if (resultCode == RESULT_OK && data != null &&
+						data.getExtras() != null) {
+					String accountName =
+							data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+					if (accountName != null) {
+						SharedPreferences settings =
+								getPreferences(Context.MODE_PRIVATE);
+						SharedPreferences.Editor editor = settings.edit();
+						editor.putString(PREF_ACCOUNT_NAME, accountName);
+						editor.apply();
+						mCredential.setSelectedAccountName(accountName);
+						getResultsFromApi();
+					}
+				}
+				break;
+			case REQUEST_AUTHORIZATION:
+				if (resultCode == RESULT_OK) {
+					getResultsFromApi();
+				}
+				break;
+		}
+	}
+
+	/**
+	 * Respond to requests for permissions at runtime for API 23 and above.
+	 *
+	 * @param requestCode  The request code passed in
+	 *                     requestPermissions(android.app.Activity, String, int, String[])
+	 * @param permissions  The requested permissions. Never null.
+	 * @param grantResults The grant results for the corresponding permissions
+	 *                     which is either PERMISSION_GRANTED or PERMISSION_DENIED. Never null.
+	 */
+	@Override
+	public void onRequestPermissionsResult(int requestCode,
+	                                       @NonNull String[] permissions,
+	                                       @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		EasyPermissions.onRequestPermissionsResult(
+				requestCode, permissions, grantResults, this);
+	}
+
+	/**
+	 * Callback for when a permission is granted using the EasyPermissions
+	 * library.
+	 *
+	 * @param requestCode The request code associated with the requested
+	 *                    permission
+	 * @param list        The requested permission list. Never null.
+	 */
+	@Override
+	public void onPermissionsGranted(int requestCode, List<String> list) {
+		// Do nothing.
+	}
+
+	/**
+	 * Callback for when a permission is denied using the EasyPermissions
+	 * library.
+	 *
+	 * @param requestCode The request code associated with the requested
+	 *                    permission
+	 * @param list        The requested permission list. Never null.
+	 */
+	@Override
+	public void onPermissionsDenied(int requestCode, List<String> list) {
+		// Do nothing.
+	}
+
+	/**
+	 * Checks whether the device currently has a network connection.
+	 *
+	 * @return true if the device has a network connection, false otherwise.
+	 */
+	private boolean isDeviceOnline() {
+		ConnectivityManager connMgr =
+				(ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+		return (networkInfo != null && networkInfo.isConnected());
+	}
+
+	/**
+	 * Check that Google Play services APK is installed and up to date.
+	 *
+	 * @return true if Google Play Services is available and up to
+	 * date on this device; false otherwise.
+	 */
+	private boolean isGooglePlayServicesAvailable() {
+		GoogleApiAvailability apiAvailability =
+				GoogleApiAvailability.getInstance();
+		final int connectionStatusCode =
+				apiAvailability.isGooglePlayServicesAvailable(this);
+		return connectionStatusCode == ConnectionResult.SUCCESS;
+	}
+
+	/**
+	 * Attempt to resolve a missing, out-of-date, invalid or disabled Google
+	 * Play Services installation via a user dialog, if possible.
+	 */
+	private void acquireGooglePlayServices() {
+		GoogleApiAvailability apiAvailability =
+				GoogleApiAvailability.getInstance();
+		final int connectionStatusCode =
+				apiAvailability.isGooglePlayServicesAvailable(this);
+		if (apiAvailability.isUserResolvableError(connectionStatusCode)) {
+			showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode);
+		}
+	}
+
+
+	/**
+	 * Display an error dialog showing that Google Play Services is missing
+	 * or out of date.
+	 *
+	 * @param connectionStatusCode code describing the presence (or lack of)
+	 *                             Google Play Services on this device.
+	 */
+	void showGooglePlayServicesAvailabilityErrorDialog(
+			final int connectionStatusCode) {
+		GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+		Dialog dialog = apiAvailability.getErrorDialog(
+				MainActivity.this,
+				connectionStatusCode,
+				REQUEST_GOOGLE_PLAY_SERVICES);
+		dialog.show();
+	}
+
+	/**
+	 * An asynchronous task that handles the Google Calendar API call.
+	 * Placing the API calls in their own task ensures the UI stays responsive.
+	 */
+	private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
+		private com.google.api.services.calendar.Calendar mService = null;
+		private Exception mLastError = null;
+
+		public MakeRequestTask(GoogleAccountCredential credential) {
+			HttpTransport transport = AndroidHttp.newCompatibleTransport();
+			JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+			mService = new com.google.api.services.calendar.Calendar.Builder(
+					transport, jsonFactory, credential)
+					.setApplicationName("Google Calendar API Android Quickstart")
+					.build();
 		}
 
-		originalMeasures.put(l.getId(), new Long[]{startDifference, periodDifference});
+		/**
+		 * Background task to call Google Calendar API.
+		 *
+		 * @param params no parameters needed for this task.
+		 */
+		@Override
+		protected List<String> doInBackground(Void... params) {
+			try {
+				return getDataFromApi();
+			} catch (Exception e) {
+				mLastError = e;
+				cancel(true);
+				return null;
+			}
+		}
+
+		/**
+		 * Fetch a list of the next 10 events from the primary calendar.
+		 *
+		 * @return List of Strings describing returned events.
+		 * @throws IOException
+		 */
+		private List<String> getDataFromApi() throws IOException {
+			// List the next 10 events from the primary calendar.
+			DateTime now = new DateTime(System.currentTimeMillis());
+			List<String> eventStrings = new ArrayList<>();
+			Events events = mService.events().list("primary")
+					.setMaxResults(10)
+					.setTimeMin(now)
+					.setOrderBy("startTime")
+					.setSingleEvents(true)
+					.execute();
+			List<Event> items = events.getItems();
+
+			for (Event event : items) {
+				DateTime start = event.getStart().getDateTime();
+				if (start == null) {
+					// All-day events don't have start times, so just use
+					// the start date.
+					start = event.getStart().getDate();
+				}
+				eventStrings.add(
+						String.format("%s (%s)", event.getSummary(), start));
+			}
+			return eventStrings;
+		}
+
+
+		@Override
+		protected void onPreExecute() {
+			mOutputText.setText("");
+			mProgress.show();
+		}
+
+		@Override
+		protected void onPostExecute(List<String> output) {
+			mProgress.hide();
+			if (output == null || output.size() == 0) {
+				mOutputText.setText("No results returned.");
+			} else {
+				output.add(0, "Data retrieved using the Google Calendar API:");
+				mOutputText.setText(TextUtils.join("\n", output));
+			}
+		}
+
+		@Override
+		protected void onCancelled() {
+			mProgress.hide();
+			if (mLastError != null) {
+				if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
+					showGooglePlayServicesAvailabilityErrorDialog(
+							((GooglePlayServicesAvailabilityIOException) mLastError)
+									.getConnectionStatusCode());
+				} else if (mLastError instanceof UserRecoverableAuthIOException) {
+					startActivityForResult(
+							((UserRecoverableAuthIOException) mLastError).getIntent(),
+							MainActivity.REQUEST_AUTHORIZATION);
+				} else {
+					mOutputText.setText("The following error occurred:\n"
+							+ mLastError.getMessage());
+				}
+			} else {
+				mOutputText.setText("Request cancelled.");
+			}
+		}
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.menu_main, menu);
+	public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+		switch (position) {
+			default:
+				return false;
+			case 0:
+				if (getFragmentManager().findFragmentByTag(MAIN_FRAGMENT_TAG) == null)
+					getFragmentManager().beginTransaction().replace(R.id.fragment_container, new MainActivityFragment(), MAIN_FRAGMENT_TAG).commit();
+				toolbar.setTitle("Stundenplan");
+				break;
+			case 1:
+				if (getSupportFragmentManager().findFragmentByTag(MANAGE_TEACHERS_TAG) == null) {
+					getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ManageTeachersFragment(), MANAGE_TEACHERS_TAG).commit();
+					toolbar.setTitle("Lehrer");
+				}
+				break;
+			case 2:
+				if (getFragmentManager().findFragmentByTag(MANAGE_SUBJECTS_TAG) == null) {
+					getFragmentManager().beginTransaction().replace(R.id.fragment_container, new ManageSubjectsFragment(), MANAGE_SUBJECTS_TAG).commit();
+					toolbar.setTitle("Fächer");
+				}
+				break;
+			case 3:
+				if (getFragmentManager().findFragmentByTag(SETTINGS_FRAGMENT_TAG) == null) {
+					getFragmentManager().beginTransaction().replace(R.id.fragment_container, new SettingsFragment(), SETTINGS_FRAGMENT_TAG).commit();
+					toolbar.setTitle("Einstellungen");
+				}
+				break;
+		}
+		result.closeDrawer();
 		return true;
 	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		switch (item.getItemId()) {
-			case R.id.manage_subjects:
-				startActivity(new Intent(this, ManageSubjectsActivity.class).putExtra("select", false));
-				break;
-			case R.id.manage_teachers:
-				startActivity(new Intent(this, ManageTeacherActivity.class));
-				break;
-			case R.id.action_settings:
-				startActivity(new Intent(this, SettingsActivity.class));
-		}
-
-		return super.onOptionsItemSelected(item);
-	}
-
-	private class OnPinchListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-
-		float startingSpan;
-
-		@Override
-		public void onScaleEnd(ScaleGestureDetector detector) {
-			mLastScalingFactor = mScalingFactor;
-		}
-
-		@Override
-		public boolean onScaleBegin(ScaleGestureDetector detector) {
-			startingSpan = detector.getCurrentSpanY();
-			return true;
-		}
-
-		@Override
-		public boolean onScale(ScaleGestureDetector detector) {
-			mScalingFactor = mLastScalingFactor * detector.getCurrentSpanY() / startingSpan;
-			if (mScalingFactor < 0.75) {
-				mScalingFactor = 0.75;
-			} else if (mScalingFactor < 1.0) {
-				showRoomOnSingleLesson = false;
-			} else if (mScalingFactor > 1.5) {
-				mScalingFactor = 1.5;
-			} else {
-				showRoomOnSingleLesson = true;
-			}
-
-			resizeLessons();
-
-			return true;
-		}
-	}
-
 }

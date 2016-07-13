@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+	<data>
+
+		<import type="com.maxkrass.stundenplan.objects.Teacher"/>
+
+		<variable
+			name="teacher"
+			type="Teacher"/>
+	</data>
+
+	<LinearLayout
+		android:id="@+id/container"
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical"
+		android:paddingEnd="16dp"
+		android:paddingStart="16dp"
+		android:paddingTop="8dp">
+
+		<android.support.design.widget.TextInputLayout
+			android:layout_width="match_parent"
+			android:id="@+id/teacher_name_til"
+			android:layout_height="wrap_content">
+
+			<EditText
+				android:id="@+id/teacher_name_field"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@{teacher.name}"
+				android:hint="Teacher's name"/>
+
+		</android.support.design.widget.TextInputLayout>
+
+		<android.support.design.widget.TextInputLayout
+			android:layout_width="match_parent"
+			android:id="@+id/teacher_phone_til"
+			android:layout_height="wrap_content">
+
+			<EditText
+				android:id="@+id/teacher_phone_field"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@{teacher.phone}"
+				android:hint="Teacher's phone"
+				android:inputType="phone"/>
+
+		</android.support.design.widget.TextInputLayout>
+
+		<android.support.design.widget.TextInputLayout
+			android:layout_width="match_parent"
+			android:id="@+id/teacher_email_til"
+			android:layout_height="wrap_content">
+
+			<EditText
+				android:id="@+id/teacher_email_field"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@{teacher.email}"
+				android:hint="Teacher's email"
+				android:inputType="textEmailAddress"/>
+
+		</android.support.design.widget.TextInputLayout>
+
+	</LinearLayout>
+</layout>

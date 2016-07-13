@@ -12,13 +12,12 @@ import com.orm.dsl.Ignore;
  * Max made this for Stundenplan on 16.04.2016.
  */
 public class Period extends SugarRecord implements Observable {
-	@Ignore
-	PropertyChangeRegistry mCallbacks;
-
 	int startHour;
 	int startMinute;
 	int endHour;
 	int endMinute;
+	@Ignore
+	PropertyChangeRegistry mCallbacks;
 
 	@Bindable
 	public int getEndMinute() {

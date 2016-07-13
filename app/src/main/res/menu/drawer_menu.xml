@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<item
+		android:id="@+id/drawer_main_item"
+		android:title="Stundenplan"/>
+	<item
+		android:id="@+id/drawer_teachers_item"
+		android:title="Lehrer"/>
+	<item
+		android:id="@+id/drawer_subjects_item"
+		android:title="Fächer"/>
+	<item
+		android:id="@+id/drawer_settings_item"
+		android:title="Einstellungen"/>
+
+</menu>

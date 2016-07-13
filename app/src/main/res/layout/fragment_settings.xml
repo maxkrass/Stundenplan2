@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout
+	xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<data>
+
+		<import type="com.maxkrass.stundenplan.objects.Period"/>
+
+		<import type="android.databinding.ObservableArrayList"/>
+
+		<variable
+			name="periods"
+			type="ObservableArrayList&lt;Period>"/>
+	</data>
+
+	<ScrollView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"
+			android:padding="16dp">
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+
+				<TextView
+					android:layout_width="50sp"
+					android:layout_height="wrap_content"
+					android:text="1"/>
+
+				<TextView
+					android:id="@+id/start_1"
+					style="@style/timeTextView"
+					android:text='@{String.format("%02d:%02d", periods[0].startHour, periods[0].startMinute)}'/>
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="16dp"
+					android:text="@string/hyphen"
+					android:textSize="16sp"/>
+
+				<TextView
+					android:id="@+id/end_1"
+					style="@style/timeTextView"
+					android:onClick="pickTime"
+					android:text='@{String.format("%02d:%02d", periods[0].endHour, periods[0].endMinute)}'/>
+			</LinearLayout>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+
+				<TextView
+					android:layout_width="50sp"
+					android:layout_height="wrap_content"
+					android:text="2"/>
+
+				<TextView
+					android:id="@+id/start_2"
+					style="@style/timeTextView"
+					android:text='@{String.format("%02d:%02d", periods[1].startHour, periods[1].startMinute)}'/>
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="16dp"
+					android:text="@string/hyphen"
+					android:textSize="16sp"/>
+
+				<TextView
+					android:id="@+id/end_2"
+					style="@style/timeTextView"
+					android:onClick="pickTime"
+					android:text='@{String.format("%02d:%02d", periods[1].endHour, periods[1].endMinute)}'/>
+			</LinearLayout>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+
+				<TextView
+					android:layout_width="50sp"
+					android:layout_height="wrap_content"
+					android:text="3"/>
+
+				<TextView
+					android:id="@+id/start_3"
+					style="@style/timeTextView"
+					android:text='@{String.format("%02d:%02d", periods[2].startHour, periods[2].startMinute)}'/>
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="16dp"
+					android:text="@string/hyphen"
+					android:textSize="16sp"/>
+
+				<TextView
+					android:id="@+id/end_3"
+					style="@style/timeTextView"
+					android:onClick="pickTime"
+					android:text='@{String.format("%02d:%02d", periods[2].endHour, periods[2].endMinute)}'/>
+			</LinearLayout>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+
+				<TextView
+					android:layout_width="50sp"
+					android:layout_height="wrap_content"
+					android:text="4"/>
+
+				<TextView
+					android:id="@+id/start_4"
+					style="@style/timeTextView"
+					android:text='@{String.format("%02d:%02d", periods[3].startHour, periods[3].startMinute)}'/>
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="16dp"
+					android:text="@string/hyphen"
+					android:textSize="16sp"/>
+
+				<TextView
+					android:id="@+id/end_4"
+					style="@style/timeTextView"
+					android:onClick="pickTime"
+					android:text='@{String.format("%02d:%02d", periods[3].endHour, periods[3].endMinute)}'/>
+			</LinearLayout>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+
+				<TextView
+					android:layout_width="50sp"
+					android:layout_height="wrap_content"
+					android:text="5"/>
+
+				<TextView
+					android:id="@+id/start_5"
+					style="@style/timeTextView"
+					android:text='@{String.format("%02d:%02d", periods[4].startHour, periods[4].startMinute)}'/>
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="16dp"
+					android:text="@string/hyphen"
+					android:textSize="16sp"/>
+
+				<TextView
+					android:id="@+id/end_5"
+					style="@style/timeTextView"
+					android:onClick="pickTime"
+					android:text='@{String.format("%02d:%02d", periods[4].endHour, periods[4].endMinute)}'/>
+			</LinearLayout>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+
+				<TextView
+					android:layout_width="50sp"
+					android:layout_height="wrap_content"
+					android:text="6"/>
+
+				<TextView
+					android:id="@+id/start_6"
+					style="@style/timeTextView"
+					android:text='@{String.format("%02d:%02d", periods[5].startHour, periods[5].startMinute)}'/>
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="16dp"
+					android:text="@string/hyphen"
+					android:textSize="16sp"/>
+
+				<TextView
+					android:id="@+id/end_6"
+					style="@style/timeTextView"
+					android:onClick="pickTime"
+					android:text='@{String.format("%02d:%02d", periods[5].endHour, periods[5].endMinute)}'/>
+			</LinearLayout>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+
+				<TextView
+					android:layout_width="50sp"
+					android:layout_height="wrap_content"
+					android:text="7"/>
+
+				<TextView
+					android:id="@+id/start_7"
+					style="@style/timeTextView"
+					android:text='@{String.format("%02d:%02d", periods[6].startHour, periods[6].startMinute)}'/>
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="16dp"
+					android:text="@string/hyphen"
+					android:textSize="16sp"/>
+
+				<TextView
+					android:id="@+id/end_7"
+					style="@style/timeTextView"
+					android:onClick="pickTime"
+					android:text='@{String.format("%02d:%02d", periods[6].endHour, periods[6].endMinute)}'/>
+			</LinearLayout>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+
+				<TextView
+					android:layout_width="50sp"
+					android:layout_height="wrap_content"
+					android:text="8"/>
+
+				<TextView
+					android:id="@+id/start_8"
+					style="@style/timeTextView"
+					android:text='@{String.format("%02d:%02d", periods[7].startHour, periods[7].startMinute)}'/>
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="16dp"
+					android:text="@string/hyphen"
+					android:textSize="16sp"/>
+
+				<TextView
+					android:id="@+id/end_8"
+					style="@style/timeTextView"
+					android:onClick="pickTime"
+					android:text='@{String.format("%02d:%02d", periods[7].endHour, periods[7].endMinute)}'/>
+			</LinearLayout>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+
+				<TextView
+					android:layout_width="50sp"
+					android:layout_height="wrap_content"
+					android:text="9"/>
+
+				<TextView
+					android:id="@+id/start_9"
+					style="@style/timeTextView"
+					android:text='@{String.format("%02d:%02d", periods[8].startHour, periods[8].startMinute)}'/>
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="16dp"
+					android:text="@string/hyphen"
+					android:textSize="16sp"/>
+
+				<TextView
+					android:id="@+id/end_9"
+					style="@style/timeTextView"
+					android:onClick="pickTime"
+					android:text='@{String.format("%02d:%02d", periods[8].endHour, periods[8].endMinute)}'/>
+			</LinearLayout>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+
+				<TextView
+					android:layout_width="50sp"
+					android:layout_height="wrap_content"
+					android:text="10"/>
+
+				<TextView
+					android:id="@+id/start_10"
+					style="@style/timeTextView"
+					android:text='@{String.format("%02d:%02d", periods[9].startHour, periods[9].startMinute)}'/>
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="16dp"
+					android:text="@string/hyphen"
+					android:textSize="16sp"/>
+
+				<TextView
+					android:id="@+id/end_10"
+					style="@style/timeTextView"
+					android:onClick="pickTime"
+					android:text='@{String.format("%02d:%02d", periods[9].endHour, periods[9].endMinute)}'/>
+			</LinearLayout>
+
+		</LinearLayout>
+
+	</ScrollView>
+
+</layout>

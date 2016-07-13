@@ -4,6 +4,10 @@
 
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
+	<uses-permission android:name="android.permission.INTERNET"/>
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+	<uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+
 	<application
 		android:name="com.orm.SugarApp"
 		android:allowBackup="true"
@@ -17,13 +21,17 @@
 			android:value="stundenplan.db"/>
 		<meta-data
 			android:name="VERSION"
-			android:value="1"/>
+			android:value="2"/>
 		<meta-data
 			android:name="QUERY_LOG"
 			android:value="true"/>
 		<meta-data
 			android:name="DOMAIN_PACKAGE_NAME"
 			android:value="com.maxkrass.stundenplan.objects"/>
+
+		<meta-data
+			android:name="com.google.android.gms.version"
+			android:value="@integer/google_play_services_version"/>
 
 		<activity
 			android:name=".activities.MainActivity"
@@ -36,10 +44,7 @@
 				<category android:name="android.intent.category.LAUNCHER"/>
 			</intent-filter>
 		</activity>
-		<activity android:name=".activities.SettingsActivity"/>
-		<activity android:name=".activities.ManageSubjectsActivity"/>
 		<activity android:name=".activities.CreateSubjectActivity"/>
-		<activity android:theme="@style/AppTheme.ManageTeacher" android:name=".activities.ManageTeacherActivity"/>
 		<activity android:name=".activities.CreateTeacherActivity"/>
 		<activity
 			android:name=".activities.ViewTeacherActivity"
@@ -53,7 +58,6 @@
 				<action android:name="android.intent.action.BOOT_COMPLETED"/>
 			</intent-filter>
 		</receiver>
-		<receiver android:name=".receiver.NotificationReceiver"/>
 		<!-- ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
 		<meta-data

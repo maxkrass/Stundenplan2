@@ -1,53 +1,78 @@
 package com.maxkrass.stundenplan.objects;
 
-import com.orm.SugarRecord;
+import android.databinding.BaseObservable;
+import android.databinding.Bindable;
 
-public class Subject extends SugarRecord {
-    private Teacher teacher;
-    private int colorIndex;
-    private String name;
-    private String abbreviation;
+import com.maxkrass.stundenplan.BR;
+import com.orm.dsl.Table;
 
-    public Teacher getTeacher() {
-        return teacher;
-    }
+@Table
+public class Subject extends BaseObservable {
+	private Teacher teacher;
+	private int colorIndex;
+	private Long id;
+	private String name;
+	private String abbreviation;
 
-    public void setTeacher(Teacher teacher) {
-        this.teacher = teacher;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public int getColorIndex() {
-        return colorIndex;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setColorIndex(int colorIndex) {
-        this.colorIndex = colorIndex;
-    }
+	@Bindable
+	public Teacher getTeacher() {
+		return teacher;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void setTeacher(Teacher teacher) {
+		this.teacher = teacher;
+		notifyPropertyChanged(BR.teacher);
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	@Bindable
+	public int getColorIndex() {
+		return colorIndex;
+	}
 
-    public String getAbbreviation() {
-        return abbreviation;
-    }
+	public void setColorIndex(int colorIndex) {
+		this.colorIndex = colorIndex;
+		notifyPropertyChanged(BR.colorIndex);
+	}
 
-    public void setAbbreviation(String abbreviation) {
-        this.abbreviation = abbreviation;
-    }
+	@Bindable
+	public String getName() {
+		return name;
+	}
 
-    public Subject(String name, String abbreviation, Teacher teacher, int colorIndex) {
-        this.teacher = teacher;
-        this.colorIndex = colorIndex;
-        this.name = name;
-        this.abbreviation = abbreviation;
-    }
+	public void setName(String name) {
+		this.name = name;
+		notifyPropertyChanged(BR.name);
+	}
 
-    public Subject() {
+	@Bindable
+	public String getAbbreviation() {
+		return abbreviation;
+	}
 
-    }
+	public void setAbbreviation(String abbreviation) {
+		this.abbreviation = abbreviation;
+		notifyPropertyChanged(BR.abbreviation);
+	}
+
+	public Subject(String name, String abbreviation, Teacher teacher, int colorIndex) {
+		this.teacher = teacher;
+		this.colorIndex = colorIndex;
+		this.name = name;
+		this.abbreviation = abbreviation;
+	}
+
+	public Subject() {
+		teacher = null;
+		colorIndex = 0;
+		name = "";
+		abbreviation = "";
+	}
 }

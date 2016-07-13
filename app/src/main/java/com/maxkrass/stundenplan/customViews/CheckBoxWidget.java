@@ -1,10 +1,9 @@
-package com.maxkrass.stundenplan.views;
+package com.maxkrass.stundenplan.customViews;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.CheckBox;
 import android.widget.Checkable;
 import android.widget.FrameLayout;

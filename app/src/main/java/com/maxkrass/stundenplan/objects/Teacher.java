@@ -1,56 +1,71 @@
 package com.maxkrass.stundenplan.objects;
 
-import android.databinding.Observable;
+import android.databinding.BaseObservable;
+import android.databinding.Bindable;
 
-import com.orm.SugarRecord;
+import com.maxkrass.stundenplan.BR;
+import com.orm.dsl.Table;
 
-import java.io.Serializable;
+@Table
+public class Teacher extends BaseObservable {
+	private String teacherName;
+	private String phone;
+	private String email;
 
-public class Teacher extends SugarRecord {
-    private String name;
-    private String phone;
-    private String email;
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public Teacher() {
-        name = "";
-        phone = "";
-        email = "";
-    }
+	private Long id;
 
+	public Long getId() {
+		return id;
+	}
 
+	public Teacher() {
+		teacherName = "";
+		phone = "";
+		email = "";
+	}
 
-    public String getName() {
-        return name;
-    }
+	@Bindable
+	public String getTeacherName() {
+		return teacherName;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setTeacherName(String teacherName) {
+		this.teacherName = teacherName;
+		notifyPropertyChanged(BR.teacherName);
+	}
 
-    public String getPhone() {
-        return phone;
-    }
+	@Bindable
+	public String getPhone() {
+		return phone;
+	}
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+	public void setPhone(String phone) {
+		this.phone = phone;
+		notifyPropertyChanged(BR.phone);
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	@Bindable
+	public String getEmail() {
+		return email;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+		notifyPropertyChanged(BR.email);
+	}
 
-    public Teacher(String name, String phone, String email) {
-        this.name = name;
-        this.phone = phone;
-        this.email = email;
-    }
+	public Teacher(String name, String phone, String email) {
+		this.teacherName = name;
+		this.phone = phone;
+		this.email = email;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        return o instanceof Teacher && ((Teacher) o).getName().equals(getName()) && ((Teacher) o).getEmail().equals(getEmail()) && ((Teacher) o).getPhone().equals(getPhone()) && ((Teacher) o).getId().equals(getId());
-    }
+	@Override
+	public boolean equals(Object o) {
+		return o instanceof Teacher && ((Teacher) o).getTeacherName().equals(getTeacherName()) && ((Teacher) o).getEmail().equals(getEmail()) && ((Teacher) o).getPhone().equals(getPhone()) && ((Teacher) o).getId().equals(getId());
+	}
 }

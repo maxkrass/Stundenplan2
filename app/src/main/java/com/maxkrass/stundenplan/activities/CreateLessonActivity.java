@@ -17,7 +17,7 @@ import com.maxkrass.stundenplan.objects.Lesson;
 import com.maxkrass.stundenplan.objects.Period;
 import com.maxkrass.stundenplan.objects.Subject;
 import com.maxkrass.stundenplan.objects.Weekday;
-import com.maxkrass.stundenplan.views.CheckBoxWidget;
+import com.maxkrass.stundenplan.customViews.CheckBoxWidget;
 import com.orm.SugarRecord;
 
 public class CreateLessonActivity extends BaseActivity {
@@ -82,7 +82,7 @@ public class CreateLessonActivity extends BaseActivity {
 	}
 
 	public void selectSubject(View view) {
-		startActivityForResult(new Intent(CreateLessonActivity.this, ManageSubjectsActivity.class).putExtra("select", true), SELECT_SUBJECT_REQUEST_CODE);
+		// TODO startActivityForResult(new Intent(CreateLessonActivity.this, ManageSubjectsActivity.class).putExtra("select", true), SELECT_SUBJECT_REQUEST_CODE);
 	}
 
 	public void saveLesson(View view) {

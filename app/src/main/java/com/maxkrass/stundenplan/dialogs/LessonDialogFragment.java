@@ -1,4 +1,4 @@
-package com.maxkrass.stundenplan.fragments;
+package com.maxkrass.stundenplan.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

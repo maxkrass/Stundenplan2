@@ -4,11 +4,11 @@ import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.google.inject.Inject;
 import com.maxkrass.stundenplan.R;
 import com.maxkrass.stundenplan.activities.MainActivity;
 import com.maxkrass.stundenplan.objects.Lesson;
@@ -35,6 +35,9 @@ public class NotificationService extends IntentService {
 		super("StundenplanNotificationService");
 	}
 
+	@Inject
+	AlarmManager alarmManager;
+
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		Intent resultIntent = new Intent(this, MainActivity.class);
@@ -42,8 +45,6 @@ public class NotificationService extends IntentService {
 		PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 		Intent rescheduleIntent = new Intent(this, NotificationService.class);
-
-		AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
 		long lessonID = intent.getLongExtra("lessonID", 0);
 

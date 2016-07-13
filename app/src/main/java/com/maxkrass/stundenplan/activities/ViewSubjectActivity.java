@@ -11,6 +11,7 @@ import com.maxkrass.stundenplan.R;
 import com.maxkrass.stundenplan.TransitionUtils;
 import com.maxkrass.stundenplan.databinding.ActivityViewSubjectBinding;
 import com.maxkrass.stundenplan.objects.Subject;
+import com.orm.SugarRecord;
 
 public class ViewSubjectActivity extends BaseActivity {
 
@@ -19,7 +20,7 @@ public class ViewSubjectActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		subject = Subject.findById(Subject.class, getIntent().getIntExtra("subjectID", 0));
+		subject = SugarRecord.findById(Subject.class, getIntent().getIntExtra("subjectID", 0));
 		if (subject == null) {
 			finish();
 		} else {

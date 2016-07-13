@@ -84,7 +84,7 @@
 		<android.support.design.widget.AppBarLayout
 			android:id="@+id/view_teacher_app_bar_layout"
 			android:layout_width="match_parent"
-			android:transitionName="teacher_appbar"
+			android:transitionName="@string/main_app_bar_layout_transition_name"
 			android:layout_height="wrap_content"
 			android:paddingTop="24dp">
 

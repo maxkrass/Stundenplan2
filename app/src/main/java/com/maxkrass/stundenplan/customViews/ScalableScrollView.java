@@ -1,4 +1,4 @@
-package com.maxkrass.stundenplan.views;
+package com.maxkrass.stundenplan.customViews;
 
 import android.content.Context;
 import android.support.v4.widget.NestedScrollView;

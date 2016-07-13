@@ -1,10 +1,9 @@
 package com.maxkrass.stundenplan.tools;
 
 import android.content.Context;
-import android.content.res.TypedArray;
+import android.text.TextUtils;
 import android.util.TypedValue;
 
-import com.maxkrass.stundenplan.R;
 import com.maxkrass.stundenplan.objects.Teacher;
 import com.orm.SugarRecord;
 
@@ -25,6 +24,10 @@ public class Tools {
             result = context.getResources().getDimensionPixelSize(resourceId);
         }
         return result;
+    }
+
+    public static boolean isValidEmail(CharSequence target) {
+        return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
     }
 
     public static int fetchPrimaryColor(Context mContext) {
