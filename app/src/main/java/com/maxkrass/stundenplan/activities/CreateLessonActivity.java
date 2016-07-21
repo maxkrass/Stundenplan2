@@ -63,7 +63,7 @@ public class CreateLessonActivity extends BaseActivity {
 				selectedSubject = SugarRecord.findById(Subject.class, subjectID);
 				subjectName.setText(selectedSubject.getName());
 				subjectColor.setVisibility(View.VISIBLE);
-				int newColor = Color.values()[selectedSubject.getColorIndex()].getColor(this);
+				int newColor = selectedSubject.getColorInt();
 				((GradientDrawable) subjectColor.getBackground()).setColor(newColor);
 				mRevealView.setBackgroundColor(newColor);
 				color = newColor;
@@ -124,7 +124,7 @@ public class CreateLessonActivity extends BaseActivity {
 					selectedSubject = SugarRecord.listAll(Subject.class, "name").get(subjectID);
 					subjectName.setText(selectedSubject.getName());
 					subjectColor.setVisibility(View.VISIBLE);
-					int newColor = Color.values()[selectedSubject.getColorIndex()].getColor(CreateLessonActivity.this);
+					int newColor = selectedSubject.getColorInt();
 					animateAppAndStatusBar(color, newColor);
 					((GradientDrawable) subjectColor.getBackground()).setColor(newColor);
 					color = newColor;

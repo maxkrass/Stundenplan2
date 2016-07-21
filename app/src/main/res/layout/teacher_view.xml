@@ -26,7 +26,7 @@
 			android:layout_gravity="center_vertical"
 			android:layout_marginStart="8dp"
 			android:layout_weight="1"
-			android:text="@{teacher.name}"
+			android:text="@{teacher.teacherName}"
 			android:textSize="16sp"
 			android:transitionName="teacher_name"/>
 

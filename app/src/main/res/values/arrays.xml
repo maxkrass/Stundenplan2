@@ -1,28 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="weekday">
-        <item>Mondays</item>
-        <item>Tuesdays</item>
-        <item>Wednesdays</item>
-        <item>Thursdays</item>
-        <item>Fridays</item>
-    </string-array>
-    <string-array name="dialog_options">
-        <item>Edit</item>
-        <item>Delete</item>
-    </string-array>
-    <string-array name="periods">
-        <item>1. Period</item>
-        <item>2. Period</item>
-        <item>3. Period</item>
-        <item>4. Period</item>
-        <item>5. Period</item>
-        <item>6. Period</item>
-        <item>7. Period</item>
-        <item>8. Period</item>
-        <item>9. Period</item>
-        <item>10. Period</item>
-        <item>11. Period</item>
-        <item>12. Period</item>
-    </string-array>
+	<string-array name="weekday">
+		<item>Mondays</item>
+		<item>Tuesdays</item>
+		<item>Wednesdays</item>
+		<item>Thursdays</item>
+		<item>Fridays</item>
+	</string-array>
+	<string-array name="dialog_options">
+		<item>Edit</item>
+		<item>Delete</item>
+	</string-array>
+	<string-array name="periods">
+		<item>1. Period</item>
+		<item>2. Period</item>
+		<item>3. Period</item>
+		<item>4. Period</item>
+		<item>5. Period</item>
+		<item>6. Period</item>
+		<item>7. Period</item>
+		<item>8. Period</item>
+		<item>9. Period</item>
+		<item>10. Period</item>
+		<item>11. Period</item>
+		<item>12. Period</item>
+	</string-array>
+	<string-array name="colors">
+	    <item name="material_red">
+		    #F44336
+	    </item>
+	    <item name="material_pink">
+		    #E91E63
+	    </item>
+	    <item name="material_purple">
+		    #9C27B0
+	    </item>
+	    <item name="material_deep_purple">
+		    #673AB7
+	    </item>
+	    <item name="material_indigo">
+		    #3F51B5
+	    </item>
+	    <item name="material_blue">
+		    #2196F3
+	    </item>
+	    <item name="material_light_blue">
+		    #03A9F4
+	    </item>
+	    <item name="material_cyan">
+		    #00BCD4
+	    </item>
+	    <item name="material_teal">
+		    #009688
+	    </item>
+	    <item name="material_green">
+		    #4CAF50
+	    </item>
+	    <item name="material_light_green">
+		    #8BC34A
+	    </item>
+	    <item name="material_lime">
+		    #CDDC39
+	    </item>
+	    <item name="material_yellow">
+		    #FFEB3B
+	    </item>
+	    <item name="material_amber">
+		    #FFC107
+	    </item>
+	    <item name="material_orange">
+		    #FF9800
+	    </item>
+	    <item name="material_deep_orange">
+		    #FF5722
+	    </item>
+	    <item name="material_brown">
+		    #795548
+	    </item>
+	    <item name="material_grey">
+		    #9E9E9E
+	    </item>
+	    <item name="material_blue_grey">
+		    #607D8B
+	    </item>
+	    <item name="material_black">
+		    #000000
+	    </item>
+	    <item name="material_white">
+		    #FFFFFF
+	    </item>
+	</string-array>
 </resources>

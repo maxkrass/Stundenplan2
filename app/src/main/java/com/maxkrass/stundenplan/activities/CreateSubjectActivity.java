@@ -4,15 +4,19 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.widget.Toolbar;
 
 import com.maxkrass.stundenplan.R;
+import com.maxkrass.stundenplan.data.SubjectRepository;
 import com.maxkrass.stundenplan.databinding.ActivityCreateSubjectBinding;
 import com.maxkrass.stundenplan.fragments.CreateSubjectFragment;
 import com.maxkrass.stundenplan.fragments.ManageTeachersFragment;
 import com.maxkrass.stundenplan.objects.Color;
+import com.maxkrass.stundenplan.objects.Teacher;
+import com.maxkrass.stundenplan.presenters.CreateSubjectPresenter;
 
 public class CreateSubjectActivity extends BaseActivity implements CreateSubjectFragment.OnChooseListener, ManageTeachersFragment.OnTeacherChosenListener {
 
@@ -20,6 +24,7 @@ public class CreateSubjectActivity extends BaseActivity implements CreateSubject
 	View mRevealView;
 	View mRevealBackgroundView;
 	CreateSubjectFragment createSubjectFragment;
+	final String CREATE_SUBJECT_TAG = "create_subject_fragment";
 	ManageTeachersFragment manageTeachersFragment;
 	ActivityCreateSubjectBinding binding;
 
@@ -29,11 +34,13 @@ public class CreateSubjectActivity extends BaseActivity implements CreateSubject
 		binding = DataBindingUtil.setContentView(this, R.layout.activity_create_subject);
 		mRevealView = binding.reveal;
 		mRevealBackgroundView = binding.revealBackground;
+		createSubjectFragment = (CreateSubjectFragment) getSupportFragmentManager().findFragmentByTag(CREATE_SUBJECT_TAG);
 		if (createSubjectFragment == null) {
 			createSubjectFragment = new CreateSubjectFragment();
-			getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, createSubjectFragment).commit();
+			getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, createSubjectFragment, CREATE_SUBJECT_TAG).commit();
 		}
 
+		new CreateSubjectPresenter(new SubjectRepository(getUid()), createSubjectFragment, getIntent().getStringExtra("subjectKey"));
 
 		mToolbar = binding.createSubjectToolbar;
 
@@ -51,7 +58,7 @@ public class CreateSubjectActivity extends BaseActivity implements CreateSubject
 
 			int position = bundle.getInt("position");
 
-			Teacher teacher = SugarRecord.listAll(Teacher.class, "name").get(position);
+			Teacher teacher = SugarRecord.listAll(Teacher.class, "teacher_name").get(position);
 
 			subject.setTeacher(teacher);
 
@@ -82,8 +89,8 @@ public class CreateSubjectActivity extends BaseActivity implements CreateSubject
 	}
 
 	@Override
-	public void onShowChosenColor(Color fromColor, Color toColor) {
-		animateAppAndStatusBar(fromColor.getColor(this), toColor.getColor(this));
+	public void onShowChosenColor(String fromColor, String toColor) {
+		animateAppAndStatusBar(Integer.decode(fromColor), Integer.decode(toColor));
 	}
 
 	@Override
@@ -92,7 +99,8 @@ public class CreateSubjectActivity extends BaseActivity implements CreateSubject
 		Bundle bundle = new Bundle();
 		bundle.putBoolean("select", true);
 		manageTeachersFragment.setArguments(bundle);
-		getSupportFragmentManager().beginTransaction().hide(createSubjectFragment).add(R.id.second_fragment_container, manageTeachersFragment).addToBackStack(null).commit();
+		getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).hide(createSubjectFragment).add(R.id.second_fragment_container, manageTeachersFragment).addToBackStack(null).commit();
+		binding.createSubjectTitle.setText("Choose Teacher");
 		binding.saveSubject.setVisibility(View.GONE);
 		binding.cancelSubject.setImageResource(R.drawable.ic_arrow_back_24dp);
 		binding.cancelSubject.setOnClickListener(new View.OnClickListener() {
@@ -104,17 +112,23 @@ public class CreateSubjectActivity extends BaseActivity implements CreateSubject
 	}
 
 	@Override
-	public void onTeacherChosen(Long teacherID) {
-		getSupportFragmentManager().popBackStack();
-		getSupportFragmentManager().beginTransaction().show(createSubjectFragment).remove(manageTeachersFragment).commit();
-		createSubjectFragment.onTeacherChosen(teacherID);
+	public void onTeacherChosen(Teacher teacher) {
+		restoreView();
+		createSubjectFragment.onTeacherChosen(teacher);
 	}
 
 	@Override
 	public void onNoneChosen() {
-		getSupportFragmentManager().popBackStack();
-		getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, createSubjectFragment).commit();
+		restoreView();
+	}
 
+	private void restoreView() {
+		getSupportFragmentManager().popBackStack();
+		getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).replace(R.id.fragment_container, createSubjectFragment).commit();
+		binding.createSubjectTitle.setText("New Subject");
+		binding.saveSubject.setVisibility(View.VISIBLE);
+		binding.cancelSubject.setImageResource(R.drawable.ic_clear_grey600_24dp);
+		binding.cancelSubject.setOnClickListener(this);
 	}
 
 	@Override

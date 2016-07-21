@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.maxkrass.stundenplan.R;
 import com.maxkrass.stundenplan.customViews.CheckBoxWidget;
 
@@ -42,5 +43,9 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
 	public ActionBar getActionBar() {
 		assert super.getActionBar() != null;
 		return super.getActionBar();
+	}
+
+	public String getUid() {
+		return FirebaseAuth.getInstance().getCurrentUser().getUid();
 	}
 }

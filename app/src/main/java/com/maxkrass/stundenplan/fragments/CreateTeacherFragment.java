@@ -1,14 +1,14 @@
 package com.maxkrass.stundenplan.fragments;
 
-import android.app.Fragment;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
 import com.maxkrass.stundenplan.R;
 import com.maxkrass.stundenplan.contracts.CreateTeacherContract;
@@ -25,7 +25,6 @@ public class CreateTeacherFragment extends Fragment implements CreateTeacherCont
 	private CreateTeacherContract.Presenter mPresenter;
 	private FragmentCreateTeacherBinding binding;
 
-	EditText mTeacherName, mTeacherPhone, mTeacherEmail;
 	Teacher teacher;
 
 	@Nullable
@@ -34,10 +33,13 @@ public class CreateTeacherFragment extends Fragment implements CreateTeacherCont
 		binding = DataBindingUtil.inflate(inflater, R.layout.fragment_create_teacher, container, false);
 		teacher = new Teacher();
 		binding.setTeacher(teacher);
-		mTeacherName = binding.teacherNameField;
-		mTeacherPhone = binding.teacherPhoneField;
-		mTeacherEmail = binding.teacherEmailField;
 		return binding.getRoot();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		mPresenter.start();
 	}
 
 	@Override
@@ -74,6 +76,11 @@ public class CreateTeacherFragment extends Fragment implements CreateTeacherCont
 	@Override
 	public void showTeacher(Teacher teacher) {
 		binding.setTeacher(teacher);
+	}
+
+	@Override
+	public void savingFailed() {
+		Snackbar.make(binding.getRoot(), "Saving Failed", Snackbar.LENGTH_SHORT);
 	}
 
 	@Override

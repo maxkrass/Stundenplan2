@@ -2,6 +2,8 @@ package com.maxkrass.stundenplan.data;
 
 import android.support.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.firebase.database.ValueEventListener;
 import com.maxkrass.stundenplan.objects.Teacher;
 
 import java.util.List;
@@ -19,21 +21,13 @@ public interface TeacherDataSource {
 		//void onDataNotAvailable();
 	}
 
-	interface GetTeacherCallback {
-		void onTeacherLoaded(Teacher teacher);
+	void getTeacher(@NonNull String key, @NonNull ValueEventListener listener);
 
-		void onDataNotAvailable();
-	}
+	void teacherExists(String name, @NonNull ValueEventListener listener);
 
-	void getTeachers(@NonNull LoadTeachersCallback callback);
+	void saveTeacher(@NonNull String teacherName, String teacherPhone, String teacherEmail, OnCompleteListener<Void> listener);
 
-	void getTeacher(@NonNull Long teacherID, @NonNull GetTeacherCallback callback);
-
-	boolean teacherExists(String name);
-
-	void saveTeacher(@NonNull Teacher teacher);
-
-	void updateTeacher(@NonNull Teacher teacher);
+	void updateTeacher(@NonNull String key, @NonNull String teacherName, String teacherPhone, String teacherEmail, OnCompleteListener<Void> listener);
 
 	void deleteTeacher(@NonNull Teacher teacher);
 

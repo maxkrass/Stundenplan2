@@ -17,7 +17,7 @@ public class Period extends SugarRecord implements Observable {
 	int endHour;
 	int endMinute;
 	@Ignore
-	PropertyChangeRegistry mCallbacks;
+	transient PropertyChangeRegistry mCallbacks;
 
 	@Bindable
 	public int getEndMinute() {

@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "582567432166",
+    "firebase_url": "https://fourth-return-136820.firebaseio.com",
+    "project_id": "fourth-return-136820",
+    "storage_bucket": "fourth-return-136820.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:582567432166:android:7385b8b507a68036",
+        "android_client_info": {
+          "package_name": "com.maxkrass.stundenplan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "582567432166-5e45m6galolav1di7t1u3ods538jl0oh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.maxkrass.stundenplan",
+            "certificate_hash": "089379CF284FC65432DA7072CE87E9FAA0C56C02"
+          }
+        },
+        {
+          "client_id": "582567432166-mrpqchkrbqmo2vo5gooer3e0urkuma6l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.maxkrass.stundenplan",
+            "certificate_hash": "C6C917AA19D9DEE676D80F1CB461028BCB741006"
+          }
+        },
+        {
+          "client_id": "582567432166-lmdpfk0vej7gd418ckrgkilpugsg0v77.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCc0K1I222LPdlIXY7l_c65lrXi_xthsPQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "582567432166-lmdpfk0vej7gd418ckrgkilpugsg0v77.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,10 +1,11 @@
 package com.maxkrass.stundenplan.dialogs;
 
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.text.format.DateFormat;
 import android.widget.TimePicker;
 
@@ -17,8 +18,8 @@ import com.maxkrass.stundenplan.objects.Period;
 public class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
 
 	int id;
-	private static final String TAG = "TimePickerFragment";
 
+	@NonNull
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -34,7 +35,7 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
 					DateFormat.is24HourFormat(getActivity()));
 		} else {
 			dismiss();
-			return null;
+			return new Dialog(getContext());
 		}
 	}
 

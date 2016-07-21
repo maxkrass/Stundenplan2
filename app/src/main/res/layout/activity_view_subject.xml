@@ -18,7 +18,7 @@
 			android:id="@+id/view_subject_app_bar_layout"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:background="@{Color.values[subject.colorIndex].getColor(context)}"
+			android:background="@{subject.color}"
 			android:paddingTop="24dp"
 			android:transitionName="subject_color">
 

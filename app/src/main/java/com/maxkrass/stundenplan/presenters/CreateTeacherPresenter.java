@@ -4,22 +4,26 @@ package com.maxkrass.stundenplan.presenters;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.telephony.PhoneNumberUtils;
-import android.text.TextUtils;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.maxkrass.stundenplan.contracts.CreateTeacherContract;
 import com.maxkrass.stundenplan.data.TeacherDataSource;
 import com.maxkrass.stundenplan.objects.Teacher;
 import com.maxkrass.stundenplan.tools.Tools;
-import com.orm.SugarRecord;
 
 import java.util.Locale;
+import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Max made this for Stundenplan2 on 11.07.2016.
  */
-public class CreateTeacherPresenter implements CreateTeacherContract.Presenter, TeacherDataSource.GetTeacherCallback {
+public class CreateTeacherPresenter implements CreateTeacherContract.Presenter, ValueEventListener {
 
 	@NonNull
 	private final TeacherDataSource mTeacherRepository;
@@ -28,66 +32,73 @@ public class CreateTeacherPresenter implements CreateTeacherContract.Presenter, 
 	private final CreateTeacherContract.View mCreateTeacherView;
 
 	@Nullable
-	private Long mTeacherID;
+	private String mTeacherIDKey;
 
-	public CreateTeacherPresenter(@NonNull TeacherDataSource teacherRepository, @NonNull CreateTeacherContract.View createTeacherView, @Nullable Long teacherID) {
+	public CreateTeacherPresenter(@NonNull TeacherDataSource teacherRepository, @NonNull CreateTeacherContract.View createTeacherView, @Nullable String teacherIDKey) {
 		mTeacherRepository = checkNotNull(teacherRepository);
 		mCreateTeacherView = checkNotNull(createTeacherView);
 		mCreateTeacherView.setPresenter(this);
-		mTeacherID = teacherID;
+		mTeacherIDKey = teacherIDKey;
 	}
 
-	@Override
 	public void saveTeacher(String name, String email, String phone) {
-		if (isNewTeacher())
-			createTeacher(name, email, phone);
-		else
-			updateTeacher(name, email, phone);
+
+		OnCompleteListener<Void> listener = new OnCompleteListener<Void>() {
+			@Override
+			public void onComplete(@NonNull Task<Void> task) {
+				if (task.isSuccessful()) mCreateTeacherView.exitCreateDialog();
+				else mCreateTeacherView.savingFailed();
+			}
+		};
+
+		if (isNewTeacher()) createTeacher(name, email, phone, listener);
+		else updateTeacher(name, email, phone, listener);
 	}
 
 	@Override
-	public void validateTeacher(String name, String email, String phone) {
-		boolean error = false;
+	public void validateTeacher(final String name, final String email, final String phone) {
 		mCreateTeacherView.removeErrors();
-		if (name.equals("")) {
+		boolean error = false;
+		if (name.isEmpty()) {
 			mCreateTeacherView.nameInvalid();
 			error = true;
-		} else if (isNewTeacher() && mTeacherRepository.teacherExists(name)) {
-			mCreateTeacherView.nameExists();
-			error = true;
 		}
-		if (!TextUtils.isEmpty(email) && !Tools.isValidEmail(email)) {
+
+		if (!email.isEmpty() && !Tools.isValidEmail(email)) {
 			mCreateTeacherView.emailInvalid();
 			error = true;
 		}
+
 		if (!error) {
-			saveTeacher(name, email, phone);
-			//teachersAdapter.add(teacher);
-			//teachersAdapter.notifyItemInserted(Stundenplan.getInstance().getTeachers().size() - 1);
+			if (isNewTeacher() || teacherNameWasChanged(name)) {
+				mTeacherRepository.teacherExists(name, new ValueEventListener() {
+					@Override
+					public void onDataChange(DataSnapshot dataSnapshot) {
+						if (dataSnapshot.exists() && dataSnapshot.hasChildren()) {
+							mCreateTeacherView.nameExists();
+						} else {
+							saveTeacher(name, email, phone);
+						}
+					}
+
+					@Override
+					public void onCancelled(DatabaseError databaseError) {
+
+					}
+				});
+			} else {
+				saveTeacher(name, email, phone);
+			}
 		}
 	}
 
-	private void updateTeacher(String name, String email, String phone) {
-		if (isNewTeacher())
-			throw new RuntimeException("updateTeacher() was called but teacher is new.");
-		Teacher teacher = new Teacher(name, phone.equals("") ? "" : PhoneNumberUtils.formatNumber(phone, Locale.getDefault().getCountry()), email);
-		teacher.setId(mTeacherID);
-		SugarRecord.update(teacher);
-		mCreateTeacherView.exitCreateDialog();
-		//TODO ((TeachersAdapter) ManageTeachersActivity.teacherRecyclerView.getAdapter()).updateData();
-		//ManageTeachersActivity.teacherRecyclerView.getAdapter().notifyItemChanged(Tools.getTeacherPosition(teacher));
+	private void updateTeacher(String name, String email, String phone, OnCompleteListener<Void> listener) {
+		assert mTeacherIDKey != null;
+		mTeacherRepository.updateTeacher(mTeacherIDKey, name, phone.equals("") ? "" : PhoneNumberUtils.formatNumber(phone, Locale.getDefault().getCountry()), email, listener);
 	}
 
-	private void createTeacher(String name, String email, String phone) {
-		if (mTeacherRepository.teacherExists(name))
-			mCreateTeacherView.nameExists();
-		else {
-			mTeacherRepository.saveTeacher(new Teacher(name, phone.equals("") ? "" : PhoneNumberUtils.formatNumber(phone, Locale.getDefault().getCountry()), email));
-			mCreateTeacherView.exitCreateDialog();
-			//TODO ((TeachersAdapter) ManageTeachersActivity.teacherRecyclerView.getAdapter()).add(teacher);
-			//ManageTeachersActivity.teacherRecyclerView.getAdapter().notifyItemInserted(SugarRecord.listAll(Teacher.class, "name").size() - 1);
-		}
-
+	private void createTeacher(String name, String email, String phone, OnCompleteListener<Void> listener) {
+		mTeacherRepository.saveTeacher(name, phone.equals("") ? "" : PhoneNumberUtils.formatNumber(phone, Locale.getDefault().getCountry()), email, listener);
 	}
 
 	@Override
@@ -96,23 +107,27 @@ public class CreateTeacherPresenter implements CreateTeacherContract.Presenter, 
 	}
 
 	public void populateTeacher() {
-		if (isNewTeacher())
-			mCreateTeacherView.showTeacher(new Teacher());
-		else
-			mTeacherRepository.getTeacher(mTeacherID, this);
-	}
-
-	@Override
-	public void onTeacherLoaded(Teacher teacher) {
-		mCreateTeacherView.showTeacher(teacher);
-	}
-
-	@Override
-	public void onDataNotAvailable() {
-		mCreateTeacherView.exitCreateDialog();
+		if (!isNewTeacher()) {
+			assert mTeacherIDKey != null;
+			mTeacherRepository.getTeacher(mTeacherIDKey, this);
+		}
 	}
 
 	private boolean isNewTeacher() {
-		return mTeacherID == null || mTeacherID == 0;
+		return mTeacherIDKey == null || Objects.equals(mTeacherIDKey, "");
+	}
+
+	private boolean teacherNameWasChanged(String name) {
+		return !Objects.equals(mTeacherIDKey, name);
+	}
+
+	@Override
+	public void onDataChange(DataSnapshot dataSnapshot) {
+		mCreateTeacherView.showTeacher(dataSnapshot.getValue(Teacher.class));
+	}
+
+	@Override
+	public void onCancelled(DatabaseError databaseError) {
+		mCreateTeacherView.exitCreateDialog();
 	}
 }

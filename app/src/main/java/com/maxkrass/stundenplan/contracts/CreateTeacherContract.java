@@ -23,11 +23,10 @@ public class CreateTeacherContract {
 
 		void showTeacher(Teacher teacher);
 
+		void savingFailed();
 	}
 
 	public interface Presenter extends BasePresenter {
-
-		void saveTeacher(String name, String email, String phone);
 
 		void validateTeacher(String name, String email, String phone);
 

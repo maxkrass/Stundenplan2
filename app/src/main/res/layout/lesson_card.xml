@@ -2,6 +2,7 @@
 
 	<data>
 		<import type="com.maxkrass.stundenplan.objects.Color" />
+		<import type="java.lang.Integer" />
 		<import type="android.view.View" />
 
 		<variable
@@ -17,7 +18,7 @@
 		android:clickable="true"
 		android:focusable="true"
 		android:foreground="?android:attr/selectableItemBackground"
-		card_view:cardBackgroundColor="@{Color.values[lesson.subject.colorIndex].getColor(context)}"
+		card_view:cardBackgroundColor="@{Integer.decode(lesson.subject.color)}"
 		card_view:cardCornerRadius="2dp"
 		card_view:cardElevation="2dp">
 

@@ -5,6 +5,9 @@
 		android:id="@+id/drawer_main_item"
 		android:title="Stundenplan"/>
 	<item
+		android:id="@+id/drawer_substitution_item"
+		android:title="Vertretungsplan"/>
+	<item
 		android:id="@+id/drawer_teachers_item"
 		android:title="Lehrer"/>
 	<item

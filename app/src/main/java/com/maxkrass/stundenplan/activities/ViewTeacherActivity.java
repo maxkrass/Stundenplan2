@@ -6,6 +6,8 @@ import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.transition.Transition;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,11 +18,11 @@ import com.maxkrass.stundenplan.R;
 import com.maxkrass.stundenplan.databinding.ActivityViewTeacherBinding;
 import com.maxkrass.stundenplan.objects.Teacher;
 import com.maxkrass.stundenplan.tools.Tools;
-import com.orm.SugarRecord;
 
 import java.util.List;
 
-public class ViewTeacherActivity extends BaseActivity {
+public class ViewTeacherActivity extends BaseActivity implements Transition.TransitionListener {
+	private static final String TAG = "ViewTeacherActivity";
 	ActivityViewTeacherBinding binding;
 
 	private float targetTextSize;
@@ -62,7 +64,7 @@ public class ViewTeacherActivity extends BaseActivity {
 				return true;
 			}
 		});
-		Teacher teacher = SugarRecord.findById(Teacher.class, getIntent().getLongExtra("teacherID", 0));
+		Teacher teacher = (Teacher) getIntent().getSerializableExtra("teacher");
 		if (teacher == null) {
 			finish();
 		} else {
@@ -75,7 +77,7 @@ public class ViewTeacherActivity extends BaseActivity {
 				}
 			});
 			setEnterSharedElementCallback(elementCallback);
-			getWindow().getSharedElementEnterTransition().excludeTarget(getWindow().getDecorView(), true);
+			getWindow().getSharedElementEnterTransition().excludeTarget(getWindow().getDecorView(), true).addListener(this);
 			//Transition transition = TransitionUtils.makeSharedElementEnterTransition();
 			//getWindow().setSharedElementEnterTransition(transition);
 			//getWindow().setEnterTransition(TransitionUtils.makeEnterTransition());
@@ -96,8 +98,35 @@ public class ViewTeacherActivity extends BaseActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case android.R.id.home:
+				binding.editTeacher.setVisibility(View.GONE);
 				finishAfterTransition();
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public void onTransitionStart(Transition transition) {
+		Log.d(TAG, "onTransitionStart() called with: " + "transition = [" + transition + "]");
+	}
+
+	@Override
+	public void onTransitionEnd(Transition transition) {
+		binding.editTeacher.show();
+		Log.d(TAG, "onTransitionEnd() called with: " + "transition = [" + transition + "]");
+	}
+
+	@Override
+	public void onTransitionCancel(Transition transition) {
+		Log.d(TAG, "onTransitionCancel() called with: " + "transition = [" + transition + "]");
+	}
+
+	@Override
+	public void onTransitionPause(Transition transition) {
+		Log.d(TAG, "onTransitionPause() called with: " + "transition = [" + transition + "]");
+	}
+
+	@Override
+	public void onTransitionResume(Transition transition) {
+		Log.d(TAG, "onTransitionResume() called with: " + "transition = [" + transition + "]");
 	}
 }

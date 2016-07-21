@@ -29,7 +29,7 @@
 				android:id="@+id/teacher_name_field"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:text="@{teacher.name}"
+				android:text="@={teacher.teacherName}"
 				android:hint="Teacher's name"/>
 
 		</android.support.design.widget.TextInputLayout>
@@ -43,7 +43,7 @@
 				android:id="@+id/teacher_phone_field"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:text="@{teacher.phone}"
+				android:text="@={teacher.phone}"
 				android:hint="Teacher's phone"
 				android:inputType="phone"/>
 
@@ -58,7 +58,7 @@
 				android:id="@+id/teacher_email_field"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:text="@{teacher.email}"
+				android:text="@={teacher.email}"
 				android:hint="Teacher's email"
 				android:inputType="textEmailAddress"/>
 

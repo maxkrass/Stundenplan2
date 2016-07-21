@@ -1,12 +1,12 @@
 package com.maxkrass.stundenplan.fragments;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
@@ -19,13 +19,13 @@ import android.widget.RelativeLayout;
 
 import com.maxkrass.stundenplan.R;
 import com.maxkrass.stundenplan.activities.CreateLessonActivity;
+import com.maxkrass.stundenplan.customViews.ScalableScrollView;
 import com.maxkrass.stundenplan.databinding.FragmentMainBinding;
 import com.maxkrass.stundenplan.databinding.LessonCardBinding;
 import com.maxkrass.stundenplan.objects.Lesson;
 import com.maxkrass.stundenplan.objects.Period;
 import com.maxkrass.stundenplan.services.NotificationService;
 import com.maxkrass.stundenplan.tools.Tools;
-import com.maxkrass.stundenplan.customViews.ScalableScrollView;
 import com.orm.SugarRecord;
 import com.orm.query.Select;
 
@@ -112,6 +112,10 @@ public class MainActivityFragment extends Fragment implements View.OnClickListen
 		super.onCreate(savedInstanceState);
 		getActivity().startService(new Intent(getActivity(), NotificationService.class));
 		fourDp = (int) Tools.getPixels(2, getActivity());
+		//SugarRecord.findById(Teacher.class, 1);
+		//SugarRecord.findById(Lesson.class, 1);
+		//SugarRecord.findById(Subject.class, 1);
+		//SugarRecord.findById(Period.class, 1);
 		periods = SugarRecord.listAll(Period.class);
 		if (SugarRecord.count(Period.class) < 1) {
 			new Period(8, 10, 8, 55).save();
@@ -227,9 +231,9 @@ public class MainActivityFragment extends Fragment implements View.OnClickListen
 		CardView lesson = (CardView) lessonCardBinding.getRoot();
 
 		lessonCardBinding.setLesson(l);
-		int colorIndex = l.getSubject().getColorIndex();
+		String color = l.getSubject().getColor();
 
-		if (colorIndex == 12 || colorIndex == 20) {
+		if (color.equals("#FFFFFF") || color.equals("#FFEB3B")) {
 			lessonCardBinding.subjectAbbrLabel.setTextColor(0xDE000000);
 			lessonCardBinding.roomLabel.setTextColor(0x8A000000);
 		}

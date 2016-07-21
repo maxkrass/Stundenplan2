@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+	<android.support.design.widget.CoordinatorLayout android:layout_width="match_parent"
+	                                                 android:layout_height="match_parent">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:orientation="vertical"
+			app:layout_behavior="@string/appbar_scrolling_view_behavior"
+			android:layout_height="match_parent">
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:id="@+id/sign_in_status"
+				android:layout_height="wrap_content"
+				android:text="To use Stundenplan, you need to sign in. You can use one of these services to do so."
+				android:textAlignment="center"
+				android:textAppearance="@android:style/TextAppearance.Material.Large"/>
+
+			<com.google.android.gms.common.SignInButton
+				android:id="@+id/google_signin_button"
+				android:layout_width="wrap_content"
+				android:layout_gravity="center_horizontal"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<android.support.design.widget.AppBarLayout
+			android:layout_width="match_parent"
+			android:layout_height="?actionBarSize">
+
+			<Toolbar
+				android:layout_width="match_parent"
+				android:title="Sign in"
+				android:layout_height="?actionBarSize"/>
+
+		</android.support.design.widget.AppBarLayout>
+
+	</android.support.design.widget.CoordinatorLayout>
+
+</layout>

@@ -4,6 +4,7 @@
 	<data>
 
 		<import type="com.maxkrass.stundenplan.objects.Subject"/>
+		<import type="com.maxkrass.stundenplan.objects.Color" />
 
 		<variable
 			name="subject"
@@ -25,7 +26,7 @@
 				android:id="@+id/subject_name"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:text="@{subject.name}"
+				android:text="@={subject.name}"
 				android:hint="Subject Name"/>
 
 		</android.support.design.widget.TextInputLayout>
@@ -39,7 +40,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:ems="3"
-				android:text="@{subject.abbreviation}"
+				android:text="@={subject.abbreviation}"
 				android:hint="Abbr."
 				android:maxLength="5"/>
 
@@ -55,7 +56,7 @@
 			android:clickable="true"
 			android:gravity="center_vertical"
 			android:paddingStart="4dp"
-			android:text='@{subject.teacher == null ? "Select teacher..." : subject.teacher.name}'
+			android:text='@{(subject.teacher == null || subject.teacher.isEmpty()) ? "Select teacher..." : subject.teacher.keySet().toArray()[0]}'
 			android:textSize="16sp"/>
 
 		<FrameLayout
@@ -70,6 +71,7 @@
 				android:layout_width="24dp"
 				android:layout_height="24dp"
 				android:layout_gravity="center_vertical"
+				android:backgroundTint="@{subject.color}"
 				android:background="@drawable/color_icon"/>
 
 			<TextView
