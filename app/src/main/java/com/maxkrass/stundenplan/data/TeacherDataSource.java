@@ -6,20 +6,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.database.ValueEventListener;
 import com.maxkrass.stundenplan.objects.Teacher;
 
-import java.util.List;
-
 /**
  * Max made this for Stundenplan2 on 11.07.2016.
  */
 public interface TeacherDataSource {
-
-	interface LoadTeachersCallback {
-		void onTeachersLoaded(List<Teacher> teachers);
-
-		void onDataNotAvailable();
-
-		//void onDataNotAvailable();
-	}
 
 	void getTeacher(@NonNull String key, @NonNull ValueEventListener listener);
 

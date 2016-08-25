@@ -47,27 +47,29 @@ public class CheckBoxWidget extends FrameLayout implements Checkable {
 		setChecked(checked);
 	}
 
+	private void setTitleView(String s) {
+		titleView.setText(s);
+	}
+
 	public void toggle() {
 		checkBox.toggle();
+	}
+
+	public String toString() {
+		return String.valueOf(isChecked()) + "";
 	}
 
 	public boolean isChecked() {
 		return checkBox.isChecked();
 	}
 
-	public void setChecked(boolean flag) {
-		checkBox.setChecked(flag);
-	}
-
-	public void setTitleView(String s) {
-		titleView.setText(s);
-	}
-
 	public void setEnabled(boolean enabled) {
 		checkBox.setEnabled(enabled);
 	}
 
-	public String toString() {
-		return String.valueOf(isChecked()) + "";
+	public void setChecked(boolean flag) {
+		checkBox.setChecked(flag);
 	}
+
+
 }

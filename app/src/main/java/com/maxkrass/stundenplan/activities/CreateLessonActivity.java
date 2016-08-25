@@ -2,138 +2,64 @@ package com.maxkrass.stundenplan.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.content.Intent;
-import android.graphics.drawable.GradientDrawable;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.view.ViewAnimationUtils;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toolbar;
 
 import com.maxkrass.stundenplan.R;
+import com.maxkrass.stundenplan.customViews.CheckBoxWidget;
+import com.maxkrass.stundenplan.data.LessonRepository;
+import com.maxkrass.stundenplan.databinding.ActivityCreateLessonBinding;
+import com.maxkrass.stundenplan.fragments.CreateLessonFragment;
+import com.maxkrass.stundenplan.fragments.ManageSubjectsFragment;
 import com.maxkrass.stundenplan.objects.Color;
-import com.maxkrass.stundenplan.objects.Lesson;
-import com.maxkrass.stundenplan.objects.Period;
 import com.maxkrass.stundenplan.objects.Subject;
 import com.maxkrass.stundenplan.objects.Weekday;
-import com.maxkrass.stundenplan.customViews.CheckBoxWidget;
-import com.orm.SugarRecord;
+import com.maxkrass.stundenplan.presenters.CreateLessonPresenter;
 
-public class CreateLessonActivity extends BaseActivity {
+public class CreateLessonActivity extends BaseActivity implements CreateLessonFragment.OnChooseSubjectListener, ManageSubjectsFragment.OnSubjectChosenListener {
 
-	int SELECT_SUBJECT_REQUEST_CODE = 1067;
-	int color;
+	private int color;
 
-	private View subjectColor;
-	private TextView subjectName;
-	private Subject selectedSubject;
-	private TextView lessonRoom;
-	private Spinner lessonWeekday;
-	private Spinner lessonPeriod;
-	private CheckBoxWidget doublePeriod;
-	private View mRevealView;
-	private View mRevealBackgroundView;
-	private Toolbar mToolbar;
+	private View                        mRevealView;
+	private View                        mRevealBackgroundView;
+	private ActivityCreateLessonBinding binding;
+	private Toolbar                     mToolbar;
+	private CreateLessonFragment        createLessonFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_create_lesson);
-		findViewById(R.id.cancel_lesson).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				finish();
-			}
-		});
-		mRevealView = findViewById(R.id.reveal);
-		mRevealBackgroundView = findViewById(R.id.revealBackground);
-		mToolbar = (Toolbar) findViewById(R.id.create_lesson_toolbar);
-		subjectColor = findViewById(R.id.select_subject_color);
-		subjectName = (TextView) findViewById(R.id.select_subject);
-		doublePeriod = (CheckBoxWidget) findViewById(R.id.double_period);
-		lessonRoom = (TextView) findViewById(R.id.lesson_room);
-		lessonPeriod = (Spinner) findViewById(R.id.lesson_period);
-		lessonWeekday = (Spinner) findViewById(R.id.lesson_weekday);
+		binding = DataBindingUtil.setContentView(this, R.layout.activity_create_lesson);
+		String CREATE_LESSON_TAG = "create_lesson_fragment";
+		createLessonFragment = (CreateLessonFragment) getSupportFragmentManager().findFragmentByTag(CREATE_LESSON_TAG);
+		if (createLessonFragment == null) {
+			createLessonFragment = new CreateLessonFragment();
+			getSupportFragmentManager().beginTransaction().add(R.id.main_fragment_container, createLessonFragment, CREATE_LESSON_TAG).commit();
+		}
+		binding.saveLesson.setOnClickListener(createLessonFragment);
+		binding.cancelLesson.setOnClickListener(this);
+		mRevealView = binding.reveal;
+		mRevealBackgroundView = binding.revealBackground;
+		mToolbar = binding.createLessonToolbar;
 		color = Color.LIGHT_GREEN.getColor(this);
 
-		if (savedInstanceState != null) {
-			long subjectID = savedInstanceState.getLong("selectedSubjectID", 0);
-			if (subjectID != 0) {
-				selectedSubject = SugarRecord.findById(Subject.class, subjectID);
-				subjectName.setText(selectedSubject.getName());
-				subjectColor.setVisibility(View.VISIBLE);
-				int newColor = selectedSubject.getColorInt();
-				((GradientDrawable) subjectColor.getBackground()).setColor(newColor);
-				mRevealView.setBackgroundColor(newColor);
-				color = newColor;
-			}
-			lessonPeriod.setSelection(savedInstanceState.getInt("selectedPeriod"));
-			lessonWeekday.setSelection(savedInstanceState.getInt("selectedWeekday"));
-		}
+		new CreateLessonPresenter(
+				createLessonFragment,
+				new LessonRepository(getUid()),
+				(Weekday) getIntent().getSerializableExtra("weekday"),
+				(Integer) getIntent().getSerializableExtra("period"),
+				(Boolean) getIntent().getSerializableExtra("doublePeriod"));
 	}
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		if (selectedSubject != null) outState.putLong("selectedSubjectID", selectedSubject.getId());
-		outState.putInt("selectedWeekday", lessonWeekday.getSelectedItemPosition());
-		outState.putInt("selectedPeriod", lessonPeriod.getSelectedItemPosition());
-	}
-
-	public void selectSubject(View view) {
-		// TODO startActivityForResult(new Intent(CreateLessonActivity.this, ManageSubjectsActivity.class).putExtra("select", true), SELECT_SUBJECT_REQUEST_CODE);
-	}
-
-	public void saveLesson(View view) {
-		if (selectedSubject != null) {
-
-			Lesson lessonToSave = new Lesson();
-
-			lessonToSave.setSubject(selectedSubject);
-			lessonToSave.setLocation(lessonRoom.getText().toString());
-			lessonToSave.setPeriod(SugarRecord.findById(Period.class, lessonPeriod.getSelectedItemPosition() + 1));
-			lessonToSave.setWeekday(Weekday.values()[lessonWeekday.getSelectedItemPosition()]);
-
-			lessonToSave.save();
-
-			if (doublePeriod.isChecked() && lessonToSave.getPeriod().getId() < 10) {
-				lessonToSave.setId(lessonToSave.getId() + 1);
-				lessonToSave.setPeriod(SugarRecord.findById(Period.class, lessonToSave.getPeriod().getId() + 1));
-
-				lessonToSave.save();
-			}
-
-			setResult(RESULT_OK, new Intent().putExtra("lessonID", lessonToSave.getId()));
-
+	public void onClick(View view) {
+		if (view instanceof CheckBoxWidget)
+			((CheckBoxWidget) view).toggle();
+		else if (view.getId() == R.id.cancel_lesson)
 			finish();
-
-		}
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == SELECT_SUBJECT_REQUEST_CODE) {
-
-			if (resultCode == RESULT_OK) {
-
-				int subjectID = data.getIntExtra("subjectID", 0);
-
-				if (subjectID < SugarRecord.count(Subject.class) && subjectID >= 0) {
-					selectedSubject = SugarRecord.listAll(Subject.class, "name").get(subjectID);
-					subjectName.setText(selectedSubject.getName());
-					subjectColor.setVisibility(View.VISIBLE);
-					int newColor = selectedSubject.getColorInt();
-					animateAppAndStatusBar(color, newColor);
-					((GradientDrawable) subjectColor.getBackground()).setColor(newColor);
-					color = newColor;
-
-				}
-
-			}
-
-		}
 	}
 
 	private void animateAppAndStatusBar(int fromColor, final int toColor) {
@@ -157,8 +83,52 @@ public class CreateLessonActivity extends BaseActivity {
 		mRevealView.setVisibility(View.VISIBLE);
 	}
 
-	public void onClick(View view) {
-		if (view instanceof CheckBoxWidget)
-			((CheckBoxWidget) view).toggle();
+	@Override
+	public void onSubjectChosen(Subject subject) {
+		restoreView();
+		int newColor = subject.getColorInt();
+		animateAppAndStatusBar(color, newColor);
+		color = newColor;
+		createLessonFragment.onSubjectChosen(subject);
+	}
+
+	@Override
+	public void onNoneChosen() {
+		restoreView();
+		createLessonFragment.onNoSubjectChosen();
+	}
+
+	@Override
+	public void onRequestChooseSubject() {
+		ManageSubjectsFragment manageSubjectsFragment = new ManageSubjectsFragment();
+		Bundle bundle = new Bundle();
+		bundle.putBoolean("select", true);
+		manageSubjectsFragment.setArguments(bundle);
+		getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).hide(createLessonFragment).add(R.id.second_fragment_container, manageSubjectsFragment).addToBackStack(null).commit();
+		binding.createLessonTitle.setText(R.string.choose_subject_title);
+		binding.saveLesson.setText(R.string.action_none);
+		binding.saveLesson.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				onNoneChosen();
+			}
+		});
+		binding.cancelLesson.setImageResource(R.drawable.ic_arrow_back_24dp);
+		binding.cancelLesson.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				restoreView();
+			}
+		});
+	}
+
+	private void restoreView() {
+		getSupportFragmentManager().popBackStack();
+		getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).replace(R.id.main_fragment_container, createLessonFragment).commit();
+		binding.createLessonTitle.setText(R.string.new_lesson_title);
+		binding.saveLesson.setText(R.string.action_save);
+		binding.saveLesson.setOnClickListener(createLessonFragment);
+		binding.cancelLesson.setImageResource(R.drawable.ic_clear_24dp);
+		binding.cancelLesson.setOnClickListener(this);
 	}
 }

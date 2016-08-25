@@ -1,15 +1,11 @@
 package com.maxkrass.stundenplan.fragments;
 
-import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -17,24 +13,26 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 import com.maxkrass.stundenplan.R;
 import com.maxkrass.stundenplan.activities.CreateLessonActivity;
+import com.maxkrass.stundenplan.adapter.CustomFirebaseLessonAdapter;
 import com.maxkrass.stundenplan.customViews.ScalableScrollView;
 import com.maxkrass.stundenplan.databinding.FragmentMainBinding;
-import com.maxkrass.stundenplan.databinding.LessonCardBinding;
-import com.maxkrass.stundenplan.objects.Lesson;
 import com.maxkrass.stundenplan.objects.Period;
+import com.maxkrass.stundenplan.objects.Weekday;
 import com.maxkrass.stundenplan.services.NotificationService;
-import com.maxkrass.stundenplan.tools.Tools;
-import com.orm.SugarRecord;
-import com.orm.query.Select;
 
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -45,17 +43,17 @@ public class MainActivityFragment extends Fragment implements View.OnClickListen
 	private double mLastScalingFactor = 1;
 	private boolean showRoomOnSingleLesson = true;
 
-	final int REQUEST_CODE_NEW_LESSON = 0x10;
-	private int fourDp;
+	private DatabaseReference mPeriodRef;
+	private DatabaseReference mLessonRef;
 
 	private List<Period> periods;
-	private List<Lesson> mondayLessons;
-	private List<Lesson> tuesdayLessons;
-	private List<Lesson> wednesdayLessons;
-	private List<Lesson> thursdayLessons;
-	private List<Lesson> fridayLessons;
-	private Map<Long, Long[]> originalMeasures;
 
+	private CustomFirebaseLessonAdapter mondayAdapter;
+	private CustomFirebaseLessonAdapter tuesdayAdapter;
+	private CustomFirebaseLessonAdapter wednesdayAdapter;
+	private CustomFirebaseLessonAdapter thursdayAdapter;
+	private CustomFirebaseLessonAdapter fridayAdapter;
+	
 	private RelativeLayout columnMonday;
 	private RelativeLayout columnTuesday;
 	private RelativeLayout columnWednesday;
@@ -64,8 +62,57 @@ public class MainActivityFragment extends Fragment implements View.OnClickListen
 
 	private Calendar firstPeriodStartTime;
 
-	//private static final String TAG = "MainActivity";
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		getActivity().startService(new Intent(getActivity(), NotificationService.class));
+		FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+		assert user != null;
+		String uId = user.getUid();
+		mPeriodRef = FirebaseDatabase
+				.getInstance()
+				.getReference()
+				.child("users")
+				.child(uId)
+				.child("periods");
+		mLessonRef = FirebaseDatabase
+				.getInstance()
+				.getReference()
+				.child("users")
+				.child(uId)
+				.child("lessons");
+		mPeriodRef.addListenerForSingleValueEvent(new ValueEventListener() {
+			@Override
+			public void onDataChange(DataSnapshot dataSnapshot) {
+				if (!dataSnapshot.hasChildren()) {
+					periods = new ArrayList<>();
+					periods.add(new Period(0, 8, 10, 8, 55));
+					periods.add(new Period(1, 9, 0, 9, 45));
+					periods.add(new Period(2, 9, 50, 10, 35));
+					periods.add(new Period(3, 11, 5, 11, 50));
+					periods.add(new Period(4, 11, 55, 12, 40));
+					periods.add(new Period(5, 12, 45, 13, 30));
+					periods.add(new Period(6, 14, 15, 15, 0));
+					periods.add(new Period(7, 15, 0, 15, 45));
+					periods.add(new Period(8, 15, 55, 16, 40));
+					periods.add(new Period(9, 16, 40, 17, 25));
 
+					mPeriodRef.setValue(periods);
+				} else {
+					periods = dataSnapshot.getValue(new GenericTypeIndicator<List<Period>>() {
+					});
+				}
+				firstPeriodStartTime = Calendar.getInstance();
+				firstPeriodStartTime.set(Calendar.HOUR_OF_DAY, periods.get(0).getStartHour());
+				firstPeriodStartTime.set(Calendar.MINUTE, periods.get(0).getStartMinute());
+			}
+
+			@Override
+			public void onCancelled(DatabaseError databaseError) {
+
+			}
+		});
+	}
 
 	@Nullable
 	@Override
@@ -104,202 +151,56 @@ public class MainActivityFragment extends Fragment implements View.OnClickListen
 				break;
 		}
 
-		return fragmentMainBinding.getRoot();
-	}
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		getActivity().startService(new Intent(getActivity(), NotificationService.class));
-		fourDp = (int) Tools.getPixels(2, getActivity());
-		//SugarRecord.findById(Teacher.class, 1);
-		//SugarRecord.findById(Lesson.class, 1);
-		//SugarRecord.findById(Subject.class, 1);
-		//SugarRecord.findById(Period.class, 1);
-		periods = SugarRecord.listAll(Period.class);
-		if (SugarRecord.count(Period.class) < 1) {
-			new Period(8, 10, 8, 55).save();
-			new Period(9, 0, 9, 45).save();
-			new Period(9, 50, 10, 35).save();
-
-			new Period(11, 5, 11, 50).save();
-			new Period(11, 55, 12, 40).save();
-			new Period(12, 45, 13, 30).save();
-
-			new Period(14, 15, 15, 0).save();
-			new Period(15, 0, 15, 45).save();
-
-			new Period(15, 55, 16, 40).save();
-			new Period(16, 40, 17, 25).save();
-		}
-		firstPeriodStartTime = Calendar.getInstance();
-		firstPeriodStartTime.set(Calendar.HOUR_OF_DAY, periods.get(0).getStartHour());
-		firstPeriodStartTime.set(Calendar.MINUTE, periods.get(0).getStartMinute());
-		loadAllLessons();
-		mondayLessons = Select.from(Lesson.class).where("weekday = 'MONDAY'").orderBy("period").list();
-		tuesdayLessons = Select.from(Lesson.class).where("weekday = 'TUESDAY'").orderBy("period").list();
-		wednesdayLessons = Select.from(Lesson.class).where("weekday = 'WEDNESDAY'").orderBy("period").list();
-		thursdayLessons = Select.from(Lesson.class).where("weekday = 'THURSDAY'").orderBy("period").list();
-		fridayLessons = Select.from(Lesson.class).where("weekday = 'FRIDAY'").orderBy("period").list();
-		//Collections.sort(mondayLessons);
-		//Collections.sort(tuesdayLessons);
-		//Collections.sort(wednesdayLessons);
-		//Collections.sort(thursdayLessons);
-		//Collections.sort(fridayLessons);
-	}
-
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == REQUEST_CODE_NEW_LESSON) {
-
-			if (resultCode == Activity.RESULT_OK) {
-
-				addLesson(SugarRecord.findById(Lesson.class, data.getLongExtra("lessonID", 0)));
-
-			}
-
-		}
-	}
-
-	public void addLesson() {
-		startActivityForResult(new Intent(getActivity(), CreateLessonActivity.class), REQUEST_CODE_NEW_LESSON);
-	}
-
-	private void resizeColumn(RelativeLayout column, List<Lesson> lessons) {
-		for (int i = 0; i < column.getChildCount(); i++) {
-			if (lessons.get(i).isSucceedingLesson())
-				continue;
-			CardView lesson = (CardView) column.getChildAt(i);
-
-			if (showRoomOnSingleLesson) {
-				lesson.findViewById(R.id.room_label).setVisibility(View.VISIBLE);
-			} else if (!lessons.get(i).hasSucceedingLesson()) {
-				lesson.findViewById(R.id.room_label).setVisibility(View.GONE);
-			}
-
-			RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) lesson.getLayoutParams();
-
-			long lessonId = lessons.get(i).getId();
-
-			Long[] measures = originalMeasures.get(lessonId);
-
-			layoutParams.topMargin = (int) Tools.getPixels((int) (measures[0] * mScalingFactor), getActivity());
-
-			layoutParams.height = (int) Tools.getPixels((int) (measures[1] * mScalingFactor), getActivity());
-		}
-
-		column.requestLayout();
-	}
-
-	private void resizeLessons() {
-
-		//long start = System.nanoTime();
-
-		resizeColumn(columnMonday, mondayLessons);
-
-		resizeColumn(columnTuesday, tuesdayLessons);
-
-		resizeColumn(columnWednesday, wednesdayLessons);
-
-		resizeColumn(columnThursday, thursdayLessons);
-
-		resizeColumn(columnFriday, fridayLessons);
-
-		//Log.d(TAG, "resizeLessons: Took " + (System.nanoTime() - start) / 1000 + "µs with Scale Factor: " + mScalingFactor);
-	}
-
-	private void loadAllLessons() {
-
-		List<Lesson> lessons = SugarRecord.listAll(Lesson.class);
-
-		Collections.sort(lessons);
-
-		//long start = System.currentTimeMillis();
-
-		originalMeasures = new TreeMap<>();
-
-		for (Lesson l : lessons) if (!l.isSucceedingLesson()) addLesson(l);
-
-		//Log.d(TAG, "loadAllLessons: Took " + (System.currentTimeMillis() - start) + "ms with Scale Factor: " + mScalingFactor);
-
-	}
-
-	private void addLesson(final Lesson l) {
-		LessonCardBinding lessonCardBinding = LessonCardBinding.inflate(getActivity().getLayoutInflater());
-
-		CardView lesson = (CardView) lessonCardBinding.getRoot();
-
-		lessonCardBinding.setLesson(l);
-		String color = l.getSubject().getColor();
-
-		if (color.equals("#FFFFFF") || color.equals("#FFEB3B")) {
-			lessonCardBinding.subjectAbbrLabel.setTextColor(0xDE000000);
-			lessonCardBinding.roomLabel.setTextColor(0x8A000000);
-		}
-
-		lessonCardBinding.getLesson().setShowRoomLabel(showRoomOnSingleLesson);
-
-		Calendar periodEndTime = Calendar.getInstance();
-		periodEndTime.set(Calendar.HOUR_OF_DAY, periods.get(l.getPeriod().getPeriodIndex() + (l.hasSucceedingLesson() ? 1 : 0)).getEndHour());
-		periodEndTime.set(Calendar.MINUTE, periods.get(l.getPeriod().getPeriodIndex() + (l.hasSucceedingLesson() ? 1 : 0)).getEndMinute());
-
-		Calendar periodStartTime = Calendar.getInstance();
-		periodStartTime.set(Calendar.HOUR_OF_DAY, periods.get(l.getPeriod().getPeriodIndex()).getStartHour());
-		periodStartTime.set(Calendar.MINUTE, periods.get(l.getPeriod().getPeriodIndex()).getStartMinute());
-
-		long startDifference = l.getPeriod().getPeriodIndex() == 0 ? 0 : TimeUnit.MILLISECONDS.toMinutes(periodStartTime.getTimeInMillis() - firstPeriodStartTime.getTimeInMillis());
-
-		long periodDifference = TimeUnit.MILLISECONDS.toMinutes(periodEndTime.getTimeInMillis() - periodStartTime.getTimeInMillis());
-
-		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) Tools.getPixels((int) (periodDifference * mScalingFactor), getActivity()));
-
-		layoutParams.setMargins(fourDp, (int) Tools.getPixels((int) (startDifference * mScalingFactor), getActivity()), fourDp, 0);
-
-		lesson.setLayoutParams(layoutParams);
-
-		lesson.setOnClickListener(new View.OnClickListener() {
+		mPeriodRef.addListenerForSingleValueEvent(new ValueEventListener() {
 			@Override
-			public void onClick(View v) {
-				new AlertDialog.Builder(getActivity())
-						.setTitle(l.getSubject().getName())
-						.setItems(new CharSequence[]{"Edit", "Delete"}, new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								switch (which) {
-									case 1:
-										break;
-									case 2:
-										break;
-								}
-							}
-						})
-						.show();
+			public void onDataChange(DataSnapshot dataSnapshot) {
+				if (!dataSnapshot.hasChildren()) {
+					periods = new ArrayList<>();
+					periods.add(new Period(0, 8, 10, 8, 55));
+					periods.add(new Period(1, 9, 0, 9, 45));
+					periods.add(new Period(2, 9, 50, 10, 35));
+					periods.add(new Period(3, 11, 5, 11, 50));
+					periods.add(new Period(4, 11, 55, 12, 40));
+					periods.add(new Period(5, 12, 45, 13, 30));
+					periods.add(new Period(6, 14, 15, 15, 0));
+					periods.add(new Period(7, 15, 0, 15, 45));
+					periods.add(new Period(8, 15, 55, 16, 40));
+					periods.add(new Period(9, 16, 40, 17, 25));
+
+					mPeriodRef.setValue(periods);
+				} else {
+					periods = dataSnapshot.getValue(new GenericTypeIndicator<ArrayList<Period>>() {
+					});
+				}
+
+				mondayAdapter = new CustomFirebaseLessonAdapter(getActivity(), columnMonday, mLessonRef.child(Weekday.MONDAY.toString()), periods);
+				tuesdayAdapter = new CustomFirebaseLessonAdapter(getActivity(), columnTuesday, mLessonRef.child(Weekday.TUESDAY.toString()), periods);
+				wednesdayAdapter = new CustomFirebaseLessonAdapter(getActivity(), columnWednesday, mLessonRef.child(Weekday.WEDNESDAY.toString()), periods);
+				thursdayAdapter = new CustomFirebaseLessonAdapter(getActivity(), columnThursday, mLessonRef.child(Weekday.THURSDAY.toString()), periods);
+				fridayAdapter = new CustomFirebaseLessonAdapter(getActivity(), columnFriday, mLessonRef.child(Weekday.FRIDAY.toString()), periods);
+			}
+
+			@Override
+			public void onCancelled(DatabaseError databaseError) {
 
 			}
 		});
 
-		switch (l.getWeekday()) {
+		return fragmentMainBinding.getRoot();
+	}
 
-			case MONDAY:
-				columnMonday.addView(lesson);
-				break;
-			case TUESDAY:
-				columnTuesday.addView(lesson);
-				break;
-			case WEDNESDAY:
-				columnWednesday.addView(lesson);
-				break;
-			case THURSDAY:
-				columnThursday.addView(lesson);
-				break;
-			case FRIDAY:
-				columnFriday.addView(lesson);
-				break;
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		mondayAdapter.cleanup();
+		tuesdayAdapter.cleanup();
+		wednesdayAdapter.cleanup();
+		thursdayAdapter.cleanup();
+		fridayAdapter.cleanup();
+	}
 
-		}
-
-		originalMeasures.put(l.getId(), new Long[]{startDifference, periodDifference});
+	private void addLesson() {
+		startActivity(new Intent(getActivity(), CreateLessonActivity.class));
 	}
 
 	@Override
@@ -310,17 +211,6 @@ public class MainActivityFragment extends Fragment implements View.OnClickListen
 	private class OnPinchListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
 
 		float startingSpan;
-
-		@Override
-		public void onScaleEnd(ScaleGestureDetector detector) {
-			mLastScalingFactor = mScalingFactor;
-		}
-
-		@Override
-		public boolean onScaleBegin(ScaleGestureDetector detector) {
-			startingSpan = detector.getCurrentSpanY();
-			return true;
-		}
 
 		@Override
 		public boolean onScale(ScaleGestureDetector detector) {
@@ -335,9 +225,31 @@ public class MainActivityFragment extends Fragment implements View.OnClickListen
 				showRoomOnSingleLesson = true;
 			}
 
-			resizeLessons();
+			mondayAdapter.setShowRoomOnSingleLesson(showRoomOnSingleLesson);
+			tuesdayAdapter.setShowRoomOnSingleLesson(showRoomOnSingleLesson);
+			wednesdayAdapter.setShowRoomOnSingleLesson(showRoomOnSingleLesson);
+			thursdayAdapter.setShowRoomOnSingleLesson(showRoomOnSingleLesson);
+			fridayAdapter.setShowRoomOnSingleLesson(showRoomOnSingleLesson);
+
+			mondayAdapter.setScalingFactor(mScalingFactor);
+			tuesdayAdapter.setScalingFactor(mScalingFactor);
+			wednesdayAdapter.setScalingFactor(mScalingFactor);
+			thursdayAdapter.setScalingFactor(mScalingFactor);
+			fridayAdapter.setScalingFactor(mScalingFactor);
+
 
 			return true;
+		}
+
+		@Override
+		public boolean onScaleBegin(ScaleGestureDetector detector) {
+			startingSpan = detector.getCurrentSpanY();
+			return true;
+		}
+
+		@Override
+		public void onScaleEnd(ScaleGestureDetector detector) {
+			mLastScalingFactor = mScalingFactor;
 		}
 	}
 }

@@ -15,7 +15,6 @@ import com.maxkrass.stundenplan.customViews.CheckBoxWidget;
 
 public class BaseActivity extends AppCompatActivity implements View.OnClickListener {
 
-	final int REQUEST_CODE_NEW_LESSON = 0x10;
 	//final int RESULT_CODE_GOOD = 0x0;
 
 	@Override
@@ -45,7 +44,8 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
 		return super.getActionBar();
 	}
 
-	public String getUid() {
+	@SuppressWarnings("ConstantConditions")
+	String getUid() {
 		return FirebaseAuth.getInstance().getCurrentUser().getUid();
 	}
 }

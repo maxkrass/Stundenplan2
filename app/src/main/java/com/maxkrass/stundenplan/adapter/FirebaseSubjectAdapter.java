@@ -1,6 +1,5 @@
 package com.maxkrass.stundenplan.adapter;
 
-import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
@@ -23,10 +22,10 @@ import java.util.ArrayList;
  */
 public class FirebaseSubjectAdapter extends FirebaseRecyclerAdapter<Subject, FirebaseSubjectAdapter.SubjectViewHolder> {
 
-	private ManageSubjectsFragment fragment;
+	private final ManageSubjectsFragment fragment;
 
-	public FirebaseSubjectAdapter(Class<Subject> modelClass, int modelLayout, Class<SubjectViewHolder> viewHolderClass, DatabaseReference ref, ManageSubjectsFragment fragment) {
-		super(modelClass, modelLayout, viewHolderClass, ref);
+	public FirebaseSubjectAdapter(Class<Subject> modelClass, Class<SubjectViewHolder> viewHolderClass, DatabaseReference ref, ManageSubjectsFragment fragment) {
+		super(modelClass, com.maxkrass.stundenplan.R.layout.subject_view, viewHolderClass, ref);
 		this.fragment = fragment;
 	}
 
@@ -40,7 +39,7 @@ public class FirebaseSubjectAdapter extends FirebaseRecyclerAdapter<Subject, Fir
 
 	public static class SubjectViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener, View.OnClickListener {
 
-		SubjectViewBinding binding;
+		final SubjectViewBinding binding;
 		ManageSubjectsFragment fragment;
 
 		public SubjectViewHolder(View itemView) {
@@ -58,12 +57,8 @@ public class FirebaseSubjectAdapter extends FirebaseRecyclerAdapter<Subject, Fir
 
 		@Override
 		public void onClick(View view) {
-			Intent activityIntent = fragment.getActivity().getIntent();
-			if (activityIntent.getBooleanExtra("select", false)) {
-				Intent result = new Intent();
-				result.putExtra("subjectID", getAdapterPosition());
-				fragment.getActivity().setResult(Activity.RESULT_OK, result);
-				fragment.getActivity().finish();
+			if (fragment.mSelect) {
+				fragment.mOnSubjectChosenListener.onSubjectChosen(binding.getSubject());
 			} else {
 				Intent newActivity = new Intent(fragment.getActivity(), ViewSubjectActivity.class);
 				newActivity.putExtra("subject", binding.getSubject());

@@ -4,20 +4,41 @@ import android.databinding.Bindable;
 import android.databinding.Observable;
 import android.databinding.PropertyChangeRegistry;
 
+import com.google.firebase.database.Exclude;
 import com.maxkrass.stundenplan.BR;
-import com.orm.SugarRecord;
-import com.orm.dsl.Ignore;
 
 /**
  * Max made this for Stundenplan on 16.04.2016.
  */
-public class Period extends SugarRecord implements Observable {
-	int startHour;
-	int startMinute;
-	int endHour;
-	int endMinute;
-	@Ignore
-	transient PropertyChangeRegistry mCallbacks;
+public class Period implements Observable {
+	private int startHour;
+	private int startMinute;
+	private int endHour;
+	private int endMinute;
+	private int index;
+
+	@Exclude
+	private transient PropertyChangeRegistry mCallbacks;
+
+	public Period() {
+	}
+
+	public Period(int index, int startHour, int startMinute, int endHour, int endMinute) {
+		this.index = index;
+		this.startHour = startHour;
+		this.startMinute = startMinute;
+		if (startHour <= endHour && startMinute <= endMinute) {
+			this.endHour = endHour;
+			this.endMinute = endMinute;
+		} else {
+			this.endMinute = (startMinute + 45) % 60;
+			this.endHour = startHour + ((startMinute + 45) / 60);
+		}
+	}
+
+	public int getIndex() {
+		return index;
+	}
 
 	@Bindable
 	public int getEndMinute() {
@@ -59,25 +80,6 @@ public class Period extends SugarRecord implements Observable {
 		notifyPropertyChanged(BR.endHour);
 	}
 
-	public int getPeriodIndex() {
-		return (int) (getId() - 1);
-	}
-
-	public Period() {
-	}
-
-	public Period(int startHour, int startMinute, int endHour, int endMinute) {
-		this.startHour = startHour;
-		this.startMinute = startMinute;
-		if (startHour <= endHour && startMinute <= endMinute) {
-			this.endHour = endHour;
-			this.endMinute = endMinute;
-		} else {
-			this.endMinute = (startMinute + 45) % 60;
-			this.endHour = startHour + ((startMinute + 45) / 60);
-		}
-	}
-
 	@Override
 	public void addOnPropertyChangedCallback(OnPropertyChangedCallback callback) {
 		if (mCallbacks == null) {
@@ -93,13 +95,7 @@ public class Period extends SugarRecord implements Observable {
 		}
 	}
 
-	public synchronized void notifyChange() {
-		if (mCallbacks != null) {
-			mCallbacks.notifyCallbacks(this, 0, null);
-		}
-	}
-
-	public void notifyPropertyChanged(int fieldId) {
+	private void notifyPropertyChanged(int fieldId) {
 		if (mCallbacks != null) {
 			mCallbacks.notifyCallbacks(this, fieldId, null);
 		}

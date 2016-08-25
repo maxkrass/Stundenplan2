@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="action_settings">Einstellungen</string>
+	<string name="action_subjects">Fächer</string>
+	<string name="add_subject">Hinzufügen</string>
+	<string name="action_timetable">Stundenplan</string>
+	<string name="action_teachers">Lehrer/-innen</string>
+	<string name="choose_color">Wähle eine Farbe aus…</string>
+	<string name="friday_title">Fr</string>
+	<string name="monday_title">Mo</string>
+	<string name="thursday_title">Do</string>
+	<string name="tuesday_title">Di</string>
+	<string name="wednesday_title">Mi</string>
+	<string-array name="weekday">
+		<item>Montags</item>
+		<item>Dienstags</item>
+		<item>Mittwochs</item>
+		<item>Donnerstags</item>
+		<item>Freitags</item>
+	</string-array>
+	<string name="select_subject">Wähle ein Fach aus…</string>
+	<string name="choose_subject_title">Deine Fächer</string>
+	<string name="new_lesson_title">Neue Stunde</string>
+	<string name="action_save">speichern</string>
+	<string name="action_none">nichts</string>
+	<string name="double_period">Doppelstunde</string>
+	<string name="room_place">Raum/Ort</string>
+	<string name="teachers_name">Name</string>
+	<string name="teachers_phone">Telefonnummer</string>
+	<string name="teachers_email">E-Mail-Adresse</string>
+	<string name="subject_name">Name</string>
+	<string name="abbr">Abkürzung</string>
+	<string-array name="periods">
+		<item>1. Stunde</item>
+		<item>2. Stunde</item>
+		<item>3. Stunde</item>
+		<item>4. Stunde</item>
+		<item>5. Stunde</item>
+		<item>6. Stunde</item>
+		<item>7. Stunde</item>
+		<item>8. Stunde</item>
+		<item>9. Stunde</item>
+		<item>10. Stunde</item>
+	</string-array>
+	<string name="select_teacher">Wähle eine Lehrperson aus…</string>
+	<string name="new_teacher">Neue Lehrperson</string>
+	<string name="new_subject">Neues Fach</string>
+</resources>

@@ -32,7 +32,7 @@ public class CreateTeacherPresenter implements CreateTeacherContract.Presenter, 
 	private final CreateTeacherContract.View mCreateTeacherView;
 
 	@Nullable
-	private String mTeacherIDKey;
+	private final String mTeacherIDKey;
 
 	public CreateTeacherPresenter(@NonNull TeacherDataSource teacherRepository, @NonNull CreateTeacherContract.View createTeacherView, @Nullable String teacherIDKey) {
 		mTeacherRepository = checkNotNull(teacherRepository);
@@ -41,7 +41,7 @@ public class CreateTeacherPresenter implements CreateTeacherContract.Presenter, 
 		mTeacherIDKey = teacherIDKey;
 	}
 
-	public void saveTeacher(String name, String email, String phone) {
+	private void saveTeacher(String name, String email, String phone) {
 
 		OnCompleteListener<Void> listener = new OnCompleteListener<Void>() {
 			@Override
@@ -106,7 +106,7 @@ public class CreateTeacherPresenter implements CreateTeacherContract.Presenter, 
 		populateTeacher();
 	}
 
-	public void populateTeacher() {
+	private void populateTeacher() {
 		if (!isNewTeacher()) {
 			assert mTeacherIDKey != null;
 			mTeacherRepository.getTeacher(mTeacherIDKey, this);

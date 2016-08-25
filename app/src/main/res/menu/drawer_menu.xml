@@ -3,18 +3,18 @@
 
 	<item
 		android:id="@+id/drawer_main_item"
-		android:title="Stundenplan"/>
+		android:title="@string/action_timetable" />
 	<item
 		android:id="@+id/drawer_substitution_item"
 		android:title="Vertretungsplan"/>
 	<item
 		android:id="@+id/drawer_teachers_item"
-		android:title="Lehrer"/>
+		android:title="@string/action_teachers" />
 	<item
 		android:id="@+id/drawer_subjects_item"
-		android:title="Fächer"/>
+		android:title="@string/action_subjects" />
 	<item
 		android:id="@+id/drawer_settings_item"
-		android:title="Einstellungen"/>
+		android:title="@string/action_settings" />
 
 </menu>

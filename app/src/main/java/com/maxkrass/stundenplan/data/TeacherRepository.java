@@ -13,7 +13,7 @@ import com.maxkrass.stundenplan.objects.Teacher;
  */
 public class TeacherRepository implements TeacherDataSource {
 
-	DatabaseReference mTeacherRef;
+	private final DatabaseReference mTeacherRef;
 
 	public TeacherRepository(String uId) {
 		mTeacherRef = FirebaseDatabase.getInstance().getReference().child("users").child(uId).child("teachers");

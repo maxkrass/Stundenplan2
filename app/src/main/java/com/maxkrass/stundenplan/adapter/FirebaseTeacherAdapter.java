@@ -23,10 +23,10 @@ import java.util.ArrayList;
  */
 public class FirebaseTeacherAdapter extends FirebaseRecyclerAdapter<Teacher, FirebaseTeacherAdapter.TeacherViewHolder> {
 
-	ManageTeachersFragment fragment;
+	private final ManageTeachersFragment fragment;
 
-	public FirebaseTeacherAdapter(Class<Teacher> modelClass, int modelLayout, Class<TeacherViewHolder> viewHolderClass, DatabaseReference ref, ManageTeachersFragment fragment) {
-		super(modelClass, modelLayout, viewHolderClass, ref);
+	public FirebaseTeacherAdapter(Class<Teacher> modelClass, Class<TeacherViewHolder> viewHolderClass, DatabaseReference ref, ManageTeachersFragment fragment) {
+		super(modelClass, R.layout.teacher_view, viewHolderClass, ref);
 		this.fragment = fragment;
 	}
 
@@ -38,8 +38,8 @@ public class FirebaseTeacherAdapter extends FirebaseRecyclerAdapter<Teacher, Fir
 
 	public static class TeacherViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
-		public TeacherViewBinding binding;
-		private ManageTeachersFragment fragment;
+		public final TeacherViewBinding     binding;
+		private      ManageTeachersFragment fragment;
 
 		public TeacherViewHolder(View itemView) {
 			super(itemView);
@@ -79,12 +79,12 @@ public class FirebaseTeacherAdapter extends FirebaseRecyclerAdapter<Teacher, Fir
 				Pair[] viewStringPair = new Pair[elements.size()];
 				View decorView = fragment.getActivity().getWindow().getDecorView();
 				View statusBackground = decorView.findViewById(android.R.id.statusBarBackground);
-				View navBackground = decorView.findViewById(android.R.id.navigationBarBackground);
+				//View navBackground = decorView.findViewById(android.R.id.navigationBarBackground);
 				Pair<View, String> statusPair = Pair.create(statusBackground,
 						statusBackground.getTransitionName());
-				Pair<View, String> navPair = Pair.create(navBackground, navBackground.getTransitionName());
+				//Pair<View, String> navPair = Pair.create(navBackground, navBackground.getTransitionName());
 				elements.add(statusPair);
-				elements.add(navPair);
+				//elements.add(navPair);
 				ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(fragment.getActivity(), elements.toArray(viewStringPair));
 				fragment.startActivity(intent, options.toBundle());
 			} else {

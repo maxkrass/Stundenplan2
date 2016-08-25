@@ -7,20 +7,21 @@ import android.support.multidex.MultiDexApplication;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.FirebaseDatabase;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerUIUtils;
-import com.orm.SugarContext;
 
 public class StundenplanApplication extends MultiDexApplication {
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-		SugarContext.init(this);
+		if (!FirebaseApp.getApps(this).isEmpty()) {
+			FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+		}
 		DrawerImageLoader.init(new AbstractDrawerImageLoader() {
 			@Override
 			public void set(ImageView imageView, Uri uri, Drawable placeholder) {
@@ -51,12 +52,6 @@ public class StundenplanApplication extends MultiDexApplication {
 				return super.placeholder(ctx, tag);
 			}
 		});
-	}
-
-	@Override
-	public void onTerminate() {
-		super.onTerminate();
-		SugarContext.terminate();
 	}
 
 }

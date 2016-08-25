@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="main_app_bar_layout_transition_name">main_toolbar</string>
+	<string name="main_app_bar_layout_transition_name" translatable="false">main_toolbar</string>
 </resources>

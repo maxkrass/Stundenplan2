@@ -10,36 +10,16 @@ import java.io.Serializable;
 
 public enum Color implements Serializable {
 
-	RED(R.color.material_red),
-	PINK(R.color.material_pink),
-	PURPLE(R.color.material_purple),
-	DEEP_PURPLE(R.color.material_deep_purple),
-	INDIGO(R.color.material_indigo),
-	BLUE(R.color.material_blue),
-	LIGHT_BLUE(R.color.material_light_blue),
-	CYAN(R.color.material_cyan),
-	TEAL(R.color.material_teal),
-	GREEN(R.color.material_green),
-	LIGHT_GREEN(R.color.material_light_green),
-	LIME(R.color.material_lime),
-	YELLOW(R.color.material_yellow),
-	AMBER(R.color.material_amber),
-	ORANGE(R.color.material_orange),
-	DEEP_ORANGE(R.color.material_deep_orange),
-	BROWN(R.color.material_brown),
-	GREY(R.color.material_grey),
-	BLUE_GREY(R.color.material_blue_grey),
-	BLACK(R.color.material_black),
-	WHITE(R.color.material_white);
+	LIGHT_GREEN(R.color.material_light_green);
 
-	public int getColor(Context context) {
-		return ContextCompat.getColor(context, color);
-	}
-
-	private int color;
+	private final int color;
 
 	Color(@ColorRes int color) {
 		this.color = color;
+	}
+
+	public int getColor(Context context) {
+		return ContextCompat.getColor(context, color);
 	}
 
 	@Override

@@ -14,17 +14,14 @@ import com.maxkrass.stundenplan.presenters.CreateTeacherPresenter;
 public class CreateTeacherActivity extends BaseActivity {
 
 	private static final String CREATE_TEACHER_TAG = "create_teacher_fragment";
-	public static final int REQUEST_CREATE_TEACHER = 0x300;
-	public static final int REQUEST_EDIT_TEACHER = 0x200;
-	Toolbar toolbar;
-	CreateTeacherFragment createTeacherFragment;
+	ActivityCreateTeacherBinding binding;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		ActivityCreateTeacherBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_create_teacher);
-		toolbar = binding.createTeacherToolbar;
-		createTeacherFragment = (CreateTeacherFragment) getSupportFragmentManager().findFragmentByTag(CREATE_TEACHER_TAG);
+		binding = DataBindingUtil.setContentView(this, R.layout.activity_create_teacher);
+		Toolbar toolbar = binding.createTeacherToolbar;
+		CreateTeacherFragment createTeacherFragment = (CreateTeacherFragment) getSupportFragmentManager().findFragmentByTag(CREATE_TEACHER_TAG);
 		if (createTeacherFragment == null) {
 			createTeacherFragment = new CreateTeacherFragment();
 			getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, createTeacherFragment).commit();
@@ -39,5 +36,21 @@ public class CreateTeacherActivity extends BaseActivity {
 		});
 
 		new CreateTeacherPresenter(new TeacherRepository(getUid()), createTeacherFragment, getIntent().getStringExtra("teacherKey"));
+	}
+
+	public String getTeacherName() {
+		return binding.teacherNameTil.getEditText().getText().toString();
+	}
+
+	public void nameInvalid() {
+		binding.teacherNameTil.setError("The name can't be empty");
+	}
+
+	public void nameExists() {
+		binding.teacherNameTil.setError("You already saved this teacher");
+	}
+
+	public void removeErrors() {
+		binding.teacherNameTil.setError("");
 	}
 }

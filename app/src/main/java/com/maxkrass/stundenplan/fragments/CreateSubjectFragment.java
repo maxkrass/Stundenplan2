@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -14,29 +16,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
-import android.widget.TextView;
 
 import com.maxkrass.stundenplan.R;
 import com.maxkrass.stundenplan.contracts.CreateSubjectContract;
 import com.maxkrass.stundenplan.databinding.ColorRowBinding;
 import com.maxkrass.stundenplan.databinding.FragmentCreateSubjectBinding;
-import com.maxkrass.stundenplan.objects.Color;
 import com.maxkrass.stundenplan.objects.Subject;
 import com.maxkrass.stundenplan.objects.Teacher;
 
-import java.util.HashMap;
-
 public class CreateSubjectFragment extends Fragment implements View.OnClickListener, CreateSubjectContract.View {
 
-	public View colorIcon;
+	private View colorIcon;
 
-	TextView selectTeacher;
-	Subject subject;
-	ListAdapter adapter;
-	FragmentCreateSubjectBinding binding;
+	private Subject                      subject;
+	private ListAdapter                  adapter;
+	private FragmentCreateSubjectBinding binding;
 
-	OnChooseListener mOnChooseListener;
-	CreateSubjectContract.Presenter mPresenter;
+	private OnChooseListener                mOnChooseListener;
+	private CreateSubjectContract.Presenter mPresenter;
 
 	@Override
 	public void setPresenter(CreateSubjectContract.Presenter presenter) {
@@ -77,12 +74,7 @@ public class CreateSubjectFragment extends Fragment implements View.OnClickListe
 	@Override
 	public void showSubject(Subject subject) {
 		this.subject = subject;
-	}
-
-	public interface OnChooseListener {
-		void onShowChosenColor(String fromColor, String toColor);
-
-		void onRequestChooseTeacher();
+		binding.setSubject(this.subject);
 	}
 
 	@Override
@@ -99,18 +91,6 @@ public class CreateSubjectFragment extends Fragment implements View.OnClickListe
 		}
 	}
 
-	public void onTeacherChosen(Teacher teacher) {
-		HashMap<String, Boolean> map = new HashMap<>(1);
-		map.put(teacher.getTeacherName(), true);
-		subject.setTeacher(map);
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		mPresenter.start();
-	}
-
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -121,7 +101,6 @@ public class CreateSubjectFragment extends Fragment implements View.OnClickListe
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		binding = DataBindingUtil.inflate(inflater, R.layout.fragment_create_subject, container, false);
-		selectTeacher = binding.selectTeacher;
 		subject.setColor("#F44336");
 		binding.setSubject(subject);
 		binding.chooseColor.setOnClickListener(new View.OnClickListener() {
@@ -130,18 +109,17 @@ public class CreateSubjectFragment extends Fragment implements View.OnClickListe
 				selectColor();
 			}
 		});
-		selectTeacher.setOnClickListener(new View.OnClickListener() {
+		binding.selectTeacher.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				//TODO Intent intent = new Intent(getApplicationContext(), ManageTeachersActivity.class);
-				//intent.putExtra("select", true);
-				//startActivityForResult(intent, SELECT_REQUEST_CODE);
 				mOnChooseListener.onRequestChooseTeacher();
 			}
 		});
 		colorIcon = binding.colorIcon;
 
-		adapter = new ArrayAdapter<Color>(getActivity(), R.layout.color_row, Color.values()) {
+		adapter = new ArrayAdapter<String>(getActivity(), R.layout.color_row, getResources().getStringArray(R.array.colors)) {
+
+			final String[] colorNames = getResources().getStringArray(R.array.colorNames);
 
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
@@ -155,7 +133,8 @@ public class CreateSubjectFragment extends Fragment implements View.OnClickListe
 					colorRowBinding = DataBindingUtil.findBinding(convertView);
 				}
 
-				colorRowBinding.setColor(Color.values()[position]);
+				((GradientDrawable) colorRowBinding.colorIcon.getBackground()).setColor(android.graphics.Color.parseColor(getItem(position)));
+				colorRowBinding.name.setText(colorNames[position]);
 
 				return convertView;
 			}
@@ -165,27 +144,41 @@ public class CreateSubjectFragment extends Fragment implements View.OnClickListe
 	}
 
 	@Override
+	public void onResume() {
+		super.onResume();
+		mPresenter.start();
+	}
+
+	public void onTeacherChosen(Teacher teacher) {
+		subject.setTeacher(teacher == null ? null : teacher.getTeacherName());
+	}
+
+	private void selectColor() {
+		new AlertDialog.Builder(getActivity()).setAdapter(adapter,
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						String newColor = getResources().getStringArray(R.array.colors)[which];
+						((GradientDrawable) colorIcon.getBackground()).setColor(Color.parseColor(newColor));
+						binding.colorNameLabel.setText(getResources().getStringArray(R.array.colorNames)[which]);
+						mOnChooseListener.onShowChosenColor(subject.getColor(), newColor);
+						subject.setColor(newColor);
+					}
+
+				}
+		).show();
+	}
+
+	public interface OnChooseListener {
+		void onShowChosenColor(String fromColor, String toColor);
+
+		void onRequestChooseTeacher();
+	}
+
+	@Override
 	public void onClick(View v) {
 		mPresenter.validateSubject(subject.getName(), subject.getAbbreviation(), subject.getColor(), subject.getTeacher());
 	}
 
-	public void selectColor() {
-		new AlertDialog.Builder(getActivity()).setAdapter(adapter, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				String[] colors = getResources().getStringArray(R.array.colors);
-				String newColor = colors[which];
-				//((GradientDrawable) colorIcon.getBackground()).setColor(newColor.getColor(getActivity()));
-				binding.colorNameLabel.setText(newColor);
 
-				if (which < Color.values().length && which >= 0) {
-					colorIcon.setVisibility(View.VISIBLE);
-					mOnChooseListener.onShowChosenColor(subject.getColor(), newColor);
-					//((GradientDrawable) colorIcon.getBackground()).setColor(newColor.getColor(getActivity()));
-					subject.setColor(newColor);
-				}
-
-			}
-		}).show();
-	}
 }

@@ -32,7 +32,7 @@
 						<TextView
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
-							android:text="Mo"
+							android:text="@string/monday_title"
 							android:textAppearance="@android:style/TextAppearance.Material.Title"/>
 
 					</FrameLayout>
@@ -51,7 +51,7 @@
 						<TextView
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
-							android:text="Di"
+							android:text="@string/tuesday_title"
 							android:textAppearance="@android:style/TextAppearance.Material.Title"/>
 
 					</FrameLayout>
@@ -70,7 +70,7 @@
 						<TextView
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
-							android:text="Mi"
+							android:text="@string/wednesday_title"
 							android:textAppearance="@android:style/TextAppearance.Material.Title"/>
 
 					</FrameLayout>
@@ -89,7 +89,7 @@
 						<TextView
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
-							android:text="Do"
+							android:text="@string/thursday_title"
 							android:textAppearance="@android:style/TextAppearance.Material.Title"/>
 
 					</FrameLayout>
@@ -108,7 +108,7 @@
 						<TextView
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
-							android:text="Fr"
+							android:text="@string/friday_title"
 							android:textAppearance="@android:style/TextAppearance.Material.Title"/>
 
 					</FrameLayout>
@@ -129,8 +129,9 @@
 					<RelativeLayout
 						android:id="@+id/column_monday"
 						android:layout_width="0dp"
-						android:layout_height="wrap_content"
+						android:layout_height="match_parent"
 						android:layout_weight="1"
+						android:animateLayoutChanges="true"
 						android:paddingBottom="2dp"
 						android:paddingTop="2dp"/>
 
@@ -143,8 +144,9 @@
 					<RelativeLayout
 						android:id="@+id/column_tuesday"
 						android:layout_width="0dp"
-						android:layout_height="fill_parent"
+						android:layout_height="match_parent"
 						android:layout_weight="1"
+						android:animateLayoutChanges="true"
 						android:paddingBottom="2dp"
 						android:paddingTop="2dp"/>
 
@@ -156,8 +158,9 @@
 					<RelativeLayout
 						android:id="@+id/column_wednesday"
 						android:layout_width="0dp"
-						android:layout_height="fill_parent"
+						android:layout_height="match_parent"
 						android:layout_weight="1"
+						android:animateLayoutChanges="true"
 						android:paddingBottom="2dp"
 						android:paddingTop="2dp"/>
 
@@ -169,8 +172,9 @@
 					<RelativeLayout
 						android:id="@+id/column_thursday"
 						android:layout_width="0dp"
-						android:layout_height="fill_parent"
+						android:layout_height="match_parent"
 						android:layout_weight="1"
+						android:animateLayoutChanges="true"
 						android:paddingBottom="2dp"
 						android:paddingTop="2dp"/>
 
@@ -182,8 +186,9 @@
 					<RelativeLayout
 						android:id="@+id/column_friday"
 						android:layout_width="0dp"
-						android:layout_height="fill_parent"
+						android:layout_height="match_parent"
 						android:layout_weight="1"
+						android:animateLayoutChanges="true"
 						android:paddingBottom="2dp"
 						android:paddingTop="2dp"/>
 

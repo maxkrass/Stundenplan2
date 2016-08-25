@@ -5,5 +5,10 @@ public enum Weekday {
 	TUESDAY,
 	WEDNESDAY,
 	THURSDAY,
-	FRIDAY
+	FRIDAY;
+
+	@Override
+	public String toString() {
+		return name().toLowerCase();
+	}
 }

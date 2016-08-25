@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	tools:context=".activities.CreateLessonActivity">
+
+	<data>
+
+		<import type="com.maxkrass.stundenplan.objects.Lesson" />
+
+		<variable
+			name="lesson"
+			type="Lesson" />
+
+	</data>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+		<FrameLayout
+			android:layout_width="match_parent"
+			android:layout_height="48dp"
+			android:layout_marginTop="8dp">
+
+			<LinearLayout
+				android:id="@+id/select_subject_container"
+				android:layout_width="match_parent"
+				android:layout_height="48dp"
+				android:background="?attr/selectableItemBackground"
+				android:clickable="true">
+
+				<View
+					android:id="@+id/select_subject_color"
+					android:layout_width="24dp"
+					android:layout_height="24dp"
+					android:layout_gravity="center_vertical"
+					android:layout_marginEnd="16dp"
+					android:layout_marginStart="16dp"
+					android:background="@drawable/color_icon"
+					android:visibility="gone" />
+
+				<TextView
+					android:id="@+id/select_subject"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center_vertical"
+					android:layout_marginStart="16dp"
+					android:text='@{lesson.subject == null ? @string/select_subject : lesson.subject.name}'
+					android:textSize="16sp" />
+
+			</LinearLayout>
+
+			<ImageView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="end|center_vertical"
+				android:layout_marginEnd="16dp"
+				android:src="@drawable/ic_arrow_drop_down_24dp"
+				android:tint="@color/grey600" />
+
+		</FrameLayout>
+
+		<FrameLayout
+			android:layout_width="match_parent"
+			android:layout_height="48dp">
+
+			<ImageView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_vertical"
+				android:layout_marginStart="16dp"
+				android:src="@drawable/ic_time_24dp" />
+
+			<LinearLayout
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_vertical"
+				android:layout_marginStart="64dp">
+
+				<Spinner
+					android:id="@+id/lesson_weekday"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:entries="@array/weekday" />
+
+				<Spinner
+					android:id="@+id/lesson_period"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginStart="16dp"
+					android:entries="@array/periods" />
+
+			</LinearLayout>
+
+		</FrameLayout>
+
+		<FrameLayout
+			android:layout_width="match_parent"
+			android:layout_height="48dp"
+			android:background="?selectableItemBackground">
+
+			<com.maxkrass.stundenplan.customViews.CheckBoxWidget
+				android:id="@+id/double_period"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:onClick="onClick"
+				app:label="@string/double_period" />
+
+		</FrameLayout>
+
+		<FrameLayout
+			android:layout_width="match_parent"
+			android:layout_height="48dp">
+
+			<ImageView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_vertical"
+				android:layout_marginStart="16dp"
+				android:contentDescription="Room"
+				android:src="@drawable/ic_room_24dp" />
+
+			<EditText
+				android:id="@+id/lesson_room"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_vertical"
+				android:layout_marginEnd="16dp"
+				android:layout_marginStart="72dp"
+				android:background="@null"
+				android:hint="@string/room_place"
+				android:text="@={lesson.location}"
+				android:textSize="16sp" />
+
+		</FrameLayout>
+
+	</LinearLayout>
+
+</layout>

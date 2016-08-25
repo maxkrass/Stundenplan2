@@ -2,22 +2,27 @@ package com.maxkrass.stundenplan.objects;
 
 import android.support.annotation.NonNull;
 
-import com.orm.SugarRecord;
-import com.orm.dsl.Ignore;
-import com.orm.query.Condition;
-import com.orm.query.Select;
+import com.google.firebase.database.Exclude;
 
 import java.util.Locale;
 
-public class Lesson extends SugarRecord implements Comparable<Lesson> {
+public class Lesson implements Comparable<Lesson> {
 	private Subject subject;
-	private Weekday weekday;
-	private String location;
-	private Period period;
-	@Ignore
-	private boolean showRoomLabel = true;
+	private String  weekday;
+	private String  location;
+	private int     period;
+
+	@Exclude
+	private transient boolean showRoomLabel = true;
 
 	public Lesson() {
+	}
+
+	public Lesson(Subject subject, int period, String weekday, String location) {
+		this.subject = subject;
+		this.period = period;
+		this.weekday = weekday;
+		this.location = location;
 	}
 
 	public boolean isShowRoomLabel() {
@@ -28,14 +33,6 @@ public class Lesson extends SugarRecord implements Comparable<Lesson> {
 		this.showRoomLabel = showRoomLabel;
 	}
 
-	public boolean hasSucceedingLesson() {
-		return Select.from(Lesson.class).where(Condition.prop("subject").eq(subject)).and(Condition.prop("location").eq(location)).and(Condition.prop("weekday").eq(weekday)).and(Condition.prop("period").eq(period.getId() + 1)).first() != null;
-	}
-
-	public boolean isSucceedingLesson() {
-		return Select.from(Lesson.class).where(Condition.prop("subject").eq(subject)).and(Condition.prop("location").eq(location)).and(Condition.prop("weekday").eq(weekday)).and(Condition.prop("period").eq(period.getId() - 1)).first() != null;
-	}
-
 	public Subject getSubject() {
 		return subject;
 	}
@@ -44,11 +41,11 @@ public class Lesson extends SugarRecord implements Comparable<Lesson> {
 		this.subject = subject;
 	}
 
-	public Weekday getWeekday() {
+	public String getWeekday() {
 		return weekday;
 	}
 
-	public void setWeekday(Weekday weekday) {
+	public void setWeekday(String weekday) {
 		this.weekday = weekday;
 	}
 
@@ -60,11 +57,11 @@ public class Lesson extends SugarRecord implements Comparable<Lesson> {
 		this.location = location;
 	}
 
-	public Period getPeriod() {
+	public int getPeriod() {
 		return period;
 	}
 
-	public void setPeriod(Period period) {
+	public void setPeriod(int period) {
 		this.period = period;
 	}
 
@@ -72,7 +69,7 @@ public class Lesson extends SugarRecord implements Comparable<Lesson> {
 	public int compareTo(@NonNull Lesson l) {
 
 		if (this.weekday.equals(l.getWeekday())) {
-			return (int) Math.signum(period.getId() - l.getPeriod().getId());
+			return (int) Math.signum(period - l.getPeriod());
 		} else {
 			return this.weekday.compareTo(l.weekday);
 		}
@@ -81,6 +78,6 @@ public class Lesson extends SugarRecord implements Comparable<Lesson> {
 
 	@Override
 	public String toString() {
-		return String.format(Locale.GERMAN, "[ %s, %s, %s, %d ]", subject.getName(), weekday.name(), location, period.getId());
+		return String.format(Locale.GERMAN, "[ %s, %s, %s, %d ]", subject, weekday, location, period);
 	}
 }

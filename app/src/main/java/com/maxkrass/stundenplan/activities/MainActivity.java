@@ -3,11 +3,11 @@ package com.maxkrass.stundenplan.activities;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
-import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.maxkrass.stundenplan.R;
@@ -18,7 +18,6 @@ import com.maxkrass.stundenplan.fragments.ManageTeachersFragment;
 import com.maxkrass.stundenplan.fragments.SettingsFragment;
 import com.maxkrass.stundenplan.fragments.SubstitutionPlanFragment;
 import com.maxkrass.stundenplan.tools.Tools;
-import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -27,21 +26,19 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemClickListener, SubstitutionPlanFragment.OnFragmentInteractionListener {
 
-	private static final String TAG = "MainActivity";
-	private static final int RC_SIGN_IN = 7001;
-	final String
-			MANAGE_SUBJECTS_TAG = "manage_subjects_fragment",
-			SUBSTITUTION_PLAN_TAG = "substitution_plan_fragment",
-			MANAGE_TEACHERS_TAG = "manage_teachers_fragment",
-			MAIN_FRAGMENT_TAG = "main_fragment",
-			SETTINGS_FRAGMENT_TAG = "settings_fragment";
-	public Toolbar toolbar;
-	private Drawer result;
-	private FirebaseAuth mFirebaseAuth;
+	private static final String TAG                   = "MainActivity";
+	private final        String MAIN_FRAGMENT_TAG     = "main_fragment";
+	private final        String SUBSTITUTION_PLAN_TAG = "substitution_plan_fragment";
+	private final        String MANAGE_TEACHERS_TAG   = "manage_teachers_fragment";
+	private final        String SETTINGS_FRAGMENT_TAG = "settings_fragment";
+	private final        String MANAGE_SUBJECTS_TAG   = "manage_subjects_fragment";
+	public  TabLayout                      tabLayout;
+	private String                         lastFragmentTag;
+	private Toolbar                        toolbar;
+	private Drawer                         result;
+	private FirebaseAuth                   mFirebaseAuth;
 	private FirebaseAuth.AuthStateListener mAuthListener;
-	private FirebaseUser user;
-
-	AccountHeader header;
+	private FirebaseUser                   user;
 
 	@Override
 	protected void onStart() {
@@ -56,12 +53,20 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
 	}
 
 	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putInt("selectedItem", result.getCurrentSelectedPosition());
+		outState.putString("lastFragment", lastFragmentTag);
+	}
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ActivityMainBinding activityMainBinding = DataBindingUtil.setContentView(MainActivity.this, R.layout.activity_main);
 		activityMainBinding.mainAppBarLayout.setPadding(0, Tools.getStatusBarHeight(MainActivity.this), 0, 0);
 		toolbar = activityMainBinding.mainToolbar;
-		setSupportActionBar(toolbar);
+		tabLayout = activityMainBinding.mainTabLayout;
+		//setSupportActionBar(toolbar);
 
 		result = new DrawerBuilder(this)
 				.withToolbar(toolbar)
@@ -79,7 +84,7 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
 				user = firebaseAuth.getCurrentUser();
 				if (user != null) {
 					Log.d(TAG, "onAuthStateChanged:signed_in: " + user.getUid());
-					header = new AccountHeaderBuilder()
+					new AccountHeaderBuilder()
 							.withActivity(MainActivity.this)
 							.withHeaderBackground(R.color.material_grey)
 							.withDrawer(result)
@@ -120,24 +125,58 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
 							}
 						}
 					}).start();*/
-				} else {
-					startActivityForResult(
-							AuthUI.getInstance()
-									.createSignInIntentBuilder()
-									.setProviders(AuthUI.GOOGLE_PROVIDER)
-									.setTheme(R.style.AppTheme)
-									.build(),
-							RC_SIGN_IN);
 				}
 
 			}
 		};
-		if (savedInstanceState == null && getSupportFragmentManager().findFragmentByTag(MAIN_FRAGMENT_TAG) == null) {
-			getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new MainActivityFragment(), MAIN_FRAGMENT_TAG).commit();
-			Log.d(TAG, "onCreate: adding MainActivityFragment");
-
+		if (savedInstanceState != null) {
+			lastFragmentTag = savedInstanceState.getString("lastFragment");
 		}
+		if (getSupportFragmentManager().findFragmentByTag(lastFragmentTag) == null) {
+			getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new MainActivityFragment(), MAIN_FRAGMENT_TAG).commit();
+			lastFragmentTag = MAIN_FRAGMENT_TAG;
+			Log.d(TAG, "onCreate: adding MainActivityFragment");
+		}
+		restoreUI();
 		Log.d(TAG, "onCreate: finished onCreate");
+	}
+
+	private void restoreUI() {
+		switch (lastFragmentTag) {
+			case MAIN_FRAGMENT_TAG:
+				toolbar.setTitle(R.string.app_name);
+				tabLayout.setVisibility(View.GONE);
+				result.setSelectionAtPosition(0, false);
+				break;
+			case SUBSTITUTION_PLAN_TAG:
+				toolbar.setTitle("Vertretungsplan");
+				tabLayout.setVisibility(View.VISIBLE);
+				result.setSelectionAtPosition(1, false);
+				break;
+			case MANAGE_TEACHERS_TAG:
+				toolbar.setTitle(getString(R.string.action_teachers));
+				tabLayout.setVisibility(View.GONE);
+				result.setSelectionAtPosition(2, false);
+				break;
+			case MANAGE_SUBJECTS_TAG:
+				toolbar.setTitle(getString(R.string.action_subjects));
+				tabLayout.setVisibility(View.GONE);
+				result.setSelectionAtPosition(3, false);
+				break;
+			case SETTINGS_FRAGMENT_TAG:
+				toolbar.setTitle(getString(R.string.action_settings));
+				tabLayout.setVisibility(View.GONE);
+				result.setSelectionAtPosition(4, false);
+				break;
+		}
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		if (savedInstanceState != null) {
+			//result.setSelectionAtPosition(savedInstanceState.getInt("selectedItem"), false);
+		}
 	}
 
 	@Override
@@ -146,32 +185,43 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
 			default:
 				return false;
 			case R.id.drawer_main_item:
-				if (getSupportFragmentManager().findFragmentByTag(MAIN_FRAGMENT_TAG) == null)
+				if (getSupportFragmentManager().findFragmentByTag(MAIN_FRAGMENT_TAG) == null) {
 					getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MainActivityFragment(), MAIN_FRAGMENT_TAG).commit();
-				toolbar.setTitle(R.string.app_name);
+					toolbar.setTitle(R.string.app_name);
+					tabLayout.setVisibility(View.GONE);
+					lastFragmentTag = MAIN_FRAGMENT_TAG;
+				}
 				break;
 			case R.id.drawer_substitution_item:
 				if (getSupportFragmentManager().findFragmentByTag(SUBSTITUTION_PLAN_TAG) == null) {
-					getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new SubstitutionPlanFragment(), SUBSTITUTION_PLAN_TAG).commit();
+					getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, SubstitutionPlanFragment.newInstance(getUid()), SUBSTITUTION_PLAN_TAG).commit();
 					toolbar.setTitle("Vertretungsplan");
+					tabLayout.setVisibility(View.VISIBLE);
+					lastFragmentTag = SUBSTITUTION_PLAN_TAG;
 				}
 				break;
 			case R.id.drawer_teachers_item:
 				if (getSupportFragmentManager().findFragmentByTag(MANAGE_TEACHERS_TAG) == null) {
 					getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ManageTeachersFragment(), MANAGE_TEACHERS_TAG).commit();
 					toolbar.setTitle("Lehrer");
+					tabLayout.setVisibility(View.GONE);
+					lastFragmentTag = MANAGE_TEACHERS_TAG;
 				}
 				break;
 			case R.id.drawer_subjects_item:
 				if (getSupportFragmentManager().findFragmentByTag(MANAGE_SUBJECTS_TAG) == null) {
 					getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ManageSubjectsFragment(), MANAGE_SUBJECTS_TAG).commit();
 					toolbar.setTitle("Fächer");
+					tabLayout.setVisibility(View.GONE);
+					lastFragmentTag = MANAGE_SUBJECTS_TAG;
 				}
 				break;
 			case R.id.drawer_settings_item:
 				if (getSupportFragmentManager().findFragmentByTag(SETTINGS_FRAGMENT_TAG) == null) {
 					getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new SettingsFragment(), SETTINGS_FRAGMENT_TAG).commit();
 					toolbar.setTitle("Einstellungen");
+					tabLayout.setVisibility(View.GONE);
+					lastFragmentTag = SETTINGS_FRAGMENT_TAG;
 				}
 				break;
 		}

@@ -16,22 +16,64 @@ import android.view.ViewGroup;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 import com.maxkrass.stundenplan.R;
 import com.maxkrass.stundenplan.activities.CreateSubjectActivity;
 import com.maxkrass.stundenplan.adapter.FirebaseSubjectAdapter;
 import com.maxkrass.stundenplan.databinding.FragmentManageSubjectsBinding;
 import com.maxkrass.stundenplan.objects.Subject;
 
+import java.util.HashMap;
+
 /**
  * Max made this for Stundenplan2 on 09.07.2016.
  */
 public class ManageSubjectsFragment extends Fragment implements View.OnClickListener {
 
-	private DatabaseReference mSubjectRef;
-	private FirebaseSubjectAdapter subjectAdapter;
-	private RecyclerView recyclerView;
+	public  boolean                 mSelect;
+	public  OnSubjectChosenListener mOnSubjectChosenListener;
+	private DatabaseReference       mSubjectRef;
+	private DatabaseReference       mTeachersRef;
+	private FirebaseSubjectAdapter  subjectAdapter;
+	private RecyclerView            recyclerView;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setRetainInstance(true);
+	}
+
+	@Nullable
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		FragmentManageSubjectsBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_manage_subjects, container, false);
+		binding.addSubject.setOnClickListener(this);
+		if (getArguments() != null) {
+			mSelect = getArguments().getBoolean("select");
+		}
+		if (mSelect) {
+			try {
+				mOnSubjectChosenListener = (OnSubjectChosenListener) getActivity();
+			} catch (ClassCastException e) {
+				throw new ClassCastException(getActivity().toString()
+						+ " must implement OnTeacherChosenListener");
+			}
+		}
+		FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+		if (user == null) throw new RuntimeException("User mustn't be null");
+		mSubjectRef = FirebaseDatabase.getInstance()
+				.getReference("users").child(user.getUid()).child("subjects");
+		mTeachersRef = FirebaseDatabase.getInstance()
+				.getReference("users").child(user.getUid()).child("teachers");
+		recyclerView = binding.subjectsRecyclerview;
+		recyclerView.setHasFixedSize(true);
+		return binding.getRoot();
+	}
 
 	@Override
 	public void onStart() {
@@ -39,7 +81,6 @@ public class ManageSubjectsFragment extends Fragment implements View.OnClickList
 
 		subjectAdapter = new FirebaseSubjectAdapter(
 				Subject.class,
-				R.layout.subject_view,
 				FirebaseSubjectAdapter.SubjectViewHolder.class,
 				mSubjectRef,
 				this
@@ -65,25 +106,10 @@ public class ManageSubjectsFragment extends Fragment implements View.OnClickList
 		recyclerView.setAdapter(subjectAdapter);
 	}
 
-	@Nullable
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		FragmentManageSubjectsBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_manage_subjects, container, false);
-		binding.addSubject.setOnClickListener(this);
-		FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-		if (user == null) throw new RuntimeException("User mustn't be null");
-		mSubjectRef = FirebaseDatabase.getInstance()
-				.getReference("users").child(user.getUid()).child("subjects");
-		recyclerView = binding.subjectsRecyclerview;
-		recyclerView.setHasFixedSize(true);
-		return binding.getRoot();
-	}
-
 	@Override
 	public void onClick(View v) {
 		getActivity().startActivity(new Intent(getActivity(), CreateSubjectActivity.class));
 	}
-
 
 	public void showLongClickDialog(final Subject subject) {
 		new AlertDialog.Builder(getActivity())
@@ -104,14 +130,42 @@ public class ManageSubjectsFragment extends Fragment implements View.OnClickList
 											@Override
 											public void onClick(View v) {
 												mSubjectRef.child(subject.getName()).setValue(subject);
+												if (!subject.getTeacher().isEmpty()) {
+													mTeachersRef.child(subject.getTeacher()).child("subjects").addListenerForSingleValueEvent(new ValueEventListener() {
+														@Override
+														public void onDataChange(DataSnapshot dataSnapshot) {
+															HashMap<String, Boolean> subjects = dataSnapshot.getValue(new GenericTypeIndicator<HashMap<String, Boolean>>() {
+															});
+															if (subjects == null)
+																subjects = new HashMap<>();
+															subjects.put(subject.getName(), true);
+															mTeachersRef.child(subject.getTeacher()).child("subjects").setValue(subjects);
+														}
+
+														@Override
+														public void onCancelled(DatabaseError databaseError) {
+
+														}
+													});
+												}
 											}
 										}).show();
 
 								dialog.dismiss();
 								mSubjectRef.child(subject.getName()).removeValue();
+								if (!subject.getTeacher().isEmpty()) {
+									mTeachersRef.child(subject.getTeacher()).child("subjects").child(subject.getName()).removeValue();
+								}
 								break;
 						}
 					}
 				}).show();
+	}
+
+
+	public interface OnSubjectChosenListener {
+		void onSubjectChosen(Subject subject);
+
+		void onNoneChosen();
 	}
 }

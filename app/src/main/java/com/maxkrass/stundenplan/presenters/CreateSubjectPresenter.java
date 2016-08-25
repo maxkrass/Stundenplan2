@@ -10,10 +10,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.maxkrass.stundenplan.contracts.CreateSubjectContract;
 import com.maxkrass.stundenplan.data.SubjectRepository;
-import com.maxkrass.stundenplan.objects.Color;
 import com.maxkrass.stundenplan.objects.Subject;
-
-import java.util.HashMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -23,13 +20,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class CreateSubjectPresenter implements CreateSubjectContract.Presenter, ValueEventListener {
 
 	@NonNull
-	private SubjectRepository mSubjectRepository;
+	private final SubjectRepository mSubjectRepository;
 
 	@NonNull
-	private CreateSubjectContract.View mCreateSubjectView;
+	private final CreateSubjectContract.View mCreateSubjectView;
 
 	@Nullable
-	private String mSubjectKey;
+	private final String mSubjectKey;
 
 	public CreateSubjectPresenter(@NonNull SubjectRepository subjectRepository, @NonNull CreateSubjectContract.View createSubjectView, @Nullable String subjectKey) {
 		mSubjectRepository = checkNotNull(subjectRepository);
@@ -47,7 +44,7 @@ public class CreateSubjectPresenter implements CreateSubjectContract.Presenter, 
 	}
 
 	@Override
-	public void validateSubject(final String name, final String abbreviation, final String color, final HashMap<String, Boolean> teacher) {
+	public void validateSubject(final String name, final String abbreviation, final String color, final String teacher) {
 		mCreateSubjectView.removeErrors();
 		boolean error = false;
 		if (name.isEmpty()) {
@@ -81,7 +78,7 @@ public class CreateSubjectPresenter implements CreateSubjectContract.Presenter, 
 		}
 	}
 
-	private void saveSubject(String name, String abbreviation, String color, HashMap<String, Boolean> teacher) {
+	private void saveSubject(String name, String abbreviation, String color, String teacher) {
 		OnCompleteListener<Void> listener = new OnCompleteListener<Void>() {
 			@Override
 			public void onComplete(@NonNull Task<Void> task) {
@@ -97,11 +94,11 @@ public class CreateSubjectPresenter implements CreateSubjectContract.Presenter, 
 		}
 	}
 
-	boolean subjectNameWasChanged(String name) {
+	private boolean subjectNameWasChanged(String name) {
 		return !name.equals(mSubjectKey);
 	}
 
-	boolean isNewSubject() {
+	private boolean isNewSubject() {
 		return mSubjectKey == null || mSubjectKey.isEmpty();
 	}
 

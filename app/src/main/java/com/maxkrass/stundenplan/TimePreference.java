@@ -12,19 +12,19 @@ public class TimePreference extends DialogPreference {
 	private int lastMinute;
 	private TimePicker picker;
 
-	public static int getHour(String time) {
-		return Integer.parseInt(time.split(":")[0]);
-	}
-
-	public static int getMinute(String time) {
-		return Integer.parseInt(time.split(":")[1]);
-	}
-
 	public TimePreference(Context context, AttributeSet attrs) {
 		super(context, attrs);
 
 		setPositiveButtonText("Set");
 		setNegativeButtonText("Cancel");
+	}
+
+	private static int getHour(String time) {
+		return Integer.parseInt(time.split(":")[0]);
+	}
+
+	private static int getMinute(String time) {
+		return Integer.parseInt(time.split(":")[1]);
 	}
 
 	@Override

@@ -9,13 +9,16 @@ import com.google.firebase.database.Exclude;
 import com.maxkrass.stundenplan.BR;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 public class Teacher implements Observable, Comparable<Teacher>, Serializable {
-	private String teacherName;
-	private String phone;
-	private String email;
+	private           String                   teacherName;
+	private           String                   phone;
+	private           String                   email;
+	private           HashMap<String, Boolean> subjects;
 	@Exclude
-	private transient PropertyChangeRegistry mCallbacks;
+	private transient PropertyChangeRegistry   mCallbacks;
+
 
 	public Teacher() {
 		this("", "", "");
@@ -25,6 +28,14 @@ public class Teacher implements Observable, Comparable<Teacher>, Serializable {
 		this.teacherName = name;
 		this.phone = phone;
 		this.email = email;
+	}
+
+	public HashMap<String, Boolean> getSubjects() {
+		return subjects;
+	}
+
+	public void setSubjects(HashMap<String, Boolean> subjects) {
+		this.subjects = subjects;
 	}
 
 	@Bindable
@@ -80,7 +91,7 @@ public class Teacher implements Observable, Comparable<Teacher>, Serializable {
 		}
 	}
 
-	public void notifyPropertyChanged(int fieldId) {
+	private void notifyPropertyChanged(int fieldId) {
 		if (mCallbacks != null) {
 			mCallbacks.notifyCallbacks(this, fieldId, null);
 		}

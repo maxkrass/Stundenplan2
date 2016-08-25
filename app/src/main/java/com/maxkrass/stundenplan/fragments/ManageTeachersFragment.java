@@ -29,17 +29,43 @@ import com.maxkrass.stundenplan.objects.Teacher;
  * Max made this for Stundenplan2 on 10.07.2016.
  */
 public class ManageTeachersFragment extends Fragment implements View.OnClickListener {
-	public RecyclerView recyclerView;
-	public boolean mSelect;
-	public OnTeacherChosenListener mOnTeacherChosenListener;
-	FirebaseRecyclerAdapter<Teacher, FirebaseTeacherAdapter.TeacherViewHolder> teachersAdapter;
+	public  boolean                                                                    mSelect;
+	public  OnTeacherChosenListener                                                    mOnTeacherChosenListener;
+	private RecyclerView                                                               recyclerView;
+	private FirebaseRecyclerAdapter<Teacher, FirebaseTeacherAdapter.TeacherViewHolder> teachersAdapter;
 
-	DatabaseReference mTeacherRef;
+	private DatabaseReference mTeacherRef;
 
-	public interface OnTeacherChosenListener {
-		void onTeacherChosen(Teacher teacher);
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setRetainInstance(true);
+	}
 
-		void onNoneChosen();
+	@Nullable
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		FragmentManageTeachersBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_manage_teachers, container, false);
+		binding.addTeacher.setOnClickListener(this);
+		if (getArguments() != null) {
+			mSelect = getArguments().getBoolean("select");
+		}
+		FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+		if (user == null) throw new RuntimeException("User mustn't be null");
+		mTeacherRef = FirebaseDatabase.getInstance()
+				.getReference("users").child(user.getUid()).child("teachers");
+		if (mSelect) {
+			try {
+				mOnTeacherChosenListener = (OnTeacherChosenListener) getActivity();
+			} catch (ClassCastException e) {
+				throw new ClassCastException(getActivity().toString()
+						+ " must implement OnTeacherChosenListener");
+			}
+		}
+		recyclerView = binding.teachersRecyclerView;
+		recyclerView.setHasFixedSize(true);
+
+		return binding.getRoot();
 	}
 
 	@Override
@@ -48,7 +74,6 @@ public class ManageTeachersFragment extends Fragment implements View.OnClickList
 
 		teachersAdapter = new FirebaseTeacherAdapter(
 				Teacher.class,
-				R.layout.teacher_view,
 				FirebaseTeacherAdapter.TeacherViewHolder.class,
 				mTeacherRef,
 				this
@@ -74,37 +99,10 @@ public class ManageTeachersFragment extends Fragment implements View.OnClickList
 		recyclerView.setAdapter(teachersAdapter);
 	}
 
-	@Nullable
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		FragmentManageTeachersBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_manage_teachers, container, false);
-		binding.addTeacher.setOnClickListener(this);
-		if (getArguments() != null) {
-			mSelect = getArguments().getBoolean("select");
-		}
-		FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-		if (user == null) throw new RuntimeException("User mustn't be null");
-		mTeacherRef = FirebaseDatabase.getInstance()
-				.getReference("users").child(user.getUid()).child("teachers");
-		if (mSelect) {
-			try {
-				mOnTeacherChosenListener = (OnTeacherChosenListener) getActivity();
-			} catch (ClassCastException e) {
-				throw new ClassCastException(getActivity().toString()
-						+ " must implement OnHeadlineSelectedListener");
-			}
-		}
-		recyclerView = binding.teachersRecyclerview;
-		recyclerView.setHasFixedSize(true);
-
-		return binding.getRoot();
-	}
-
 	@Override
 	public void onClick(View v) {
 		startActivity(new Intent(getActivity(), CreateTeacherActivity.class));
 	}
-
 
 	public void showLongClickDialog(final Teacher teacher) {
 		new AlertDialog.Builder(getActivity())
@@ -134,5 +132,12 @@ public class ManageTeachersFragment extends Fragment implements View.OnClickList
 						}
 					}
 				}).create().show();
+	}
+
+
+	public interface OnTeacherChosenListener {
+		void onTeacherChosen(Teacher teacher);
+
+		void onNoneChosen();
 	}
 }

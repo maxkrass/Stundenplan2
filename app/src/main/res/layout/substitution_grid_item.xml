@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<data>
+
+		<import type="com.maxkrass.stundenplan.objects.SubstitutionEvent" />
+
+		<import type="android.view.View" />
+
+		<import type="java.util.Set" />
+
+		<variable
+			name="substitutionEvent"
+			type="SubstitutionEvent" />
+
+		<variable
+			name="subjects"
+			type="Set&lt;String>" />
+
+	</data>
+
+	<android.support.v7.widget.CardView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				android:paddingBottom="@{subjects.contains(substitutionEvent.subject) ? @dimen/card_view_top_padding : @dimen/null_padding}"
+				android:paddingEnd="16dp"
+				android:paddingStart="16dp"
+				android:paddingTop="@dimen/card_view_top_padding">
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text='@{substitutionEvent.grade.name() + ": " + substitutionEvent.period + ". Stunde", default="EF: 1 - 3. Stunde"}'
+					android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="8dp"
+					android:text='@{substitutionEvent.subject + " bei " + substitutionEvent.oldTeacher, default="KU GK1 bei HAN"}'
+					android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+					android:textStyle="italic"
+					android:visibility="@{substitutionEvent.subject.empty &amp;&amp; substitutionEvent.oldTeacher.empty ? View.GONE : View.VISIBLE}" />
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="8dp"
+					android:text='@{substitutionEvent.type.toString(), default="faellt aus"}'
+					android:textAppearance="@style/TextAppearance.AppCompat.Title"
+					android:textColor="@{substitutionEvent.type}" />
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="8dp"
+					android:text='@{substitutionEvent.subject + " in: " + substitutionEvent.newLocation}'
+					android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+					android:textStyle="bold"
+					android:visibility="@{substitutionEvent.type == SubstitutionEvent.SubstitutionType.Cancelled ? View.GONE : View.VISIBLE}" />
+
+			</LinearLayout>
+
+			<TextView
+				android:id="@+id/add_substitution_subject"
+				style="@style/Widget.AppCompat.Button.Borderless"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="8dp"
+				android:background="?selectableItemBackground"
+				android:clickable="true"
+				android:minWidth="0dp"
+				android:paddingEnd="8dp"
+				android:paddingStart="8dp"
+				android:text="@string/add_subject"
+				android:visibility="@{subjects.contains(substitutionEvent.subject) ? View.GONE : View.VISIBLE}" />
+
+		</LinearLayout>
+
+	</android.support.v7.widget.CardView>
+
+</layout>

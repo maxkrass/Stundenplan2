@@ -7,16 +7,33 @@ import android.support.v4.app.FragmentPagerAdapter;
 import com.maxkrass.stundenplan.fragments.SingleDaySubstitutionFragment;
 
 /**
- * Created by Max on 16.07.2016.
+ * Max made this for Stundenplan2 on 16.07.2016.
  */
 public class SubstitutionPlanPagerAdapter extends FragmentPagerAdapter {
-	public SubstitutionPlanPagerAdapter(FragmentManager fm) {
+
+	private final SingleDaySubstitutionFragment fragment1;
+	private final SingleDaySubstitutionFragment fragment2;
+	private final SingleDaySubstitutionFragment fragment3;
+
+	public SubstitutionPlanPagerAdapter(FragmentManager fm, String uId) {
 		super(fm);
+		fragment1 = SingleDaySubstitutionFragment.newInstance(1, uId);
+		fragment2 = SingleDaySubstitutionFragment.newInstance(2, uId);
+		fragment3 = SingleDaySubstitutionFragment.newInstance(3, uId);
 	}
 
 	@Override
 	public Fragment getItem(int position) {
-		return SingleDaySubstitutionFragment.newInstance(position);
+		switch (position) {
+			case 0:
+				return fragment1;
+			case 1:
+				return fragment2;
+			case 2:
+				return fragment3;
+			default:
+				return null;
+		}
 	}
 
 	@Override

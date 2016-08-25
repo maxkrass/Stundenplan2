@@ -3,12 +3,13 @@
 
 	<data>
 
-		<import type="com.maxkrass.stundenplan.objects.Subject"/>
+		<import type="com.maxkrass.stundenplan.objects.Subject" />
+
 		<import type="com.maxkrass.stundenplan.objects.Color" />
 
 		<variable
 			name="subject"
-			type="Subject"/>
+			type="Subject" />
 
 	</data>
 
@@ -19,45 +20,60 @@
 		android:padding="16dp">
 
 		<android.support.design.widget.TextInputLayout
-			android:layout_width="fill_parent"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
 
 			<EditText
 				android:id="@+id/subject_name"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:text="@={subject.name}"
-				android:hint="Subject Name"/>
+				android:hint="@string/subject_name"
+				android:text="@={subject.name}" />
 
 		</android.support.design.widget.TextInputLayout>
 
-		<android.support.design.widget.TextInputLayout
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content">
+		<android.support.design.widget.TextInputLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			app:counterEnabled="true"
+			app:counterMaxLength="5">
 
 			<EditText
+
 				android:id="@+id/subject_abbr"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:ems="3"
-				android:text="@={subject.abbreviation}"
-				android:hint="Abbr."
-				android:maxLength="5"/>
+				android:hint="@string/abbr"
+				android:maxLength="5"
+				android:text="@={subject.abbreviation}" />
 
 		</android.support.design.widget.TextInputLayout>
 
-		<TextView
+		<FrameLayout
 			android:id="@+id/select_teacher"
 			android:layout_width="match_parent"
 			android:layout_height="48dp"
-			android:layout_gravity="center_vertical"
 			android:layout_marginTop="16dp"
 			android:background="?android:selectableItemBackground"
-			android:clickable="true"
-			android:gravity="center_vertical"
-			android:paddingStart="4dp"
-			android:text='@{(subject.teacher == null || subject.teacher.isEmpty()) ? "Select teacher..." : subject.teacher.keySet().toArray()[0]}'
-			android:textSize="16sp"/>
+			android:clickable="true">
+
+			<ImageView
+				android:layout_width="24dp"
+				android:layout_height="24dp"
+				android:layout_gravity="center_vertical"
+				android:src="@drawable/ic_person_24dp" />
+
+			<TextView
+				android:id="@+id/select_teacher_label"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_vertical"
+				android:layout_marginStart="56dp"
+				android:text='@{(subject.teacher == null || subject.teacher.isEmpty()) ? @string/select_teacher : subject.teacher}'
+				android:textSize="16sp" />
+
+		</FrameLayout>
 
 		<FrameLayout
 			android:id="@+id/choose_color"
@@ -71,8 +87,7 @@
 				android:layout_width="24dp"
 				android:layout_height="24dp"
 				android:layout_gravity="center_vertical"
-				android:backgroundTint="@{subject.color}"
-				android:background="@drawable/color_icon"/>
+				android:background="@drawable/color_icon" />
 
 			<TextView
 				android:id="@+id/color_name_label"
@@ -80,8 +95,8 @@
 				android:layout_height="wrap_content"
 				android:layout_gravity="center_vertical"
 				android:layout_marginStart="56dp"
-				android:text="Choose Color"
-				android:textSize="16sp"/>
+				android:text="@string/choose_color"
+				android:textSize="16sp" />
 
 		</FrameLayout>
 

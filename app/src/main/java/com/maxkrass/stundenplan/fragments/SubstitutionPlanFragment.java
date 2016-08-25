@@ -1,8 +1,6 @@
 package com.maxkrass.stundenplan.fragments;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -11,35 +9,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.maxkrass.stundenplan.R;
+import com.maxkrass.stundenplan.activities.MainActivity;
 import com.maxkrass.stundenplan.adapter.SubstitutionPlanPagerAdapter;
 import com.maxkrass.stundenplan.databinding.FragmentSubstitutionPlanBinding;
 
 public class SubstitutionPlanFragment extends Fragment {
 
+	private static final String TAG = "SubstitutionPlan";
 	private OnFragmentInteractionListener mListener;
-	private ViewPager viewPager;
-	private TabLayout tabLayout;
+	private MainActivity                  mActivity;
 
-	public SubstitutionPlanFragment() {
-		// Required empty public constructor
-	}
+	public static SubstitutionPlanFragment newInstance(String uId) {
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	                         Bundle savedInstanceState) {
-		// Inflate the layout for this fragment
-		FragmentSubstitutionPlanBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_substitution_plan, container, false);
-		viewPager = binding.substitutionPlanViewPager;
-		tabLayout = binding.substitutionPlanTabLayout;
-		viewPager.setAdapter(new SubstitutionPlanPagerAdapter(getFragmentManager()));
-		tabLayout.setupWithViewPager(viewPager);
-		return binding.getRoot();
+		Bundle args = new Bundle();
+		args.putString("uId", uId);
+		SubstitutionPlanFragment fragment = new SubstitutionPlanFragment();
+		fragment.setArguments(args);
+		return fragment;
 	}
 
 	@Override
@@ -47,10 +33,23 @@ public class SubstitutionPlanFragment extends Fragment {
 		super.onAttach(context);
 		if (context instanceof OnFragmentInteractionListener) {
 			mListener = (OnFragmentInteractionListener) context;
+			mActivity = (MainActivity) getActivity();
 		} else {
 			throw new RuntimeException(context.toString()
 					+ " must implement OnFragmentInteractionListener");
 		}
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	                         Bundle savedInstanceState) {
+		FragmentSubstitutionPlanBinding binding = FragmentSubstitutionPlanBinding.inflate(inflater);
+		ViewPager viewPager = binding.substitutionPlanViewPager;
+		TabLayout tabLayout = mActivity.tabLayout;
+		viewPager.setAdapter(new SubstitutionPlanPagerAdapter(getChildFragmentManager(), getArguments().getString("uId")));
+		tabLayout.setupWithViewPager(viewPager);
+
+		return viewPager;
 	}
 
 	@Override
@@ -72,4 +71,5 @@ public class SubstitutionPlanFragment extends Fragment {
 	public interface OnFragmentInteractionListener {
 		// TODO: Update argument type and name
 	}
+
 }

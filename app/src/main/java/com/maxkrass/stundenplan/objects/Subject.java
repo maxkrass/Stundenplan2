@@ -11,31 +11,52 @@ import com.google.firebase.database.Exclude;
 import com.maxkrass.stundenplan.BR;
 
 import java.io.Serializable;
-import java.util.HashMap;
 
 public class Subject implements Observable, Serializable {
-	private HashMap<String, Boolean> teacher;
-	private String color;
-	private Long id;
-	private String name;
-	private String abbreviation;
+	private           String                 teacher;
+	private           String                 color;
+	private           String                 name;
+	private           String                 abbreviation;
 	@Exclude
 	private transient PropertyChangeRegistry mCallbacks;
 
-	public Long getId() {
-		return id;
+	public Subject(String name, String abbreviation, String teacher, String color) {
+		this.teacher = teacher;
+		this.color = color;
+		this.name = name;
+		this.abbreviation = abbreviation;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public Subject() {
+		teacher = "";
+		color = "";
+		name = "";
+		abbreviation = "";
+	}
+
+	@BindingConversion
+	public static ColorDrawable convertStringToDrawable(String color) {
+		return new ColorDrawable(android.graphics.Color.parseColor(color));
+	}
+
+	@BindingConversion
+	public static ColorStateList convertStringToColorStateList(String color) {
+		return new ColorStateList(
+				new int[][]{
+						new int[]{}
+				},
+				new int[]{
+						android.graphics.Color.parseColor(color)
+				}
+		);
 	}
 
 	@Bindable
-	public HashMap<String, Boolean> getTeacher() {
+	public String getTeacher() {
 		return teacher;
 	}
 
-	public void setTeacher(HashMap<String, Boolean> teacher) {
+	public void setTeacher(String teacher) {
 		this.teacher = teacher;
 		notifyPropertyChanged(BR.teacher);
 	}
@@ -45,16 +66,16 @@ public class Subject implements Observable, Serializable {
 		return color;
 	}
 
-	@Exclude
-	public int getColorInt() {
-		if (color != null && !color.isEmpty()) return Long.decode(color).intValue();
-		return 0;
-	}
-
 	public void setColor(String color) {
 		if (!color.startsWith("#")) color = "#" + color;
 		this.color = color;
 		notifyPropertyChanged(BR.color);
+	}
+
+	@Exclude
+	public int getColorInt() {
+		if (color != null && !color.isEmpty()) return android.graphics.Color.parseColor(color);
+		return android.graphics.Color.parseColor("#00000000");
 	}
 
 	@Bindable
@@ -77,20 +98,6 @@ public class Subject implements Observable, Serializable {
 		notifyPropertyChanged(BR.abbreviation);
 	}
 
-	public Subject(String name, String abbreviation, HashMap<String, Boolean> teacher, String color) {
-		this.teacher = teacher;
-		this.color = color;
-		this.name = name;
-		this.abbreviation = abbreviation;
-	}
-
-	public Subject() {
-		teacher = new HashMap<>(1);
-		color = "";
-		name = "";
-		abbreviation = "";
-	}
-
 	@Override
 	public void addOnPropertyChangedCallback(OnPropertyChangedCallback callback) {
 		if (mCallbacks == null) {
@@ -106,32 +113,23 @@ public class Subject implements Observable, Serializable {
 		}
 	}
 
-	public void notifyPropertyChanged(int fieldId) {
-		if (mCallbacks != null) {
-			mCallbacks.notifyCallbacks(this, fieldId, null);
-		}
-	}
-
-	@BindingConversion
-	public static ColorDrawable convertStringToDrawable(String color) {
-		return new ColorDrawable(Long.decode(color).intValue());
-	}
-
 	//@BindingConversion
 	//public static int convertStringToInt(String color) {
 	//	if (color != null && !color.isEmpty()) return Long.decode(color).intValue();
 	//	return 0;
 	//}
 
-	@BindingConversion
-	public static ColorStateList convertStringToColorStateList(String color) {
-		return new ColorStateList(
-				new int[][] {
-						new int[]{}
-				},
-				new int[] {
-						Long.decode(color).intValue()
-				}
-		);
+	private void notifyPropertyChanged(int fieldId) {
+		if (mCallbacks != null) {
+			mCallbacks.notifyCallbacks(this, fieldId, null);
+		}
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		return o instanceof Subject &&
+				getName().equals(((Subject) o).getName()) &&
+				getTeacher().equals(((Subject) o).getTeacher()) &&
+				getColor().equals(((Subject) o).getColor());
 	}
 }

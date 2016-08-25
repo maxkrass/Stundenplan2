@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout
-	xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<data>
 
-		<import type="com.maxkrass.stundenplan.objects.Period"/>
+		<import type="com.maxkrass.stundenplan.objects.Period" />
 
-		<import type="android.databinding.ObservableArrayList"/>
+		<import type="android.databinding.ObservableArrayList" />
 
 		<variable
 			name="periods"
-			type="ObservableArrayList&lt;Period>"/>
+			type="ObservableArrayList&lt;Period>" />
 	</data>
 
 	<ScrollView
@@ -31,7 +30,7 @@
 				<TextView
 					android:layout_width="50sp"
 					android:layout_height="wrap_content"
-					android:text="1"/>
+					android:text="@string/one" />
 
 				<TextView
 					android:id="@+id/start_1"
@@ -48,7 +47,6 @@
 				<TextView
 					android:id="@+id/end_1"
 					style="@style/timeTextView"
-					android:onClick="pickTime"
 					android:text='@{String.format("%02d:%02d", periods[0].endHour, periods[0].endMinute)}'/>
 			</LinearLayout>
 
@@ -59,7 +57,7 @@
 				<TextView
 					android:layout_width="50sp"
 					android:layout_height="wrap_content"
-					android:text="2"/>
+					android:text="@string/two" />
 
 				<TextView
 					android:id="@+id/start_2"
@@ -76,7 +74,6 @@
 				<TextView
 					android:id="@+id/end_2"
 					style="@style/timeTextView"
-					android:onClick="pickTime"
 					android:text='@{String.format("%02d:%02d", periods[1].endHour, periods[1].endMinute)}'/>
 			</LinearLayout>
 
@@ -87,7 +84,7 @@
 				<TextView
 					android:layout_width="50sp"
 					android:layout_height="wrap_content"
-					android:text="3"/>
+					android:text="@string/three" />
 
 				<TextView
 					android:id="@+id/start_3"
@@ -104,7 +101,6 @@
 				<TextView
 					android:id="@+id/end_3"
 					style="@style/timeTextView"
-					android:onClick="pickTime"
 					android:text='@{String.format("%02d:%02d", periods[2].endHour, periods[2].endMinute)}'/>
 			</LinearLayout>
 
@@ -115,7 +111,7 @@
 				<TextView
 					android:layout_width="50sp"
 					android:layout_height="wrap_content"
-					android:text="4"/>
+					android:text="@string/four" />
 
 				<TextView
 					android:id="@+id/start_4"
@@ -132,7 +128,6 @@
 				<TextView
 					android:id="@+id/end_4"
 					style="@style/timeTextView"
-					android:onClick="pickTime"
 					android:text='@{String.format("%02d:%02d", periods[3].endHour, periods[3].endMinute)}'/>
 			</LinearLayout>
 
@@ -143,7 +138,7 @@
 				<TextView
 					android:layout_width="50sp"
 					android:layout_height="wrap_content"
-					android:text="5"/>
+					android:text="@string/five" />
 
 				<TextView
 					android:id="@+id/start_5"
@@ -160,7 +155,6 @@
 				<TextView
 					android:id="@+id/end_5"
 					style="@style/timeTextView"
-					android:onClick="pickTime"
 					android:text='@{String.format("%02d:%02d", periods[4].endHour, periods[4].endMinute)}'/>
 			</LinearLayout>
 
@@ -171,7 +165,7 @@
 				<TextView
 					android:layout_width="50sp"
 					android:layout_height="wrap_content"
-					android:text="6"/>
+					android:text="@string/six" />
 
 				<TextView
 					android:id="@+id/start_6"
@@ -188,7 +182,6 @@
 				<TextView
 					android:id="@+id/end_6"
 					style="@style/timeTextView"
-					android:onClick="pickTime"
 					android:text='@{String.format("%02d:%02d", periods[5].endHour, periods[5].endMinute)}'/>
 			</LinearLayout>
 
@@ -199,7 +192,7 @@
 				<TextView
 					android:layout_width="50sp"
 					android:layout_height="wrap_content"
-					android:text="7"/>
+					android:text="@string/seven" />
 
 				<TextView
 					android:id="@+id/start_7"
@@ -216,7 +209,6 @@
 				<TextView
 					android:id="@+id/end_7"
 					style="@style/timeTextView"
-					android:onClick="pickTime"
 					android:text='@{String.format("%02d:%02d", periods[6].endHour, periods[6].endMinute)}'/>
 			</LinearLayout>
 
@@ -227,7 +219,7 @@
 				<TextView
 					android:layout_width="50sp"
 					android:layout_height="wrap_content"
-					android:text="8"/>
+					android:text="@string/eight" />
 
 				<TextView
 					android:id="@+id/start_8"
@@ -244,7 +236,6 @@
 				<TextView
 					android:id="@+id/end_8"
 					style="@style/timeTextView"
-					android:onClick="pickTime"
 					android:text='@{String.format("%02d:%02d", periods[7].endHour, periods[7].endMinute)}'/>
 			</LinearLayout>
 
@@ -255,7 +246,7 @@
 				<TextView
 					android:layout_width="50sp"
 					android:layout_height="wrap_content"
-					android:text="9"/>
+					android:text="@string/nine" />
 
 				<TextView
 					android:id="@+id/start_9"
@@ -272,7 +263,6 @@
 				<TextView
 					android:id="@+id/end_9"
 					style="@style/timeTextView"
-					android:onClick="pickTime"
 					android:text='@{String.format("%02d:%02d", periods[8].endHour, periods[8].endMinute)}'/>
 			</LinearLayout>
 
@@ -283,7 +273,7 @@
 				<TextView
 					android:layout_width="50sp"
 					android:layout_height="wrap_content"
-					android:text="10"/>
+					android:text="@string/ten" />
 
 				<TextView
 					android:id="@+id/start_10"
@@ -300,7 +290,6 @@
 				<TextView
 					android:id="@+id/end_10"
 					style="@style/timeTextView"
-					android:onClick="pickTime"
 					android:text='@{String.format("%02d:%02d", periods[9].endHour, periods[9].endMinute)}'/>
 			</LinearLayout>
 

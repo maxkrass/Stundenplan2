@@ -1,7 +1,8 @@
 <layout>
 
 	<data>
-		<import type="com.maxkrass.stundenplan.objects.Color" />
+
+		<import type="android.graphics.Color" />
 		<import type="java.lang.Integer" />
 		<import type="android.view.View" />
 
@@ -18,7 +19,7 @@
 		android:clickable="true"
 		android:focusable="true"
 		android:foreground="?android:attr/selectableItemBackground"
-		card_view:cardBackgroundColor="@{Integer.decode(lesson.subject.color)}"
+		card_view:cardBackgroundColor="@{Color.parseColor(lesson.subject.color)}"
 		card_view:cardCornerRadius="2dp"
 		card_view:cardElevation="2dp">
 
@@ -40,9 +41,9 @@
 				android:id="@+id/room_label"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:visibility="@{lesson.showRoomLabel ? View.VISIBLE : View.GONE}"
 				android:text="@{lesson.location}"
-				android:textColor="#B3FFFFFF"/>
+				android:textColor="#B3FFFFFF"
+				android:visibility="@{lesson.showRoomLabel ? View.VISIBLE : View.GONE}" />
 
 		</LinearLayout>
 

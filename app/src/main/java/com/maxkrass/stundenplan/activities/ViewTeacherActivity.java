@@ -23,20 +23,12 @@ import java.util.List;
 
 public class ViewTeacherActivity extends BaseActivity implements Transition.TransitionListener {
 	private static final String TAG = "ViewTeacherActivity";
-	ActivityViewTeacherBinding binding;
+	private ActivityViewTeacherBinding binding;
 
 	private float targetTextSize;
 	private ColorStateList targetTextColors;
 
-	private SharedElementCallback elementCallback = new SharedElementCallback() {
-		@Override
-		public void onSharedElementEnd(List<String> sharedElementNames, List<View> sharedElements, List<View> sharedElementSnapshots) {
-			TextView teacherName = binding.viewTeacherName;
-			teacherName.setTextSize(TypedValue.COMPLEX_UNIT_PX, targetTextSize);
-			teacherName.setTextColor(targetTextColors);
-			//forceSharedElementLayout(binding.description);
-		}
-
+	private final SharedElementCallback elementCallback = new SharedElementCallback() {
 		@Override
 		public void onSharedElementStart(List<String> sharedElementNames, List<View> sharedElements, List<View> sharedElementSnapshots) {
 			TextView teacherName = binding.viewTeacherName;
@@ -47,6 +39,14 @@ public class ViewTeacherActivity extends BaseActivity implements Transition.Tran
 			teacherName.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
 			Rect padding = getIntent().getParcelableExtra("padding");
 			teacherName.setPadding(padding.left, padding.top, padding.right, padding.bottom);
+		}
+
+		@Override
+		public void onSharedElementEnd(List<String> sharedElementNames, List<View> sharedElements, List<View> sharedElementSnapshots) {
+			TextView teacherName = binding.viewTeacherName;
+			teacherName.setTextSize(TypedValue.COMPLEX_UNIT_PX, targetTextSize);
+			teacherName.setTextColor(targetTextColors);
+			//forceSharedElementLayout(binding.description);
 		}
 	};
 
@@ -78,15 +78,9 @@ public class ViewTeacherActivity extends BaseActivity implements Transition.Tran
 			});
 			setEnterSharedElementCallback(elementCallback);
 			getWindow().getSharedElementEnterTransition().excludeTarget(getWindow().getDecorView(), true).addListener(this);
-			//Transition transition = TransitionUtils.makeSharedElementEnterTransition();
-			//getWindow().setSharedElementEnterTransition(transition);
-			//getWindow().setEnterTransition(TransitionUtils.makeEnterTransition());
-			//setEnterSharedElementCallback(new EnterSharedElementCallback(this));
 			setActionBar(binding.viewTeacherToolbar);
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 			((View) binding.viewTeacherToolbar.getParent()).setPadding(0, Tools.getStatusBarHeight(this), 0, 0);
-			//getWindow().setEnterTransition(new Slide(Gravity.BOTTOM).excludeTarget(android.R.id.statusBarBackground, true).excludeTarget(android.R.id.navigationBarBackground, true));
-			//getWindow().setExitTransition(new Slide(Gravity.BOTTOM).excludeTarget(android.R.id.statusBarBackground, true).excludeTarget(android.R.id.navigationBarBackground, true));
 			//TODO Add onPress events to phone and email
 			//TODO Add "subjects with this teachers"
 			//TODO Link those subjects to their view Activities

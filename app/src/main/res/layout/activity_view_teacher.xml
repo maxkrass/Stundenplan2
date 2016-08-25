@@ -19,11 +19,10 @@
 		<LinearLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			app:layout_behavior="@string/appbar_scrolling_view_behavior"
-			android:orientation="vertical">
+			android:orientation="vertical"
+			app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 			<FrameLayout
-				android:id="@+id/view_teacher_phone_container"
 				android:layout_width="match_parent"
 				android:layout_height="48dp"
 				android:background="?android:selectableItemBackground"
@@ -31,17 +30,16 @@
 				android:visibility='@{teacher.phone.length() &lt; 1 ? View.GONE : View.VISIBLE}'>
 
 				<ImageView
+					android:id="@+id/view_teacher_phone_icon"
 					android:layout_width="48dp"
 					android:layout_height="48dp"
 					android:layout_gravity="center_vertical"
 					android:layout_marginStart="4dp"
 					android:scaleType="center"
 					android:src="@drawable/ic_call_24dp"
-					android:id="@+id/view_teacher_phone_icon"
 					android:transitionName="teacher_phone_icon"/>
 
 				<TextView
-					android:id="@+id/view_teacher_phone"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_gravity="center_vertical"
@@ -52,7 +50,6 @@
 			</FrameLayout>
 
 			<FrameLayout
-				android:id="@+id/view_teacher_email_container"
 				android:layout_width="match_parent"
 				android:layout_height="48dp"
 				android:background="?android:selectableItemBackground"
@@ -60,16 +57,15 @@
 				android:visibility='@{teacher.email.length() &lt; 1 ? View.GONE : View.VISIBLE}'>
 
 				<ImageView
+					android:id="@+id/view_teacher_email_icon"
 					android:layout_width="48dp"
 					android:layout_height="48dp"
 					android:layout_marginStart="4dp"
 					android:scaleType="center"
 					android:src="@drawable/ic_mail_24dp"
-					android:id="@+id/view_teacher_email_icon"
 					android:transitionName="teacher_email_icon"/>
 
 				<TextView
-					android:id="@+id/view_teacher_email"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_gravity="center_vertical"
@@ -84,9 +80,9 @@
 		<android.support.design.widget.AppBarLayout
 			android:id="@+id/view_teacher_app_bar_layout"
 			android:layout_width="match_parent"
-			android:transitionName="@string/main_app_bar_layout_transition_name"
 			android:layout_height="wrap_content"
-			android:paddingTop="24dp">
+			android:paddingTop="24dp"
+			android:transitionName="@string/main_app_bar_layout_transition_name">
 
 			<Toolbar
 				android:id="@+id/view_teacher_toolbar"
@@ -116,16 +112,16 @@
 		</android.support.design.widget.AppBarLayout>
 
 		<android.support.design.widget.FloatingActionButton
+			android:id="@+id/edit_teacher"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:layout_marginEnd="16dp"
 			android:src="@drawable/ic_edit_24dp"
-			android:id="@+id/edit_teacher"
 			android:tint="@color/material_white"
 			android:visibility="gone"
-			android:layout_marginEnd="16dp"
+			app:fabSize="mini"
 			app:layout_anchor="@id/view_teacher_app_bar_layout"
-			app:layout_anchorGravity="bottom|end"
-			app:fabSize="mini"/>
+			app:layout_anchorGravity="bottom|end" />
 
 	</android.support.design.widget.CoordinatorLayout>
 </layout>
