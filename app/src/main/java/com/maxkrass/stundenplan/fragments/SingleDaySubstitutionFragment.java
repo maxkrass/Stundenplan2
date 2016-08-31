@@ -5,12 +5,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.maxkrass.stundenplan.adapter.SingleDaySubstitutionRecyclerViewAdapter;
@@ -80,7 +81,7 @@ public class SingleDaySubstitutionFragment extends Fragment {
 			mRecyclerView.setAdapter(new SingleDaySubstitutionRecyclerViewAdapter(getActivity(), mEvents, mSubstitutionSubjectsRef));
 			//mProgressBar.setVisibility(View.INVISIBLE);
 		}
-		mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+		mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 		mRecyclerView.addItemDecoration(new EqualSpaceItemDecoration((int) Tools.getPixels(4, getContext())));
 		mRecyclerView.setHasFixedSize(true);
 		return mRecyclerView;
@@ -135,7 +136,7 @@ public class SingleDaySubstitutionFragment extends Fragment {
 					for (int i = 0; i < element.childNodeSize(); i++) {
 						switch (i) {
 							case 0:
-								event.setGrade(SubstitutionEvent.Grade.valueOf(element.child(i).ownText().replaceAll("&nbsp;", "").replaceAll("\\s+", " ").trim()));
+								event.setGrade(SubstitutionEvent.Grade.valueOf(element.child(i).ownText().replaceAll("&nbsp;", "").replaceAll("\\s+", " ").trim().toUpperCase()));
 								break;
 							case 1:
 								event.setPeriod((element.child(i).ownText().substring(0, 1)));
@@ -145,7 +146,7 @@ public class SingleDaySubstitutionFragment extends Fragment {
 								if (struckSubject.startsWith("<strike>")) {
 									struckSubject = struckSubject.replace("<strike>", "").replace("</strike>", "");
 								}
-								event.setSubject(struckSubject.replaceAll("&nbsp;", "").replaceAll("\\s+", " ").replaceAll("&nbsp;", "").replaceAll("\\s+", " ").trim());
+								event.setSubject(struckSubject.replaceAll("&nbsp;", "").replaceAll("\\s+", " ").replaceAll("&nbsp;", "").replaceAll("\\s+", " ").trim().toUpperCase());
 								break;
 							case 3:
 								event.setType(SubstitutionEvent.SubstitutionType.getTypeByString(element.child(i).ownText().replaceAll("&nbsp;", "").replaceAll("\\s+", " ").replaceAll("&nbsp;", "").replaceAll("\\s+", " ").trim()));
@@ -178,6 +179,7 @@ public class SingleDaySubstitutionFragment extends Fragment {
 				return events;
 			} catch (IOException e) {
 				e.printStackTrace();
+				FirebaseCrash.log("HTML Parsing Error for day: " + getArguments().getInt("day"));
 				return new ArrayList<>();
 			}
 		}

@@ -13,21 +13,20 @@ import java.util.HashMap;
 
 public class Teacher implements Observable, Comparable<Teacher>, Serializable {
 	private           String                   teacherName;
-	private           String                   phone;
-	private           String                   email;
+
+	private           String                   contraction;
 	private           HashMap<String, Boolean> subjects;
 	@Exclude
 	private transient PropertyChangeRegistry   mCallbacks;
 
 
 	public Teacher() {
-		this("", "", "");
+		this("", "");
 	}
 
-	public Teacher(String name, String phone, String email) {
+	public Teacher(String name, String contraction) {
 		this.teacherName = name;
-		this.phone = phone;
-		this.email = email;
+		this.contraction = contraction;
 	}
 
 	public HashMap<String, Boolean> getSubjects() {
@@ -36,6 +35,14 @@ public class Teacher implements Observable, Comparable<Teacher>, Serializable {
 
 	public void setSubjects(HashMap<String, Boolean> subjects) {
 		this.subjects = subjects;
+	}
+
+	public String getContraction() {
+		return contraction;
+	}
+
+	public void setContraction(String contraction) {
+		this.contraction = contraction;
 	}
 
 	@Bindable
@@ -49,31 +56,15 @@ public class Teacher implements Observable, Comparable<Teacher>, Serializable {
 	}
 
 	@Bindable
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-		notifyPropertyChanged(BR.phone);
-	}
-
-	@Bindable
 	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-		notifyPropertyChanged(BR.email);
+		return contraction.toLowerCase() + "@max-planck.com";
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		return o instanceof Teacher
 				&& ((Teacher) o).getTeacherName().equals(getTeacherName())
-				&& ((Teacher) o).getEmail().equals(getEmail())
-				&& ((Teacher) o).getPhone().equals(getPhone());
+				&& ((Teacher) o).getContraction().equals(getContraction());
 	}
 
 	@Override

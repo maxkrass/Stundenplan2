@@ -9,6 +9,7 @@ import android.util.Pair;
 import android.view.View;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.maxkrass.stundenplan.R;
 import com.maxkrass.stundenplan.activities.ViewTeacherActivity;
@@ -28,6 +29,11 @@ public class FirebaseTeacherAdapter extends FirebaseRecyclerAdapter<Teacher, Fir
 	public FirebaseTeacherAdapter(Class<Teacher> modelClass, Class<TeacherViewHolder> viewHolderClass, DatabaseReference ref, ManageTeachersFragment fragment) {
 		super(modelClass, R.layout.teacher_view, viewHolderClass, ref);
 		this.fragment = fragment;
+	}
+
+	@Override
+	protected Teacher parseSnapshot(DataSnapshot snapshot) {
+		return new Teacher(snapshot.getKey(), snapshot.getKey());
 	}
 
 	@Override
@@ -70,9 +76,6 @@ public class FirebaseTeacherAdapter extends FirebaseRecyclerAdapter<Teacher, Fir
 				ArrayList<Pair> elements = new ArrayList<>();
 				elements.add(new Pair<>(binding.teacherName, "teacher_name"));
 				elements.add(new Pair<>(fragment.getActivity().findViewById(R.id.main_app_bar_layout), fragment.getString(R.string.main_app_bar_layout_transition_name)));
-				if (binding.callTeacher.getVisibility() != View.GONE) {
-					elements.add(new Pair<>(binding.callTeacher, "teacher_phone_icon"));
-				}
 				if (binding.emailTeacher.getVisibility() != View.GONE) {
 					elements.add(new Pair<>(binding.emailTeacher, "teacher_email_icon"));
 				}

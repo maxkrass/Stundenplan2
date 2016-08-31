@@ -1,11 +1,14 @@
 package com.maxkrass.stundenplan.activities;
 
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,12 +36,21 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
 	private final        String SETTINGS_FRAGMENT_TAG = "settings_fragment";
 	private final        String MANAGE_SUBJECTS_TAG   = "manage_subjects_fragment";
 	public  TabLayout                      tabLayout;
+	int width;
 	private String                         lastFragmentTag;
 	private Toolbar                        toolbar;
 	private Drawer                         result;
 	private FirebaseAuth                   mFirebaseAuth;
 	private FirebaseAuth.AuthStateListener mAuthListener;
 	private FirebaseUser                   user;
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		if (width <= 480) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		}
+	}
 
 	@Override
 	protected void onStart() {
@@ -62,6 +74,11 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Display display = getWindowManager().getDefaultDisplay();
+		width = display.getWidth();
+		if (width <= 480) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		}
 		ActivityMainBinding activityMainBinding = DataBindingUtil.setContentView(MainActivity.this, R.layout.activity_main);
 		activityMainBinding.mainAppBarLayout.setPadding(0, Tools.getStatusBarHeight(MainActivity.this), 0, 0);
 		toolbar = activityMainBinding.mainToolbar;

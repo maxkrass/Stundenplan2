@@ -16,6 +16,7 @@ import com.maxkrass.stundenplan.activities.CreateLessonActivity;
 import com.maxkrass.stundenplan.databinding.LessonCardBinding;
 import com.maxkrass.stundenplan.objects.Lesson;
 import com.maxkrass.stundenplan.objects.Period;
+import com.maxkrass.stundenplan.objects.Subject;
 import com.maxkrass.stundenplan.objects.Weekday;
 import com.maxkrass.stundenplan.tools.Tools;
 
@@ -54,24 +55,26 @@ public class CustomFirebaseLessonAdapter {
 		mSnapshots = new CustomFirebaseArray(ref);
 		mSnapshots.setOnChangedListener(new CustomFirebaseArray.OnChangedListener() {
 			@Override
-			public void onChanged(HashMap<Integer, Lesson> lessons) {
+			public void onChanged(HashMap<Integer, Lesson> lessons, HashMap<String, Subject> subjects) {
 				mColumn.removeAllViews();
 				originalMeasurements.clear();
 				for (HashMap.Entry<Integer, Lesson> entry : lessons.entrySet()) {
-					if (!isSucceedingLesson(entry.getValue())) addLesson(entry.getValue());
+					if (!isSucceedingLesson(entry.getValue()))
+						addLesson(entry.getValue(), subjects.get(entry.getValue().getSubject()));
 				}
 			}
 		});
 	}
 
-	private void addLesson(final Lesson l) {
+	private void addLesson(final Lesson l, final Subject s) {
 		LessonCardBinding lessonCardBinding = LessonCardBinding.inflate(mActivity.getLayoutInflater());
 
 		CardView lesson = (CardView) lessonCardBinding.getRoot();
 
 		lessonCardBinding.setLesson(l);
+		lessonCardBinding.setSubject(s);
 
-		String color = l.getSubject().getColor();
+		String color = s.getColor();
 
 		if (color.equals("#FFFFFF") || color.equals("#FFEB3B")) {
 			lessonCardBinding.subjectAbbrLabel.setTextColor(0xDE000000);
@@ -102,7 +105,7 @@ public class CustomFirebaseLessonAdapter {
 			@Override
 			public void onClick(View v) {
 				new AlertDialog.Builder(mActivity)
-						.setTitle(l.getSubject().getName())
+						.setTitle(s.getName())
 						.setItems(new CharSequence[]{"Edit", "Delete"}, new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {

@@ -33,7 +33,7 @@ public class TeacherRepository implements TeacherDataSource {
 	public void saveTeacher(@NonNull String teacherName, String teacherPhone, String teacherEmail, OnCompleteListener<Void> listener) {
 		mTeacherRef
 				.child(teacherName)
-				.setValue(new Teacher(teacherName, teacherPhone, teacherEmail))
+				.setValue(new Teacher(teacherName, teacherEmail.substring(0, teacherEmail.indexOf("@"))))
 				.addOnCompleteListener(listener);
 	}
 
@@ -47,7 +47,7 @@ public class TeacherRepository implements TeacherDataSource {
 
 		mTeacherRef
 				.child(teacherName)
-				.setValue(new Teacher(teacherName, teacherPhone, teacherEmail))
+				.setValue(new Teacher(teacherName, teacherEmail.substring(0, teacherEmail.indexOf("@"))))
 				.addOnCompleteListener(listener);
 	}
 

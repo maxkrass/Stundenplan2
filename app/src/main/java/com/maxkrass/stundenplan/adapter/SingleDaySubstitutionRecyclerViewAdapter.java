@@ -6,18 +6,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.GenericTypeIndicator;
-import com.google.firebase.database.ValueEventListener;
 import com.maxkrass.stundenplan.R;
 import com.maxkrass.stundenplan.databinding.SubstitutionGridItemBinding;
 import com.maxkrass.stundenplan.objects.SubstitutionEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -35,20 +30,20 @@ public class SingleDaySubstitutionRecyclerViewAdapter extends RecyclerView.Adapt
 		mActivity = activity;
 		mEvents = events;
 		mSubstitutionSubjectsRef = substitutionSubjectsRef;
-		mSubstitutionSubjectsRef.addValueEventListener(new ValueEventListener() {
-			@Override
-			public void onDataChange(DataSnapshot dataSnapshot) {
-				HashMap<String, Boolean> hashMap = dataSnapshot.getValue(new GenericTypeIndicator<HashMap<String, Boolean>>() {
-				});
-				if (hashMap != null) mSubstitutionSubjects = hashMap.keySet();
-				else mSubstitutionSubjects = new HashSet<>();
-			}
-
-			@Override
-			public void onCancelled(DatabaseError databaseError) {
-
-			}
-		});
+		//mSubstitutionSubjectsRef.addValueEventListener(new ValueEventListener() {
+		//	@Override
+		//	public void onDataChange(DataSnapshot dataSnapshot) {
+		//		HashMap<String, Boolean> hashMap = dataSnapshot.getValue(new GenericTypeIndicator<HashMap<String, Boolean>>() {
+		//		});
+		//		if (hashMap != null) mSubstitutionSubjects = hashMap.keySet();
+		//		else mSubstitutionSubjects = new HashSet<>();
+		//	}
+//
+		//	@Override
+		//	public void onCancelled(DatabaseError databaseError) {
+//
+		//	}
+		//});
 	}
 
 	@Override

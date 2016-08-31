@@ -5,7 +5,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.maxkrass.stundenplan.objects.Lesson;
-import com.maxkrass.stundenplan.objects.Subject;
 import com.maxkrass.stundenplan.objects.Weekday;
 
 /**
@@ -32,7 +31,7 @@ public class LessonRepository {
 		mLessonRef.child(weekday.toString()).addListenerForSingleValueEvent(listener);
 	}
 
-	public void createLesson(Subject subject, Weekday weekday, Integer period, String location, boolean doublePeriod, OnCompleteListener<Void> listener) {
+	public void createLesson(String subject, Weekday weekday, Integer period, String location, boolean doublePeriod, OnCompleteListener<Void> listener) {
 		mLessonRef.child(weekday.toString())
 				.child(period.toString())
 				.setValue(new Lesson(subject, period, weekday.toString(), location))
@@ -48,7 +47,7 @@ public class LessonRepository {
 		//TODO addLessonToSubject
 	}
 
-	public void updateLesson(Subject subject, Weekday oldWeekday, Weekday newWeekday, Integer oldPeriod, Integer newPeriod, String location, boolean wasDoublePeriod, boolean isDoublePeriod, OnCompleteListener<Void> listener) {
+	public void updateLesson(String subject, Weekday oldWeekday, Weekday newWeekday, Integer oldPeriod, Integer newPeriod, String location, boolean wasDoublePeriod, boolean isDoublePeriod, OnCompleteListener<Void> listener) {
 		mLessonRef
 				.child(oldWeekday.toString())
 				.child(String.valueOf(oldPeriod))
@@ -76,4 +75,7 @@ public class LessonRepository {
 		//TODO addLessonToSubject
 	}
 
+	public void getSubject(String subjectName, ValueEventListener listener) {
+		mLessonRef.getParent().child("subjects").child(subjectName).addListenerForSingleValueEvent(listener);
+	}
 }

@@ -5,6 +5,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.maxkrass.stundenplan.objects.Lesson;
+import com.maxkrass.stundenplan.objects.Subject;
 
 import java.util.HashMap;
 
@@ -46,6 +47,10 @@ class CustomFirebaseArray implements ValueEventListener {
 		return null;
 	}
 
+	public void setOnChangedListener(OnChangedListener listener) {
+		mListener = listener;
+	}
+
 	public void onDataChange(DataSnapshot dataSnapshot) {
 		mLessons = new HashMap<>();
 		if (dataSnapshot.exists() && dataSnapshot.hasChildren()) {
@@ -53,25 +58,39 @@ class CustomFirebaseArray implements ValueEventListener {
 				Lesson lesson = child.getValue(Lesson.class);
 				mLessons.put(lesson.getPeriod(), lesson);
 			}
-			notifyChangedListeners();
+			mLessonQuery.getRef().getParent().getParent().child("subjects").addListenerForSingleValueEvent(new ValueEventListener() {
+				@Override
+				public void onDataChange(DataSnapshot dataSnapshot) {
+					HashMap<String, Subject> mSubjects = new HashMap<>();
+					if (dataSnapshot.exists() && dataSnapshot.hasChildren()) {
+						for (DataSnapshot child : dataSnapshot.getChildren()) {
+							Subject subject = child.getValue(Subject.class);
+							mSubjects.put(subject.getName(), subject);
+						}
+					}
+					notifyChangedListeners(mSubjects);
+				}
+
+				@Override
+				public void onCancelled(DatabaseError databaseError) {
+
+				}
+			});
+		}
+	}
+
+	private void notifyChangedListeners(HashMap<String, Subject> subjects) {
+		if (mListener != null) {
+			mListener.onChanged(mLessons, subjects);
 		}
 	}
 
 	public void onCancelled(DatabaseError firebaseError) {
 	}
 
-	public void setOnChangedListener(OnChangedListener listener) {
-		mListener = listener;
-	}
-
-	private void notifyChangedListeners() {
-		if (mListener != null) {
-			mListener.onChanged(mLessons);
-		}
-	}
-
 	public interface OnChangedListener {
-		void onChanged(HashMap<Integer, Lesson> lessons);
+		void onChanged(HashMap<Integer, Lesson> lessons, HashMap<String, Subject> subjects);
 	}
+
 
 }

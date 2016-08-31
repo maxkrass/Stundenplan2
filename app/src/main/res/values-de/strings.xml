@@ -45,4 +45,5 @@
 	<string name="select_teacher">Wähle eine Lehrperson aus…</string>
 	<string name="new_teacher">Neue Lehrperson</string>
 	<string name="new_subject">Neues Fach</string>
+	<string name="subject_name_invalid">Das Fach braucht einen Namen</string>
 </resources>

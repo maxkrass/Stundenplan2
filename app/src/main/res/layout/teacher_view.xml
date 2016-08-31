@@ -30,19 +30,6 @@
 			android:transitionName="teacher_name"/>
 
 		<ImageView
-			android:id="@+id/call_teacher"
-			android:layout_width="48dp"
-			android:layout_height="48dp"
-			android:layout_gravity="center_vertical"
-			android:background="?android:selectableItemBackgroundBorderless"
-			android:clickable="true"
-			android:focusable="true"
-			android:scaleType="center"
-			android:src="@drawable/ic_call_24dp"
-			android:transitionName="teacher_phone_icon"
-			android:visibility='@{teacher.phone.equals("") ? View.GONE : View.VISIBLE}'/>
-
-		<ImageView
 			android:id="@+id/email_teacher"
 			android:layout_width="48dp"
 			android:layout_height="48dp"

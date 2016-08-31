@@ -113,11 +113,9 @@ public class CreateLessonFragment extends Fragment implements CreateLessonContra
 
 	@Override
 	public void showLesson(Lesson lesson, Boolean doublePeriod) {
+		mPresenter.loadSubject(lesson.getSubject());
 		binding.setLesson(lesson);
-		selectedSubject = lesson.getSubject();
-		subjectName.setText(lesson.getSubject().getName());
 		subjectColor.setVisibility(View.VISIBLE);
-		((GradientDrawable) subjectColor.getBackground()).setColor(Color.parseColor(lesson.getSubject().getColor()));
 		lessonWeekday.setSelection(Weekday.valueOf(lesson.getWeekday().toUpperCase()).ordinal());
 		lessonPeriod.setSelection(lesson.getPeriod());
 		lessonRoom.setText(lesson.getLocation());
@@ -136,6 +134,14 @@ public class CreateLessonFragment extends Fragment implements CreateLessonContra
 	}
 
 	@Override
+	public void showSubject(Subject subject) {
+		selectedSubject = subject;
+		subjectName.setText(subject.getName());
+		((GradientDrawable) subjectColor.getBackground()).setColor(Color.parseColor(subject.getColor()));
+
+	}
+
+	@Override
 	public void setPresenter(CreateLessonContract.Presenter presenter) {
 		mPresenter = presenter;
 	}
@@ -147,7 +153,7 @@ public class CreateLessonFragment extends Fragment implements CreateLessonContra
 	@Override
 	public void onClick(View v) {
 		mPresenter.validateLesson(
-				selectedSubject,
+				selectedSubject.getName(),
 				lessonPeriod.getSelectedItemPosition(),
 				lessonRoom.getText().toString(),
 				Weekday.values()[lessonWeekday.getSelectedItemPosition()],

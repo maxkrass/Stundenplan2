@@ -42,23 +42,23 @@ public class CreateSubjectFragment extends Fragment implements View.OnClickListe
 
 	@Override
 	public void nameInvalid() {
-		((TextInputLayout) binding.subjectName.getParent()).setError("The name can't be empty");
+		((TextInputLayout) binding.subjectName.getParent().getParent()).setError(getString(R.string.subject_name_invalid));
 	}
 
 	@Override
 	public void subjectAlreadyExists() {
-		((TextInputLayout) binding.subjectName.getParent()).setError("You already created this subject");
+		((TextInputLayout) binding.subjectName.getParent().getParent()).setError("You already created this subject");
 	}
 
 	@Override
 	public void abbreviationInvalid() {
-		((TextInputLayout) binding.subjectAbbr.getParent()).setError("I need an abbreviation");
+		((TextInputLayout) binding.subjectAbbr.getParent().getParent()).setError("I need an abbreviation");
 	}
 
 	@Override
 	public void removeErrors() {
-		((TextInputLayout) binding.subjectName.getParent()).setError("");
-		((TextInputLayout) binding.subjectAbbr.getParent()).setError("");
+		((TextInputLayout) binding.subjectName.getParent().getParent()).setError("");
+		((TextInputLayout) binding.subjectAbbr.getParent().getParent()).setError("");
 	}
 
 	@Override

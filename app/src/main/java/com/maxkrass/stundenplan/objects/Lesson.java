@@ -7,10 +7,10 @@ import com.google.firebase.database.Exclude;
 import java.util.Locale;
 
 public class Lesson implements Comparable<Lesson> {
-	private Subject subject;
-	private String  weekday;
-	private String  location;
-	private int     period;
+	private String subject;
+	private String weekday;
+	private String location;
+	private int    period;
 
 	@Exclude
 	private transient boolean showRoomLabel = true;
@@ -18,7 +18,7 @@ public class Lesson implements Comparable<Lesson> {
 	public Lesson() {
 	}
 
-	public Lesson(Subject subject, int period, String weekday, String location) {
+	public Lesson(String subject, int period, String weekday, String location) {
 		this.subject = subject;
 		this.period = period;
 		this.weekday = weekday;
@@ -33,11 +33,11 @@ public class Lesson implements Comparable<Lesson> {
 		this.showRoomLabel = showRoomLabel;
 	}
 
-	public Subject getSubject() {
+	public String getSubject() {
 		return subject;
 	}
 
-	public void setSubject(Subject subject) {
+	public void setSubject(String subject) {
 		this.subject = subject;
 	}
 

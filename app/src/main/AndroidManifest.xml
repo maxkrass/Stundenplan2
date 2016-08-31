@@ -45,7 +45,6 @@
 			</intent-filter>
 		</activity>
 		<activity android:name=".activities.CreateSubjectActivity" />
-		<activity android:name=".activities.CreateTeacherActivity" />
 		<activity
 			android:name=".activities.ViewTeacherActivity"
 			android:theme="@style/AppTheme.ViewTeacher" />

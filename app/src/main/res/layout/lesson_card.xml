@@ -9,6 +9,10 @@
 		<variable
 			name="lesson"
 			type="com.maxkrass.stundenplan.objects.Lesson" />
+
+		<variable
+			name="subject"
+			type="com.maxkrass.stundenplan.objects.Subject" />
 	</data>
 
 	<android.support.v7.widget.CardView
@@ -19,7 +23,7 @@
 		android:clickable="true"
 		android:focusable="true"
 		android:foreground="?android:attr/selectableItemBackground"
-		card_view:cardBackgroundColor="@{Color.parseColor(lesson.subject.color)}"
+		card_view:cardBackgroundColor="@{Color.parseColor(subject.color)}"
 		card_view:cardCornerRadius="2dp"
 		card_view:cardElevation="2dp">
 
@@ -33,7 +37,7 @@
 				android:id="@+id/subject_abbr_label"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="@{lesson.subject.abbreviation}"
+				android:text="@{subject.abbreviation}"
 				android:textAppearance="@style/TextAppearance.AppCompat.Medium"
 				android:textColor='#fff'/>
 

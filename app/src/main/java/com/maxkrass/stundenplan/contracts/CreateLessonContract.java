@@ -17,10 +17,14 @@ public class CreateLessonContract {
 		void showError(String error);
 
 		void exitCreateDialog();
+
+		void showSubject(Subject subject);
 	}
 
 	public interface Presenter extends BasePresenter {
-		void validateLesson(Subject subject, Integer period, String location, Weekday weekday, boolean doublePeriod);
+		void validateLesson(String subject, Integer period, String location, Weekday weekday, boolean doublePeriod);
+
+		void loadSubject(String subjectName);
 	}
 
 }

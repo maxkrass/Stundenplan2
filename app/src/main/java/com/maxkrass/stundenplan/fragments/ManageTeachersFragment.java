@@ -2,7 +2,6 @@ package com.maxkrass.stundenplan.fragments;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,12 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.maxkrass.stundenplan.R;
-import com.maxkrass.stundenplan.activities.CreateTeacherActivity;
 import com.maxkrass.stundenplan.adapter.FirebaseTeacherAdapter;
 import com.maxkrass.stundenplan.databinding.FragmentManageTeachersBinding;
 import com.maxkrass.stundenplan.objects.Teacher;
@@ -28,7 +24,7 @@ import com.maxkrass.stundenplan.objects.Teacher;
 /**
  * Max made this for Stundenplan2 on 10.07.2016.
  */
-public class ManageTeachersFragment extends Fragment implements View.OnClickListener {
+public class ManageTeachersFragment extends Fragment {
 	public  boolean                                                                    mSelect;
 	public  OnTeacherChosenListener                                                    mOnTeacherChosenListener;
 	private RecyclerView                                                               recyclerView;
@@ -46,14 +42,12 @@ public class ManageTeachersFragment extends Fragment implements View.OnClickList
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		FragmentManageTeachersBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_manage_teachers, container, false);
-		binding.addTeacher.setOnClickListener(this);
+		// TODO Add a select from these public teachers binding.addTeacher.setOnClickListener(this);
 		if (getArguments() != null) {
 			mSelect = getArguments().getBoolean("select");
 		}
-		FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-		if (user == null) throw new RuntimeException("User mustn't be null");
 		mTeacherRef = FirebaseDatabase.getInstance()
-				.getReference("users").child(user.getUid()).child("teachers");
+				.getReference("stundenplan").child("publicTeachers");
 		if (mSelect) {
 			try {
 				mOnTeacherChosenListener = (OnTeacherChosenListener) getActivity();
@@ -99,11 +93,6 @@ public class ManageTeachersFragment extends Fragment implements View.OnClickList
 		recyclerView.setAdapter(teachersAdapter);
 	}
 
-	@Override
-	public void onClick(View v) {
-		startActivity(new Intent(getActivity(), CreateTeacherActivity.class));
-	}
-
 	public void showLongClickDialog(final Teacher teacher) {
 		new AlertDialog.Builder(getActivity())
 				.setTitle(teacher.getTeacherName())
@@ -112,10 +101,6 @@ public class ManageTeachersFragment extends Fragment implements View.OnClickList
 					public void onClick(DialogInterface dialog, int which) {
 						switch (which) {
 							case 0:
-								Intent intent = new Intent(getActivity(), CreateTeacherActivity.class);
-								intent.putExtra("teacherKey", teacher.getTeacherName());
-								startActivity(intent);
-								dialog.dismiss();
 								break;
 							case 1:
 								Snackbar.make(recyclerView, teacher.getTeacherName() + " deleted", Snackbar.LENGTH_LONG)

@@ -42,7 +42,7 @@ public class CreateLessonPresenter implements CreateLessonContract.Presenter, Va
 	}
 
 	@Override
-	public void validateLesson(final Subject subject, final Integer period, final String location, final Weekday weekday, final boolean doublePeriod) {
+	public void validateLesson(final String subject, final Integer period, final String location, final Weekday weekday, final boolean doublePeriod) {
 		if (subject == null) {
 			mCreateLessonView.showError("You must select a Subject");
 		} else {
@@ -76,7 +76,22 @@ public class CreateLessonPresenter implements CreateLessonContract.Presenter, Va
 		}
 	}
 
-	private void saveLesson(Subject subject, Integer period, String location, Weekday weekday, boolean doublePeriod) {
+	@Override
+	public void loadSubject(String subjectName) {
+		mLessonRepository.getSubject(subjectName, new ValueEventListener() {
+			@Override
+			public void onDataChange(DataSnapshot dataSnapshot) {
+				mCreateLessonView.showSubject(dataSnapshot.getValue(Subject.class));
+			}
+
+			@Override
+			public void onCancelled(DatabaseError databaseError) {
+
+			}
+		});
+	}
+
+	private void saveLesson(String subject, Integer period, String location, Weekday weekday, boolean doublePeriod) {
 		OnCompleteListener<Void> listener = new OnCompleteListener<Void>() {
 			@Override
 			public void onComplete(@NonNull Task<Void> task) {

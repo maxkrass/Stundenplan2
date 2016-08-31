@@ -3,7 +3,6 @@
 	<transitionSet>
 		<targets>
 			<target android:targetId="@id/view_teacher_email_icon" />
-			<target android:targetId="@id/view_teacher_phone_icon" />
 			<target android:targetId="@+id/view_teacher_app_bar_layout" />
 		</targets>
 		<changeBounds>

@@ -28,7 +28,7 @@ public class CreateTeacherContract {
 
 	public interface Presenter extends BasePresenter {
 
-		void validateTeacher(String name, String email, String phone);
+		void validateTeacher(String name, String email);
 
 	}
 

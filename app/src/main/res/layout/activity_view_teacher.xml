@@ -27,33 +27,6 @@
 				android:layout_height="48dp"
 				android:background="?android:selectableItemBackground"
 				android:clickable="true"
-				android:visibility='@{teacher.phone.length() &lt; 1 ? View.GONE : View.VISIBLE}'>
-
-				<ImageView
-					android:id="@+id/view_teacher_phone_icon"
-					android:layout_width="48dp"
-					android:layout_height="48dp"
-					android:layout_gravity="center_vertical"
-					android:layout_marginStart="4dp"
-					android:scaleType="center"
-					android:src="@drawable/ic_call_24dp"
-					android:transitionName="teacher_phone_icon"/>
-
-				<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_gravity="center_vertical"
-					android:layout_marginStart="72dp"
-					android:text="@{teacher.phone}"
-					android:textSize="16sp"/>
-
-			</FrameLayout>
-
-			<FrameLayout
-				android:layout_width="match_parent"
-				android:layout_height="48dp"
-				android:background="?android:selectableItemBackground"
-				android:clickable="true"
 				android:visibility='@{teacher.email.length() &lt; 1 ? View.GONE : View.VISIBLE}'>
 
 				<ImageView
