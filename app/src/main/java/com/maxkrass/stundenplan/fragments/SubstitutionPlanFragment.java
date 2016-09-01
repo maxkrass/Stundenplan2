@@ -47,6 +47,7 @@ public class SubstitutionPlanFragment extends Fragment {
 		ViewPager viewPager = binding.substitutionPlanViewPager;
 		TabLayout tabLayout = mActivity.tabLayout;
 		viewPager.setAdapter(new SubstitutionPlanPagerAdapter(getChildFragmentManager(), getArguments().getString("uId")));
+		viewPager.setOffscreenPageLimit(2);
 		tabLayout.setupWithViewPager(viewPager);
 
 		return viewPager;

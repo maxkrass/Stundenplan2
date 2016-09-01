@@ -13,8 +13,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,15 +41,11 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final FragmentSettingsBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_settings, container, false);
-		FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-		assert user != null;
-		String uId = user.getUid();
 		mPeriodRef = FirebaseDatabase
 				.getInstance()
 				.getReference()
-				.child("users")
-				.child(uId)
-				.child("periods");
+				.child("stundenplan")
+				.child("publicPeriods");
 		mPeriodRef.addValueEventListener(new ValueEventListener() {
 			@Override
 			public void onDataChange(DataSnapshot dataSnapshot) {
@@ -142,7 +136,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
 				period.setEndHour(hourOfDay);
 				period.setEndMinute(minute);
 			}
-			mPeriodRef.child(String.valueOf(period.getIndex())).setValue(period);
+			//mPeriodRef.child(String.valueOf(period.getIndex())).setValue(period);
 		}
 	}
 }

@@ -15,10 +15,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.maxkrass.stundenplan.R;
 import com.maxkrass.stundenplan.databinding.ActivityMainBinding;
+import com.maxkrass.stundenplan.fragments.GradeCalculatorFragment;
 import com.maxkrass.stundenplan.fragments.MainActivityFragment;
 import com.maxkrass.stundenplan.fragments.ManageSubjectsFragment;
 import com.maxkrass.stundenplan.fragments.ManageTeachersFragment;
-import com.maxkrass.stundenplan.fragments.SettingsFragment;
 import com.maxkrass.stundenplan.fragments.SubstitutionPlanFragment;
 import com.maxkrass.stundenplan.tools.Tools;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -30,6 +30,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemClickListener, SubstitutionPlanFragment.OnFragmentInteractionListener {
 
 	private static final String TAG                   = "MainActivity";
+	private static final String GRADE_CALCULATOR_TAG  = "grade_calculator_fragment";
 	private final        String MAIN_FRAGMENT_TAG     = "main_fragment";
 	private final        String SUBSTITUTION_PLAN_TAG = "substitution_plan_fragment";
 	private final        String MANAGE_TEACHERS_TAG   = "manage_teachers_fragment";
@@ -233,14 +234,22 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
 					lastFragmentTag = MANAGE_SUBJECTS_TAG;
 				}
 				break;
-			case R.id.drawer_settings_item:
+			case R.id.drawer_grade_calculator_item:
+				if (getSupportFragmentManager().findFragmentByTag(GRADE_CALCULATOR_TAG) == null) {
+					getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, GradeCalculatorFragment.newInstance(getUid()), GRADE_CALCULATOR_TAG).commit();
+					toolbar.setTitle(getString(R.string.grade_calculator));
+					tabLayout.setVisibility(View.GONE);
+					lastFragmentTag = GRADE_CALCULATOR_TAG;
+				}
+				break;
+			/*case R.id.drawer_settings_item:
 				if (getSupportFragmentManager().findFragmentByTag(SETTINGS_FRAGMENT_TAG) == null) {
 					getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new SettingsFragment(), SETTINGS_FRAGMENT_TAG).commit();
 					toolbar.setTitle("Einstellungen");
 					tabLayout.setVisibility(View.GONE);
 					lastFragmentTag = SETTINGS_FRAGMENT_TAG;
 				}
-				break;
+				break;*/
 		}
 		result.closeDrawer();
 		return true;

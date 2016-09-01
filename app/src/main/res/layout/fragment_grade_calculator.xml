@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:layout_gravity="end|center_vertical"
+	android:orientation="vertical">
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="50dp">
+
+		<TextView
+			android:id="@+id/punkteD"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentStart="true"
+			android:layout_centerVertical="true"
+			android:layout_marginStart="10dp"
+			android:text="Punkte Ø: 0,00"
+			android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+		<TextView
+			android:id="@+id/notenD"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerVertical="true"
+			android:layout_marginStart="20dp"
+			android:layout_toEndOf="@+id/punkteD"
+			android:text="Noten Ø: 0,00"
+			android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+	</RelativeLayout>
+
+	<View
+		android:layout_width="match_parent"
+		android:layout_height="1dp"
+		android:background="@color/grey600" />
+
+	<TableLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="7dp"
+		android:shrinkColumns="*"
+		android:stretchColumns="*">
+
+		<TableRow
+			android:id="@+id/tableRow1"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content">
+
+			<TextView
+				android:id="@+id/textView1"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="end|center_vertical"
+				android:singleLine="true"
+				android:text="Sehr Gut" />
+
+			<Button
+				android:id="@+id/b15"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="15" />
+
+			<Button
+				android:id="@+id/b14"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="14" />
+
+			<Button
+				android:id="@+id/b13"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="13" />
+		</TableRow>
+
+		<View
+			android:layout_width="match_parent"
+			android:layout_height="1dp"
+			android:background="@color/grey600" />
+
+		<TableRow
+			android:id="@+id/tableRow2"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content">
+
+			<TextView
+				android:id="@+id/textView2"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="end|center_vertical"
+				android:singleLine="true"
+				android:text="Gut" />
+
+			<Button
+				android:id="@+id/b12"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="12" />
+
+			<Button
+				android:id="@+id/b11"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="11" />
+
+			<Button
+				android:id="@+id/b10"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/ten" />
+		</TableRow>
+
+		<View
+			android:layout_width="match_parent"
+			android:layout_height="1dp"
+			android:background="@color/grey600" />
+
+		<TableRow
+			android:id="@+id/tableRow3"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content">
+
+			<TextView
+				android:id="@+id/textView3"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="end|center_vertical"
+				android:singleLine="true"
+				android:text="Befriedigend" />
+
+			<Button
+				android:id="@+id/b9"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/nine" />
+
+			<Button
+				android:id="@+id/b8"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/eight" />
+
+			<Button
+				android:id="@+id/b7"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/seven" />
+		</TableRow>
+
+		<View
+			android:layout_width="match_parent"
+			android:layout_height="1dp"
+			android:background="@color/grey600" />
+
+		<TableRow
+			android:id="@+id/tableRow4"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content">
+
+			<TextView
+				android:id="@+id/textView4"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="end|center_vertical"
+				android:singleLine="true"
+				android:text="Ausreichend" />
+
+			<Button
+				android:id="@+id/b6"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/six" />
+
+			<Button
+				android:id="@+id/b5"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/five" />
+
+			<Button
+				android:id="@+id/b4"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/four" />
+		</TableRow>
+
+		<View
+			android:layout_width="match_parent"
+			android:layout_height="1dp"
+			android:background="@color/grey600" />
+
+		<TableRow
+			android:id="@+id/tableRow5"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content">
+
+			<TextView
+				android:id="@+id/textView5"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="end|center_vertical"
+				android:singleLine="true"
+				android:text="Mangelhaft" />
+
+			<Button
+				android:id="@+id/b3"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/three" />
+
+			<Button
+				android:id="@+id/b2"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/two" />
+
+			<Button
+				android:id="@+id/b1"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/one" />
+		</TableRow>
+
+		<View
+			android:layout_width="match_parent"
+			android:layout_height="1dp"
+			android:background="@color/grey600" />
+
+		<TableRow
+			android:id="@+id/tableRow6"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content">
+
+			<TextView
+				android:id="@+id/textView6"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="end|center_vertical"
+				android:singleLine="true"
+				android:text="Ungenügend" />
+
+			<Button
+				android:id="@+id/b0"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="0" />
+
+			<Button
+				android:id="@+id/bBack"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/grade_back" />
+
+			<Button
+				android:id="@+id/bDelete"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="X" />
+		</TableRow>
+	</TableLayout>
+
+	<View
+		android:layout_width="match_parent"
+		android:layout_height="1dp"
+		android:background="@color/grey600" />
+
+	<ScrollView
+		android:id="@+id/sview331"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="2dp">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
+
+			<TextView
+				android:id="@+id/notenListe"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="3dp"
+				android:text="[]" />
+
+			<View
+				android:layout_width="match_parent"
+				android:layout_height="1dp"
+				android:background="@color/grey600" />
+
+			<TextView
+				android:id="@+id/textView7"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:paddingStart="7dp"
+				android:paddingTop="4dp"
+				android:text="Deine Fächer:" />
+
+			<TextView
+				android:id="@+id/fachListeTxt"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="7dp"
+				android:text="" />
+		</LinearLayout>
+	</ScrollView>
+</LinearLayout>

@@ -72,9 +72,8 @@ public class MainActivityFragment extends Fragment implements View.OnClickListen
 		mPeriodRef = FirebaseDatabase
 				.getInstance()
 				.getReference()
-				.child("users")
-				.child(uId)
-				.child("periods");
+				.child("stundenplan")
+				.child("publicPeriods");
 		mLessonRef = FirebaseDatabase
 				.getInstance()
 				.getReference()
