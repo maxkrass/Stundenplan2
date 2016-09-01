@@ -127,7 +127,7 @@ public class LarsSingleDaySubstitutionFragment extends Fragment {
 								}
 								break;
 							case 7:
-								event.setAnnotation(element.child(i).ownText());
+								event.setAnnotation(element.child(i).ownText().replaceAll("&nbsp;", "").replaceAll("\\s+", " ").trim());
 						}
 					}
 					events.add(event);

@@ -7,6 +7,9 @@
     <color name="material_light_green">
         #8BC34A
     </color>
+    <color name="material_teal">
+        #009688
+    </color>
     <color name="material_grey">
         #9E9E9E
     </color>

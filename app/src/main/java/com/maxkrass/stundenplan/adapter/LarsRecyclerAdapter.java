@@ -36,7 +36,7 @@ public class LarsRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
 			return new RecyclerHeaderViewHolderKlasse(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_header, parent, false));
 		}
 		if (viewType == VIEWTYPE_ITEM) {
-			RecyclerRowBinding binding = RecyclerRowBinding.inflate(LayoutInflater.from(parent.getContext()));
+			RecyclerRowBinding binding = RecyclerRowBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
 			return new RecyclerItemViewHolderKlasse(binding.getRoot());
 		}
 		return null;
@@ -123,10 +123,11 @@ public class LarsRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
 					if (mySavedSubjects.containsKey(event.getSubject()) && mySavedSubjects.get(event.getSubject()).equals(event.getGrade()))
 						mySubjects.items.add(event);
 				}
-				mItemGroup.add(mySubjects);
-				mItemGroup.add(efSubs);
-				mItemGroup.add(q1Subs);
-				mItemGroup.add(q2Subs);
+				if (!mySubjects.items.isEmpty()) mItemGroup.add(mySubjects);
+				if (!efSubs.items.isEmpty()) mItemGroup.add(efSubs);
+				if (!q1Subs.items.isEmpty()) mItemGroup.add(q1Subs);
+				if (!q2Subs.items.isEmpty()) mItemGroup.add(q2Subs);
+				if (mItemGroup.isEmpty()) mItemGroup.add(new ItemGroup("keine Vertretungen"));
 			} catch (Exception e2) {
 				this.mItemGroup.clear();
 				e2.printStackTrace();

@@ -48,7 +48,7 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 		if (width <= 480) {
-			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		}
 	}
 
@@ -77,7 +77,7 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
 		Display display = getWindowManager().getDefaultDisplay();
 		width = display.getWidth();
 		if (width <= 480) {
-			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		}
 		ActivityMainBinding activityMainBinding = DataBindingUtil.setContentView(MainActivity.this, R.layout.activity_main);
 		activityMainBinding.mainAppBarLayout.setPadding(0, Tools.getStatusBarHeight(MainActivity.this), 0, 0);

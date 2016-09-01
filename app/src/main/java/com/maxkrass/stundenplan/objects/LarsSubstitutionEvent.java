@@ -3,6 +3,8 @@ package com.maxkrass.stundenplan.objects;
 import android.content.res.ColorStateList;
 import android.databinding.BindingConversion;
 
+import java.util.Objects;
+
 /**
  * Max made this for Stundenplan2 on 30.08.2016.
  */
@@ -70,8 +72,8 @@ public class LarsSubstitutionEvent {
 
 	public String getDisplayString() {
 		String s = period + " Std. " + oldTeacher + " " + subject + " " + type;
-		if (type.equals(SubstitutionType.LocationChange)) s = s.concat(" " + newLocation);
-		else if (type.equals(SubstitutionType.Substitution)) s = s.concat(" " + sub);
+		if (Objects.equals(type, SubstitutionType.LocationChange)) s = s.concat(" " + newLocation);
+		else if (Objects.equals(type, SubstitutionType.Substitution)) s = s.concat(" " + sub);
 		return s;
 	}
 
