@@ -27,7 +27,7 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemClickListener, SubstitutionPlanFragment.OnFragmentInteractionListener {
+public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemClickListener {
 
 	private static final String TAG                   = "MainActivity";
 	private static final String GRADE_CALCULATOR_TAG  = "grade_calculator_fragment";

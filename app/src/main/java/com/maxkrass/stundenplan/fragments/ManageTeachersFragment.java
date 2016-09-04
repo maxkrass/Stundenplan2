@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,10 +24,9 @@ import com.maxkrass.stundenplan.objects.Teacher;
  * Max made this for Stundenplan2 on 10.07.2016.
  */
 public class ManageTeachersFragment extends Fragment {
-	public  boolean                                                                    mSelect;
-	public  OnTeacherChosenListener                                                    mOnTeacherChosenListener;
-	private RecyclerView                                                               recyclerView;
-	private FirebaseRecyclerAdapter<Teacher, FirebaseTeacherAdapter.TeacherViewHolder> teachersAdapter;
+	public  boolean                 mSelect;
+	public  OnTeacherChosenListener mOnTeacherChosenListener;
+	private RecyclerView            recyclerView;
 
 	private DatabaseReference mTeacherRef;
 
@@ -42,7 +40,7 @@ public class ManageTeachersFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		FragmentManageTeachersBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_manage_teachers, container, false);
-		// TODO Add a select from these public teachers binding.addTeacher.setOnClickListener(this);
+		// TODO Add a suggest a new teacher binding.addTeacher.setOnClickListener(this);
 		if (getArguments() != null) {
 			mSelect = getArguments().getBoolean("select");
 		}
@@ -66,30 +64,13 @@ public class ManageTeachersFragment extends Fragment {
 	public void onStart() {
 		super.onStart();
 
-		teachersAdapter = new FirebaseTeacherAdapter(
+		FirebaseRecyclerAdapter<Teacher, FirebaseTeacherAdapter.TeacherViewHolder> teachersAdapter = new FirebaseTeacherAdapter(
 				Teacher.class,
 				FirebaseTeacherAdapter.TeacherViewHolder.class,
 				mTeacherRef,
 				this
 		);
 
-		teachersAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-			@Override
-			public void onItemRangeInserted(int positionStart, int itemCount) {
-				super.onItemRangeInserted(positionStart, itemCount);
-				int friendlyMessageCount = teachersAdapter.getItemCount();
-				int lastVisiblePosition =
-						((LinearLayoutManager) recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
-				// If the recycler view is initially being loaded or the
-				// user is at the bottom of the list, scroll to the bottom
-				// of the list to show the newly added message.
-				if (lastVisiblePosition == -1 ||
-						(positionStart >= (friendlyMessageCount - 1) &&
-								lastVisiblePosition == (positionStart - 1))) {
-					recyclerView.scrollToPosition(positionStart);
-				}
-			}
-		});
 		recyclerView.setAdapter(teachersAdapter);
 	}
 

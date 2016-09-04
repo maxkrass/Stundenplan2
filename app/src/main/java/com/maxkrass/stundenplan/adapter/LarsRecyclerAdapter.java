@@ -12,6 +12,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 import com.maxkrass.stundenplan.R;
 import com.maxkrass.stundenplan.databinding.RecyclerRowBinding;
 import com.maxkrass.stundenplan.objects.LarsSubstitutionEvent;
@@ -19,58 +25,55 @@ import com.maxkrass.stundenplan.objects.LarsSubstitutionEvent;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class LarsRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
-	private static final int VIEWTYPE_HEADER = 111;
-	private static final int VIEWTYPE_ITEM   = 222;
-	private int                  index;
-	private ArrayList<ItemGroup> mItemGroup;
+	private static final int VIEW_TYPE_HEADER = 111;
+	private static final int VIEW_TYPE_ITEM   = 222;
+	private ArrayList<ItemGroup>      mItemGroups;
+	private OnLoadingFinishedListener mListener;
 
-	public LarsRecyclerAdapter(int index) {
-		this.mItemGroup = new ArrayList<>();
-		this.index = index;
+	public LarsRecyclerAdapter(OnLoadingFinishedListener listener) {
+		mItemGroups = new ArrayList<>();
+		mListener = listener;
 	}
 
 	public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-		if (viewType == VIEWTYPE_HEADER) {
-			return new RecyclerHeaderViewHolderKlasse(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_header, parent, false));
+		if (viewType == VIEW_TYPE_HEADER) {
+			return new RecyclerHeaderViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_header, parent, false));
 		}
-		if (viewType == VIEWTYPE_ITEM) {
+		if (viewType == VIEW_TYPE_ITEM) {
 			RecyclerRowBinding binding = RecyclerRowBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-			return new RecyclerItemViewHolderKlasse(binding.getRoot());
+			return new RecyclerItemViewHolder(binding.getRoot());
 		}
 		return null;
 	}
 
 	public void onBindViewHolder(ViewHolder viewHolder, int position) {
 		int size = 0;
-		try {
-			for (ItemGroup g : this.mItemGroup) {
-				if (position == size) {
-					bindHeader((RecyclerHeaderViewHolderKlasse) viewHolder, g);
-					return;
-				}
-				size += g.getGroupSize();
-				if (position < size) {
-					bindItem((RecyclerItemViewHolderKlasse) viewHolder, g.items.get((g.getGroupSize() - 1) - (size - position)));
-					return;
-				}
+		for (ItemGroup g : mItemGroups) {
+			if (position == size) {
+				bindHeader((RecyclerHeaderViewHolder) viewHolder, g);
+				return;
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+			size += g.getGroupSize();
+			if (position < size) {
+				bindItem((RecyclerItemViewHolder) viewHolder, g.items.get((g.getGroupSize() - 1) - (size - position)));
+				return;
+			}
 		}
 	}
 
 	public int getItemViewType(int position) {
-		if (this.mItemGroup != null && position >= 0) {
+		if (this.mItemGroups != null && position >= 0) {
 			int size = 0;
-			for (ItemGroup group : this.mItemGroup) {
+			for (ItemGroup group : this.mItemGroups) {
 				if (position == size) {
-					return VIEWTYPE_HEADER;
+					return VIEW_TYPE_HEADER;
 				}
 				size += group.getGroupSize();
 				if (position < size) {
-					return VIEWTYPE_ITEM;
+					return VIEW_TYPE_ITEM;
 				}
 			}
 		}
@@ -78,62 +81,83 @@ public class LarsRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
 	}
 
 	public int getItemCount() {
-		if (mItemGroup == null || mItemGroup.isEmpty()) {
+		if (mItemGroups == null || mItemGroups.isEmpty()) {
 			return 0;
 		}
 		int size = 0;
-		for (ItemGroup itemGroup : mItemGroup) {
+		for (ItemGroup itemGroup : mItemGroups) {
 			size += itemGroup.getGroupSize();
 		}
 		return size;
 	}
 
-	private void bindItem(RecyclerItemViewHolderKlasse viewHolder, LarsSubstitutionEvent event) {
+	private void bindItem(RecyclerItemViewHolder viewHolder, LarsSubstitutionEvent event) {
 		viewHolder.binding.setEvent(event);
 		//TODO viewHolder.itemView.setOnClickListener(new C04981(headerText, dataList));
 	}
 
-	private void bindHeader(RecyclerHeaderViewHolderKlasse viewHolder, ItemGroup g) {
+	private void bindHeader(RecyclerHeaderViewHolder viewHolder, ItemGroup g) {
 		viewHolder.header.setText(g.headerText);
 	}
 
-	public void setNewContent(ArrayList<LarsSubstitutionEvent> list) {
+	public void setNewContent(final ArrayList<LarsSubstitutionEvent> list) {
 		//Map<String, Boolean> settings = MainActivity.settingsMap;
-		this.mItemGroup.clear();
+		this.mItemGroups.clear();
 		if (list != null) {
-			try {
-				//TODO get the real saved subjects
-				HashMap<String, LarsSubstitutionEvent.Grade> mySavedSubjects = new HashMap<>();
-				ItemGroup mySubjects = new ItemGroup("Meine Fächer");
-				ItemGroup efSubs = new ItemGroup("EF");
-				ItemGroup q1Subs = new ItemGroup("Q1");
-				ItemGroup q2Subs = new ItemGroup("Q2");
-				for (LarsSubstitutionEvent event : list) {
-					switch (event.getGrade()) {
-						case EF:
-							efSubs.items.add(event);
-							break;
-						case Q1:
-							q1Subs.items.add(event);
-							break;
-						case Q2:
-							q2Subs.items.add(event);
-							break;
-					}
-					if (mySavedSubjects.containsKey(event.getSubject()) && mySavedSubjects.get(event.getSubject()).equals(event.getGrade()))
-						mySubjects.items.add(event);
-				}
-				if (!mySubjects.items.isEmpty()) mItemGroup.add(mySubjects);
-				if (!efSubs.items.isEmpty()) mItemGroup.add(efSubs);
-				if (!q1Subs.items.isEmpty()) mItemGroup.add(q1Subs);
-				if (!q2Subs.items.isEmpty()) mItemGroup.add(q2Subs);
-				if (mItemGroup.isEmpty()) mItemGroup.add(new ItemGroup("keine Vertretungen"));
-			} catch (Exception e2) {
-				this.mItemGroup.clear();
-				e2.printStackTrace();
-			}
-			notifyDataSetChanged();
+			//TODO get the real saved subjects
+			FirebaseDatabase
+					.getInstance()
+					.getReference()
+					.child("users")
+					.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+					.child("substitutionSubjects")
+					.addListenerForSingleValueEvent(new ValueEventListener() {
+						@Override
+						public void onDataChange(DataSnapshot dataSnapshot) {
+							HashMap<String, String> mySavedSubjects = dataSnapshot.getValue(new GenericTypeIndicator<HashMap<String, String>>() {
+							});
+							ItemGroup mySubjects = new ItemGroup("Meine Fächer");
+							ItemGroup efSubs = new ItemGroup("EF");
+							ItemGroup q1Subs = new ItemGroup("Q1");
+							ItemGroup q2Subs = new ItemGroup("Q2");
+							for (LarsSubstitutionEvent event : list) {
+								if (mySavedSubjects.containsKey(event.getSubject()) && Objects.equals(mySavedSubjects.get(event.getSubject()), event.getGrade().name())
+										|| Objects.equals(event.getType(), LarsSubstitutionEvent.SubstitutionType.Special) && mySavedSubjects.containsValue(event.getGrade().name())) {
+									mySubjects.items.add(event);
+								} else {
+									switch (event.getGrade()) {
+										case EF:
+											efSubs.items.add(event);
+											break;
+										case Q1:
+											q1Subs.items.add(event);
+											break;
+										case Q2:
+											q2Subs.items.add(event);
+											break;
+									}
+								}
+							}
+							if (!mySubjects.items.isEmpty()) mItemGroups.add(mySubjects);
+							if (!efSubs.items.isEmpty()) mItemGroups.add(efSubs);
+							if (!q1Subs.items.isEmpty()) mItemGroups.add(q1Subs);
+							if (!q2Subs.items.isEmpty()) mItemGroups.add(q2Subs);
+							if (mItemGroups.isEmpty())
+								mItemGroups.add(new ItemGroup("keine Vertretungen"));
+							notifyDataSetChanged();
+							mListener.onLoadingFinished();
+						}
+
+						@Override
+						public void onCancelled(DatabaseError databaseError) {
+							mListener.onLoadingFinished();
+						}
+					});
 		}
+	}
+
+	public interface OnLoadingFinishedListener {
+		void onLoadingFinished();
 	}
 
 	/* renamed from: de.mpgdusseldorf.lpewewq.mpgdsseldorf.MyRecyclerAdapter.1 */
@@ -175,20 +199,20 @@ public class LarsRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
 		}
 	}
 
-	class RecyclerHeaderViewHolderKlasse extends ViewHolder {
+	class RecyclerHeaderViewHolder extends ViewHolder {
 		private TextView header;
 
-		public RecyclerHeaderViewHolderKlasse(View parent) {
+		public RecyclerHeaderViewHolder(View parent) {
 			super(parent);
 			this.header = (TextView) parent.findViewById(R.id.textViewHeader);
 		}
 	}
 
-	class RecyclerItemViewHolderKlasse extends ViewHolder {
+	class RecyclerItemViewHolder extends ViewHolder {
 
 		private final RecyclerRowBinding binding;
 
-		public RecyclerItemViewHolderKlasse(View parent) {
+		public RecyclerItemViewHolder(View parent) {
 			super(parent);
 			binding = DataBindingUtil.bind(parent);
 			this.itemView.setOnTouchListener(new OnTouchListener() {

@@ -168,6 +168,7 @@ public class GradeCalculatorFragment extends Fragment implements OnClickListener
 					public void onDataChange(DataSnapshot dataSnapshot) {
 						subjects = dataSnapshot.getValue(new GenericTypeIndicator<HashMap<String, Subject>>() {
 						});
+						if (subjects == null) subjects = new HashMap<>();
 						setUpUI();
 					}
 

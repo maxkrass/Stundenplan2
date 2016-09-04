@@ -1,218 +1,256 @@
 package com.maxkrass.stundenplan.services;
 
+import android.app.AlarmManager;
 import android.app.IntentService;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.support.v4.app.NotificationCompat;
+import android.util.Log;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.inject.Inject;
+import com.maxkrass.stundenplan.R;
+import com.maxkrass.stundenplan.activities.MainActivity;
+import com.maxkrass.stundenplan.objects.Lesson;
+import com.maxkrass.stundenplan.objects.Period;
+import com.maxkrass.stundenplan.objects.Weekday;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+
+import static org.roboguice.shaded.goole.common.base.Preconditions.checkNotNull;
 
 /**
  * Max made this for Stundenplan2 on 18.06.2016.
  */
 public class NotificationService extends IntentService {
-	//private static final String TAG = "NotificationService";
-//
-	//Calendar calendar = GregorianCalendar.getInstance();
-//
+	private static final String TAG = "NotificationService";
+	Calendar calendar = GregorianCalendar.getInstance();
+	@Inject
+	AlarmManager alarmManager;
+
+
 	public NotificationService() {
 		super("StundenplanNotificationService");
 	}
 
-	//
-	//@Inject
-	//AlarmManager alarmManager;
-//
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		//	Intent resultIntent = new Intent(this, MainActivity.class);
+		Intent resultIntent = new Intent(this, MainActivity.class);
+
+		final PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+		final Intent rescheduleIntent = new Intent(this, NotificationService.class);
+
+		final Lesson lesson = (Lesson) intent.getSerializableExtra("lesson");
 //
-		//	PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		final int UPDATE_ONGOING_LESSON = 0x100;
+		final int SHOW_UPCOMING_LESSON = 0x200;
+		final int NO_REQUEST_CODE = 0x000;
 //
-		//	Intent rescheduleIntent = new Intent(this, NotificationService.class);
+		final NotificationManager mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 //
-		//	long lessonID = intent.getLongExtra("lessonID", 0);
+		final int mNotificationId = 1;
+		if (lesson != null) {
+			int requestCode = intent.getIntExtra("requestCode", NO_REQUEST_CODE);
 //
-		//	final int UPDATE_ONGOING_LESSON = 0x100;
-		//	final int SHOW_UPCOMING_LESSON = 0x200;
-		//	final int NO_REQUEST_CODE = 0x000;
+			final NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 //
-		//	NotificationManager mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+			Log.d(TAG, "onHandleIntent: Retrieved Lesson: " + lesson);
 //
-		//	int mNotificationId = 1;
-		//	if (lessonID > 0) {
-		//		Lesson lessonToShow = SugarRecord.findById(Lesson.class, lessonID);
-		//		int requestCode = intent.getIntExtra("requestCode", NO_REQUEST_CODE);
+			switch (requestCode) {
+				case NO_REQUEST_CODE:
+					startService(new Intent(this, NotificationService.class));
+					return;
+				case UPDATE_ONGOING_LESSON:
+					Log.d(TAG, "onHandleIntent: Request Code is UPDATE_ONGOING_LESSON");
+
+					FirebaseDatabase
+							.getInstance().getReference()
+							.child("stundenplan")
+							.child("publicPeriods")
+							.child(String.valueOf(lesson.getPeriod()))
+							.addListenerForSingleValueEvent(new ValueEventListener() {
+								@Override
+								public void onDataChange(DataSnapshot dataSnapshot) {
+									Period period = dataSnapshot.getValue(Period.class);
+									checkNotNull(period);
 //
-		//		NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+									Calendar lessonCalendar = Calendar.getInstance();
+									lessonCalendar.set(Calendar.DAY_OF_WEEK, Weekday.fromString(lesson.getWeekday()).ordinal() + 2);
+									lessonCalendar.set(Calendar.HOUR_OF_DAY, period.getStartHour());
+									lessonCalendar.set(Calendar.MINUTE, period.getStartMinute());
+									lessonCalendar.set(Calendar.SECOND, 0);
+									lessonCalendar.set(Calendar.MILLISECOND, 0);
 //
-		//		Log.d(TAG, "onHandleIntent: Retrieved Lesson: " + lessonToShow);
+									long minutesToLesson = Math.round((lessonCalendar.getTimeInMillis() - calendar.getTimeInMillis()) / 60000);
 //
-		//		switch (requestCode) {
-		//			case NO_REQUEST_CODE:
-		//				startService(new Intent(this, NotificationService.class));
-		//				return;
-		//			case UPDATE_ONGOING_LESSON:
-		//				Log.d(TAG, "onHandleIntent: Request Code is UPDATE_ONGOING_LESSON");
+									Log.d(TAG, "onHandleIntent: " + minutesToLesson + " Minutes until the lesson starts");
 //
-		//				Calendar lessonCalendar = Calendar.getInstance();
-		//				lessonCalendar.set(Calendar.DAY_OF_WEEK, lessonToShow.getWeekday().ordinal() + 2);
-		//				lessonCalendar.set(Calendar.HOUR_OF_DAY, lessonToShow.getPeriod().getStartHour());
-		//				lessonCalendar.set(Calendar.MINUTE, lessonToShow.getPeriod().getStartMinute());
-		//				lessonCalendar.set(Calendar.SECOND, 0);
-		//				lessonCalendar.set(Calendar.MILLISECOND, 0);
+									if (minutesToLesson < 5) {
+										builder.setContentTitle(lesson.getSubject() + " (" + lesson.getLocation() + ")")
+												.setSmallIcon(R.mipmap.ic_launcher)
+												.setOngoing(true)
+												.setCategory(NotificationCompat.CATEGORY_EVENT)
+												.setPriority(NotificationCompat.PRIORITY_LOW)
+												.setContentIntent(resultPendingIntent);
 //
-		//				long minutesToLesson = Math.round((lessonCalendar.getTimeInMillis() - calendar.getTimeInMillis()) / 60000);
+										if (minutesToLesson > 0) {
 //
-		//				Log.d(TAG, "onHandleIntent: " + minutesToLesson + " Minutes until the lesson starts");
+											builder.setContentText("In " + minutesToLesson + " minutes");
+										} else {
 //
-		//				if (minutesToLesson < 5) {
-		//					builder.setContentTitle(lessonToShow.getSubject().getName() + " (" + lessonToShow.getLocation() + ")")
-		//							.setSmallIcon(R.mipmap.ic_launcher)
-		//							.setOngoing(true)
-		//							.setCategory(NotificationCompat.CATEGORY_EVENT)
-		//							.setPriority(NotificationCompat.PRIORITY_LOW)
-		//							.setContentIntent(resultPendingIntent);
+											Calendar periodEndTime = Calendar.getInstance();
+											periodEndTime.set(Calendar.HOUR_OF_DAY, period.getEndHour());
+											periodEndTime.set(Calendar.MINUTE, period.getEndMinute());
 //
-		//					if (minutesToLesson > 0) {
+											int minutesLeftUntilEnd = (int) ((periodEndTime.getTimeInMillis() - Calendar.getInstance().getTimeInMillis()) / 60000);
+											builder.setContentText(minutesLeftUntilEnd + " Min. left");
 //
-		//						builder.setContentText("In " + minutesToLesson + " minutes");
-		//					} else {
+											if (minutesLeftUntilEnd <= 0) {
+												startService(rescheduleIntent);
+												return;
+											}
+										}
 //
-		//						Calendar periodEndTime = Calendar.getInstance();
-		//						periodEndTime.set(Calendar.HOUR_OF_DAY, lessonToShow.getPeriod().getEndHour());
-		//						periodEndTime.set(Calendar.MINUTE, lessonToShow.getPeriod().getEndMinute());
+										mNotificationManager.notify(mNotificationId, builder.build());
 //
-		//						int minutesLeftUntilEnd = (int) ((periodEndTime.getTimeInMillis() - Calendar.getInstance().getTimeInMillis()) / 60000);
-		//						builder.setContentText(minutesLeftUntilEnd + " Min. left");
+										Log.d(TAG, "onHandleIntent: notification updated");
+										Calendar calendar = Calendar.getInstance();
+										calendar.set(Calendar.SECOND, 0);
+										calendar.set(Calendar.MILLISECOND, 0);
+										calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) + 1);
 //
-		//						if (minutesLeftUntilEnd <= 0) {
-		//							startService(rescheduleIntent);
-		//							return;
-		//						}
-		//					}
+										rescheduleIntent.putExtra("lesson", lesson);
+										rescheduleIntent.putExtra("requestCode", UPDATE_ONGOING_LESSON);
+										PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 0, rescheduleIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+										alarmManager.setExact(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntent);
 //
-		//					mNotificationManager.notify(mNotificationId, builder.build());
+										Log.d(TAG, "onHandleIntent: alarm set to update the notification for : " + new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.GERMANY).format(calendar.getTime()));
+									}
+								}
+
+								@Override
+								public void onCancelled(DatabaseError databaseError) {
+
+								}
+							});
 //
-		//					Log.d(TAG, "onHandleIntent: notification updated");
-		//					Calendar calendar = Calendar.getInstance();
-		//					calendar.set(Calendar.SECOND, 0);
-		//					calendar.set(Calendar.MILLISECOND, 0);
-		//					calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) + 1);
-//
-		//					rescheduleIntent.putExtra("lessonID", lessonToShow.getId());
-		//					rescheduleIntent.putExtra("requestCode", UPDATE_ONGOING_LESSON);
-		//					PendingIntent pendingIntent = PendingIntent.getService(this, 0, rescheduleIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-		//					alarmManager.setExact(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntent);
-//
-		//					Log.d(TAG, "onHandleIntent: alarm set to update the notification for : " + new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.GERMANY).format(calendar.getTime()));
-		//				}
-//
-		//				break;
-//	//			case SHOW_UPCOMING_LESSON:
-//	//				Log.d(TAG, "onHandleIntent: Request Code is SHOW_UPCOMING_LESSON");
+					break;
+				case SHOW_UPCOMING_LESSON:
+					Log.d(TAG, "onHandleIntent: Request Code is SHOW_UPCOMING_LESSON");
 ////
-//	//				break;
-		//		}
+					break;
+			}
 //
-		//	} else {
-//
-		//		Log.d(TAG, "onHandleIntent: gonna handle this Intent the default way");
-//
-		//		int currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-//
-		//		boolean nextWeek = true;
-//
-		//		Weekday currentWeekday = Weekday.MONDAY;                                                    // If it's the weekend we want to plan a notification for the next day available, which is monday
-//
-		//		Lesson nextOrCurrentLesson;
-		//		if (currentDayOfWeek > Calendar.SUNDAY && currentDayOfWeek < Calendar.SATURDAY) {
-		//			currentWeekday = Weekday.values()[currentDayOfWeek - 2];
-		//			nextWeek = false;
-		//			nextOrCurrentLesson = findFirstUnfinishedLesson(currentWeekday, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
-		//			while (nextOrCurrentLesson == null) {
-		//				if (currentWeekday.ordinal() + 1 > Weekday.FRIDAY.ordinal() && !nextWeek) {
-		//					currentWeekday = Weekday.MONDAY;
-		//					nextWeek = true;
-		//				} else if (currentWeekday.ordinal() + 1 > Weekday.FRIDAY.ordinal() && nextWeek) {
-		//					Log.d(TAG, "onHandleIntent: no lessons found for this or next week");
-		//					return;
-		//				} else {
-		//					currentWeekday = Weekday.values()[currentWeekday.ordinal() + 1];
-		//				}
-		//				nextOrCurrentLesson = findFirstLesson(currentWeekday);
-		//			}
-		//		} else {
-		//			do {
-		//				nextOrCurrentLesson = findFirstLesson(currentWeekday);
-		//				if (currentWeekday.ordinal() + 1 > Weekday.FRIDAY.ordinal() && nextOrCurrentLesson == null) {
-		//					Log.d(TAG, "onHandleIntent: no lessons found for this nor next week");
-		//					return;
-		//				} else {
-		//					currentWeekday = Weekday.values()[currentWeekday.ordinal() + 1];
-		//				}
-		//			} while (nextOrCurrentLesson == null);
-		//		}
-//
-		//		Log.d(TAG, "onHandleIntent: ok, got my next Lesson: " + nextOrCurrentLesson);
-//
-//
-		//		Calendar lessonCalendar = Calendar.getInstance();
-		//		lessonCalendar.set(Calendar.DAY_OF_WEEK, nextOrCurrentLesson.getWeekday().ordinal() + 2);
-		//		lessonCalendar.set(Calendar.HOUR_OF_DAY, nextOrCurrentLesson.getPeriod().getStartHour());
-		//		lessonCalendar.set(Calendar.MINUTE, nextOrCurrentLesson.getPeriod().getStartMinute());
-		//		lessonCalendar.set(Calendar.SECOND, 0);
-		//		lessonCalendar.set(Calendar.MILLISECOND, 0);
-		//		lessonCalendar.set(Calendar.WEEK_OF_YEAR, calendar.get(Calendar.WEEK_OF_YEAR) + (nextWeek ? 1 : 0));
-//
-		//		long minutesToLesson = (lessonCalendar.getTimeInMillis() - calendar.getTimeInMillis()) / 60000;
-//
-		//		Log.d(TAG, "onHandleIntent: " + minutesToLesson + " Minutes until the lesson starts");
-//
-		//		if (minutesToLesson < 5) {
-//
-		//			NotificationCompat.Builder builder = new NotificationCompat.Builder(NotificationService.this);
-		//			builder.setContentTitle(nextOrCurrentLesson.getSubject().getName() + " (" + nextOrCurrentLesson.getLocation() + ")")
-		//					.setSmallIcon(R.mipmap.ic_launcher)
-		//					.setOngoing(true)
-		//					.setDefaults(NotificationCompat.DEFAULT_ALL)
-		//					.setContentIntent(resultPendingIntent);
-//
-		//			if (minutesToLesson > 0) {
-//
-		//				builder.setContentText("In " + minutesToLesson + " minutes");
-		//			} else {
-//
-		//				Calendar periodEndTime = Calendar.getInstance();
-		//				periodEndTime.set(Calendar.HOUR_OF_DAY, nextOrCurrentLesson.getPeriod().getEndHour());
-		//				periodEndTime.set(Calendar.MINUTE, nextOrCurrentLesson.getPeriod().getEndMinute());
-//
-		//				int minutesLeftUntilEnd = (int) ((periodEndTime.getTimeInMillis() - Calendar.getInstance().getTimeInMillis()) / 60000);
-		//				builder.setContentText(minutesLeftUntilEnd + " Min. left");
-		//			}
-//
-		//			mNotificationManager.notify(mNotificationId, builder.build());
-//
-		//			Log.d(TAG, "onHandleIntent: notification issued");
-		//			Calendar calendar = Calendar.getInstance();
-		//			calendar.set(Calendar.SECOND, 0);
-		//			calendar.set(Calendar.MILLISECOND, 0);
-		//			calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) + 1);
-//
-		//			rescheduleIntent.putExtra("lessonID", nextOrCurrentLesson.getId());
-		//			rescheduleIntent.putExtra("requestCode", UPDATE_ONGOING_LESSON);
-		//			PendingIntent pendingIntent = PendingIntent.getService(this, 0, rescheduleIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-		//			alarmManager.setExact(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntent);
-//
-		//			Log.d(TAG, "onHandleIntent: alarm set to update the notification for : " + new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.GERMANY).format(calendar.getTime()));
-		//		} else {
-		//			mNotificationManager.cancelAll();
-//
-		//			rescheduleIntent.putExtra("lessonID", nextOrCurrentLesson.getId());
-		//			rescheduleIntent.putExtra("requestCode", SHOW_UPCOMING_LESSON);
-		//			PendingIntent pendingIntent = PendingIntent.getService(this, 0, rescheduleIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-		//			long triggerTime = lessonCalendar.getTimeInMillis() - (5 * 60000);
-		//			alarmManager.setExact(AlarmManager.RTC, triggerTime, pendingIntent);
-//
-		//			Log.d(TAG, "onHandleIntent: alarm set to plan the notification for : " + new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.GERMANY).format(new Date(triggerTime)));
-		//		}
-		//	}
+		} /* else {
+
+			Log.d(TAG, "onHandleIntent: gonna handle this Intent the default way");
+
+			int currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
+			boolean nextWeek = true;
+
+			Weekday currentWeekday = Weekday.MONDAY;                                                    // If it's the weekend we want to plan a notification for the next day available, which is monday
+
+			Lesson nextOrCurrentLesson;
+			if (currentDayOfWeek > Calendar.SUNDAY && currentDayOfWeek < Calendar.SATURDAY) {
+				currentWeekday = Weekday.values()[currentDayOfWeek - 2];
+				nextWeek = false;
+				nextOrCurrentLesson = findFirstUnfinishedLesson(currentWeekday, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
+				while (nextOrCurrentLesson == null) {
+					if (currentWeekday.ordinal() + 1 > Weekday.FRIDAY.ordinal() && !nextWeek) {
+						currentWeekday = Weekday.MONDAY;
+						nextWeek = true;
+					} else if (currentWeekday.ordinal() + 1 > Weekday.FRIDAY.ordinal() && nextWeek) {
+						Log.d(TAG, "onHandleIntent: no lessons found for this or next week");
+						return;
+					} else {
+						currentWeekday = Weekday.values()[currentWeekday.ordinal() + 1];
+					}
+					nextOrCurrentLesson = findFirstLesson(currentWeekday);
+				}
+			} else {
+				do {
+					nextOrCurrentLesson = findFirstLesson(currentWeekday);
+					if (currentWeekday.ordinal() + 1 > Weekday.FRIDAY.ordinal() && nextOrCurrentLesson == null) {
+						Log.d(TAG, "onHandleIntent: no lessons found for this nor next week");
+						return;
+					} else {
+						currentWeekday = Weekday.values()[currentWeekday.ordinal() + 1];
+					}
+				} while (nextOrCurrentLesson == null);
+			}
+
+			Log.d(TAG, "onHandleIntent: ok, got my next Lesson: " + nextOrCurrentLesson);
+
+
+			Calendar lessonCalendar = Calendar.getInstance();
+			lessonCalendar.set(Calendar.DAY_OF_WEEK, nextOrCurrentLesson.getWeekday().ordinal() + 2);
+			lessonCalendar.set(Calendar.HOUR_OF_DAY, nextOrCurrentLesson.getPeriod().getStartHour());
+			lessonCalendar.set(Calendar.MINUTE, nextOrCurrentLesson.getPeriod().getStartMinute());
+			lessonCalendar.set(Calendar.SECOND, 0);
+			lessonCalendar.set(Calendar.MILLISECOND, 0);
+			lessonCalendar.set(Calendar.WEEK_OF_YEAR, calendar.get(Calendar.WEEK_OF_YEAR) + (nextWeek ? 1 : 0));
+
+			long minutesToLesson = (lessonCalendar.getTimeInMillis() - calendar.getTimeInMillis()) / 60000;
+
+			Log.d(TAG, "onHandleIntent: " + minutesToLesson + " Minutes until the lesson starts");
+
+			if (minutesToLesson < 5) {
+
+				NotificationCompat.Builder builder = new NotificationCompat.Builder(NotificationService.this);
+				builder.setContentTitle(nextOrCurrentLesson.getSubject().getName() + " (" + nextOrCurrentLesson.getLocation() + ")")
+						.setSmallIcon(R.mipmap.ic_launcher)
+						.setOngoing(true)
+						.setDefaults(NotificationCompat.DEFAULT_ALL)
+						.setContentIntent(resultPendingIntent);
+
+				if (minutesToLesson > 0) {
+
+					builder.setContentText("In " + minutesToLesson + " minutes");
+				} else {
+
+					Calendar periodEndTime = Calendar.getInstance();
+					periodEndTime.set(Calendar.HOUR_OF_DAY, nextOrCurrentLesson.getPeriod().getEndHour());
+					periodEndTime.set(Calendar.MINUTE, nextOrCurrentLesson.getPeriod().getEndMinute());
+
+					int minutesLeftUntilEnd = (int) ((periodEndTime.getTimeInMillis() - Calendar.getInstance().getTimeInMillis()) / 60000);
+					builder.setContentText(minutesLeftUntilEnd + " Min. left");
+				}
+
+				mNotificationManager.notify(mNotificationId, builder.build());
+
+				Log.d(TAG, "onHandleIntent: notification issued");
+				Calendar calendar = Calendar.getInstance();
+				calendar.set(Calendar.SECOND, 0);
+				calendar.set(Calendar.MILLISECOND, 0);
+				calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) + 1);
+
+				rescheduleIntent.putExtra("lessonID", nextOrCurrentLesson.getId());
+				rescheduleIntent.putExtra("requestCode", UPDATE_ONGOING_LESSON);
+				PendingIntent pendingIntent = PendingIntent.getService(this, 0, rescheduleIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+				alarmManager.setExact(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntent);
+
+				Log.d(TAG, "onHandleIntent: alarm set to update the notification for : " + new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.GERMANY).format(calendar.getTime()));
+			} else {
+				mNotificationManager.cancelAll();
+
+				rescheduleIntent.putExtra("lessonID", nextOrCurrentLesson.getId());
+				rescheduleIntent.putExtra("requestCode", SHOW_UPCOMING_LESSON);
+				PendingIntent pendingIntent = PendingIntent.getService(this, 0, rescheduleIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+				long triggerTime = lessonCalendar.getTimeInMillis() - (5 * 60000);
+				alarmManager.setExact(AlarmManager.RTC, triggerTime, pendingIntent);
+
+				Log.d(TAG, "onHandleIntent: alarm set to plan the notification for : " + new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.GERMANY).format(new Date(triggerTime)));
+			}
+		}
 //
 //	//	/*long lessonID = intent.getLongExtra("lessonID", 0);
 //	//	mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -275,7 +313,8 @@ public class NotificationService extends IntentService {
 //	//	}*/
 //
 	}
-//
+
+	//
 	//private Lesson findFirstUnfinishedLesson(Weekday weekday, int hour, int minute) {
 	//	List<Lesson> lessonsToday = Select.from(Lesson.class).where("weekday = \'" + weekday.toString() + "\'").orderBy("period").list();
 //
@@ -291,9 +330,21 @@ public class NotificationService extends IntentService {
 	//	return nextOrCurrentLesson;
 	//}
 //
-	//private Lesson findFirstLesson(Weekday weekday) {
-	//	return Select.from(Lesson.class).where("weekday = \'" + weekday.toString() + "\'").orderBy("period").first();
-	//}
+	/*private Lesson findFirstLesson(Weekday weekday, ValueEventListener listener) {
+		FirebaseDatabase
+				.getInstance()
+				.getReference()
+				.child("users")
+				.child(FirebaseAuth
+						.getInstance()
+						.getCurrentUser()
+						.getUid())
+				.child("lessons")
+				.child(weekday.toString())
+				.limitToFirst(1)
+				.addListenerForSingleValueEvent(listener);
+		return Select.from(Lesson.class).where("weekday = \'" + weekday.toString() + "\'").orderBy("period").first();
+	}*/
 
 
 }

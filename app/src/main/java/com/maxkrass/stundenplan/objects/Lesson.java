@@ -4,9 +4,10 @@ import android.support.annotation.NonNull;
 
 import com.google.firebase.database.Exclude;
 
+import java.io.Serializable;
 import java.util.Locale;
 
-public class Lesson implements Comparable<Lesson> {
+public class Lesson implements Comparable<Lesson>, Serializable {
 	private String subject;
 	private String weekday;
 	private String location;

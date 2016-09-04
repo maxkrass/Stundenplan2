@@ -3,6 +3,7 @@ package com.maxkrass.stundenplan.fragments;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
@@ -14,13 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.firebase.crash.FirebaseCrash;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 import com.maxkrass.stundenplan.R;
 import com.maxkrass.stundenplan.adapter.LarsRecyclerAdapter;
 import com.maxkrass.stundenplan.objects.LarsSubstitutionEvent;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -30,9 +29,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class LarsSingleDaySubstitutionFragment extends Fragment {
+public class LarsSingleDaySubstitutionFragment extends Fragment implements LarsRecyclerAdapter.OnLoadingFinishedListener {
 	private static final long idleTime = 60000;
-	public  Object              aktuelleListe;
 	public  LarsRecyclerAdapter recyclerAdapter;
 	private int                 index;
 	private RecyclerView        recyclerView;
@@ -47,8 +45,8 @@ public class LarsSingleDaySubstitutionFragment extends Fragment {
 	@Nullable
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.recycle_view_fragment, container, false);
-		this.swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipeRefreshLayout);
-		this.swipeRefreshLayout.setOnRefreshListener(new C08461());
+		swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipeRefreshLayout);
+		swipeRefreshLayout.setOnRefreshListener(new C08461());
 		initRecyclerView(v);
 		//MainActivity.rootRef.child(String.valueOf(this.index)).addValueEventListener(new C08472());
 		refreshItems();
@@ -60,18 +58,24 @@ public class LarsSingleDaySubstitutionFragment extends Fragment {
 	}
 
 	private void initRecyclerView(View v) {
-		this.recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
-		this.recyclerAdapter = new LarsRecyclerAdapter(this.index);
-		this.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), 1, false));
-		this.recyclerView.setAdapter(this.recyclerAdapter);
-		this.recyclerView.addOnScrollListener(new C08483());
+		recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
+		recyclerAdapter = new LarsRecyclerAdapter(this);
+		recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), 1, false));
+		recyclerView.setAdapter(this.recyclerAdapter);
+		recyclerView.addOnScrollListener(new C08483());
+	}
+
+	@Override
+	public void onLoadingFinished() {
+		swipeRefreshLayout.setRefreshing(false);
 	}
 
 	class BackgroundTask extends AsyncTask<Void, Void, ArrayList<LarsSubstitutionEvent>> {
 
 		protected ArrayList<LarsSubstitutionEvent> doInBackground(Void... params) {
 			try {
-				Document document = Jsoup.connect("http://www.mpg-plan.max-planck-gymnasium-duesseldorf.de/Vertretungsplan/Moodle/SII/t" + index + "/subst_001.htm").get();
+				Connection.Response response = Jsoup.connect("http://www.mpg-plan.max-planck-gymnasium-duesseldorf.de/Vertretungsplan/Moodle/SII/t" + index + "/subst_001.htm").execute();
+				Document document = response.parse();
 				Element table = document.select("table.mon_list").first();
 				Elements rows = table.select(".odd, .even");
 
@@ -88,7 +92,7 @@ public class LarsSingleDaySubstitutionFragment extends Fragment {
 									event.setGrade(LarsSubstitutionEvent.Grade.valueOf(grade));
 								else {
 									if (i1 > 0)
-										events.get(i1 - 1).setAnnotation((events.get(i1 - 1).getAnnotation() + " " + element.child(7).ownText()).trim());
+										events.get(events.size() - 1).setAnnotation((events.get(events.size() - 1).getAnnotation() + " " + element.child(7).ownText()).trim());
 									continue outerLoop;
 								}
 								break;
@@ -135,58 +139,42 @@ public class LarsSingleDaySubstitutionFragment extends Fragment {
 				return events;
 			} catch (IOException e) {
 				e.printStackTrace();
-				FirebaseCrash.log("HTML Parsing Error for day: " + getArguments().getInt("day"));
+				Snackbar.make(swipeRefreshLayout, "Bitte überprüfe deine Internetverbindung", Snackbar.LENGTH_LONG).show();
+				FirebaseCrash.log("HTML Parsing Error for day: " + index);
 				return new ArrayList<>();
 			}
 		}
 
 		protected void onPreExecute() {
 			super.onPreExecute();
-			LarsSingleDaySubstitutionFragment.this.swipeRefreshLayout.setRefreshing(true);
+			swipeRefreshLayout.setRefreshing(true);
 		}
 
 		protected void onPostExecute(ArrayList<LarsSubstitutionEvent> events) {
-			if (events != null && !events.isEmpty()) {
-				LarsSingleDaySubstitutionFragment.this.recyclerAdapter.setNewContent(events);
+			if (events != null) {
+				recyclerAdapter.setNewContent(events);
+			} else {
+				onLoadingFinished();
 			}
-			LarsSingleDaySubstitutionFragment.this.swipeRefreshLayout.setRefreshing(false);
 		}
 	}
 
 	/* renamed from: de.mpgdusseldorf.lpewewq.mpgdsseldorf.LarsSingleDaySubstitutionFragment.1 */
 	class C08461 implements OnRefreshListener {
+		private long lastChecked;
 		C08461() {
+			lastChecked = System.currentTimeMillis();
 		}
 
 		public void onRefresh() {
-			LarsSingleDaySubstitutionFragment.this.refreshItems();
-		}
-	}
 
-	/* renamed from: de.mpgdusseldorf.lpewewq.mpgdsseldorf.LarsSingleDaySubstitutionFragment.2 */
-	class C08472 implements ValueEventListener {
-		private long lastChecked;
-
-		C08472() {
-			this.lastChecked = System.currentTimeMillis();
-		}
-
-		private void checkForIdleTime() {
-			if (this.lastChecked < System.currentTimeMillis() - LarsSingleDaySubstitutionFragment.idleTime) {
-				LarsSingleDaySubstitutionFragment.this.refreshItems();
-				this.lastChecked = System.currentTimeMillis();
+			if (lastChecked < System.currentTimeMillis() - LarsSingleDaySubstitutionFragment.idleTime) {
+				refreshItems();
+				lastChecked = System.currentTimeMillis();
+			} else {
+				onLoadingFinished();
 			}
 		}
-
-		public void onDataChange(DataSnapshot dataSnapshot) {
-			checkForIdleTime();
-		}
-
-		public void onCancelled(DatabaseError databaseError) {
-			checkForIdleTime();
-		}
-
-
 	}
 
 	/* renamed from: de.mpgdusseldorf.lpewewq.mpgdsseldorf.LarsSingleDaySubstitutionFragment.3 */

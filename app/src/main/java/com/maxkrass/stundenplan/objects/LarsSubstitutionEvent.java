@@ -71,7 +71,9 @@ public class LarsSubstitutionEvent {
 	}
 
 	public String getDisplayString() {
-		String s = period + " Std. " + oldTeacher + " " + subject + " " + type;
+		String s = period + " Std. ";
+		if (Objects.equals(type, SubstitutionType.Special)) s = s.concat(type.toString());
+		else s = s.concat(oldTeacher + " " + subject + " " + type);
 		if (Objects.equals(type, SubstitutionType.LocationChange)) s = s.concat(" " + newLocation);
 		else if (Objects.equals(type, SubstitutionType.Substitution)) s = s.concat(" " + sub);
 		return s;

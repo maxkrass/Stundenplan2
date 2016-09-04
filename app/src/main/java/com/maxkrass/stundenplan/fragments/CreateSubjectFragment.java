@@ -150,7 +150,7 @@ public class CreateSubjectFragment extends Fragment implements View.OnClickListe
 	}
 
 	public void onTeacherChosen(Teacher teacher) {
-		subject.setTeacher(teacher == null ? null : teacher.getTeacherName());
+		subject.setTeacher(teacher == null ? null : teacher.getContraction());
 	}
 
 	private void selectColor() {

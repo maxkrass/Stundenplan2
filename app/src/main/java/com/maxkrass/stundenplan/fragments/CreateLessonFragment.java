@@ -81,6 +81,8 @@ public class CreateLessonFragment extends Fragment implements CreateLessonContra
 			}
 		});
 
+		selectedSubject = new Subject();
+
 		if (savedInstanceState != null) {
 			Subject subject = (Subject) savedInstanceState.getSerializable("selectedSubject");
 			if (subject != null) {

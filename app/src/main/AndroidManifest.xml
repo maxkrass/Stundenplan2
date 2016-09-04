@@ -16,18 +16,6 @@
 		android:supportsRtl="true"
 		android:theme="@style/AppTheme">
 		<meta-data
-			android:name="DATABASE"
-			android:value="stundenplan.db" />
-		<meta-data
-			android:name="VERSION"
-			android:value="4" />
-		<meta-data
-			android:name="QUERY_LOG"
-			android:value="true" />
-		<meta-data
-			android:name="DOMAIN_PACKAGE_NAME"
-			android:value="com.maxkrass.stundenplan.objects" />
-		<meta-data
 			android:name="com.google.android.gms.version"
 			android:value="@integer/google_play_services_version" />
 
@@ -39,19 +27,29 @@
 		<activity
 			android:name=".activities.SplashActivity"
 			android:launchMode="singleTop"
+			android:screenOrientation="portrait"
 			android:theme="@style/SplashTheme">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<activity android:name=".activities.CreateSubjectActivity" />
+		<activity
+			android:name=".activities.CreateSubjectActivity"
+			android:screenOrientation="portrait" />
 		<activity
 			android:name=".activities.ViewTeacherActivity"
+			android:screenOrientation="portrait"
 			android:theme="@style/AppTheme.ViewTeacher" />
-		<activity android:name=".activities.ViewSubjectActivity" />
-		<activity android:name=".activities.ViewLessonActivity" />
-		<activity android:name=".activities.CreateLessonActivity" />
+		<activity
+			android:name=".activities.ViewSubjectActivity"
+			android:screenOrientation="portrait" />
+		<activity
+			android:name=".activities.ViewLessonActivity"
+			android:screenOrientation="portrait" />
+		<activity
+			android:name=".activities.CreateLessonActivity"
+			android:screenOrientation="portrait" />
 
 		<service android:name=".services.NotificationService" />
 
