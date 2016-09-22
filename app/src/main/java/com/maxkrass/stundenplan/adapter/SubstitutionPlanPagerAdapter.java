@@ -12,9 +12,7 @@ import com.maxkrass.stundenplan.fragments.LarsSingleDaySubstitutionFragment;
  */
 public class SubstitutionPlanPagerAdapter extends FragmentPagerAdapter {
 
-	private final LarsSingleDaySubstitutionFragment fragment1;
-	private final LarsSingleDaySubstitutionFragment fragment2;
-	private final LarsSingleDaySubstitutionFragment fragment3;
+	private final LarsSingleDaySubstitutionFragment fragment1, fragment2, fragment3;
 	private       TabLayout                         mTabLayout;
 
 	public SubstitutionPlanPagerAdapter(FragmentManager fm, String uId, TabLayout tabLayout) {

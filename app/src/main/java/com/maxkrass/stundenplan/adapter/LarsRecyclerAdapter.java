@@ -26,8 +26,7 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class LarsRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
-	private static final int VIEW_TYPE_HEADER = 111;
-	private static final int VIEW_TYPE_ITEM   = 222;
+	private static final int VIEW_TYPE_HEADER = 111, VIEW_TYPE_ITEM = 222;
 	private ArrayList<ItemGroup>            mItemGroups;
 	private OnLoadingFinishedListener       mListener;
 	private OnSubstitutionItemClickListener mClickListener;
