@@ -13,6 +13,7 @@ import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.maxkrass.stundenplan.R;
 import com.maxkrass.stundenplan.databinding.ActivityMainBinding;
 import com.maxkrass.stundenplan.fragments.GradeCalculatorFragment;
@@ -90,10 +91,13 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
 				.withToolbar(toolbar)
 				.inflateMenu(R.menu.drawer_menu)
 				.withOnDrawerItemClickListener(this)
+				.withMultiSelect(false)
 				.withDrawerLayout(com.mikepenz.materialdrawer.R.layout.material_drawer_fits_not)
 				.withTranslucentStatusBar(false)
 				.withSavedInstance(savedInstanceState)
 				.build();
+
+		FirebaseMessaging.getInstance().subscribeToTopic("checkPlan");
 
 		mFirebaseAuth = FirebaseAuth.getInstance();
 		mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -150,12 +154,19 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
 		if (savedInstanceState != null) {
 			lastFragmentTag = savedInstanceState.getString("lastFragment");
 		}
-		if (getSupportFragmentManager().findFragmentByTag(lastFragmentTag) == null) {
+		//if (getSupportFragmentManager().findFragmentByTag(lastFragmentTag) == null) {
+		//	getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new MainActivityFragment(), MAIN_FRAGMENT_TAG).commit();
+		//	lastFragmentTag = MAIN_FRAGMENT_TAG;
+		//	Log.d(TAG, "onCreate: adding MainActivityFragment");
+		//}
+		if (lastFragmentTag == null) {
 			getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new MainActivityFragment(), MAIN_FRAGMENT_TAG).commit();
+			toolbar.setTitle(R.string.app_name);
 			lastFragmentTag = MAIN_FRAGMENT_TAG;
 			Log.d(TAG, "onCreate: adding MainActivityFragment");
+		} else {
+			restoreUI();
 		}
-		restoreUI();
 		Log.d(TAG, "onCreate: finished onCreate");
 	}
 
@@ -164,28 +175,31 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
 			case MAIN_FRAGMENT_TAG:
 				toolbar.setTitle(R.string.app_name);
 				tabLayout.setVisibility(View.GONE);
-				result.setSelectionAtPosition(0, false);
+				result.setSelectionAtPosition(0);
 				break;
 			case SUBSTITUTION_PLAN_TAG:
 				toolbar.setTitle("Vertretungsplan");
 				tabLayout.setVisibility(View.VISIBLE);
-				result.setSelectionAtPosition(1, false);
+				result.setSelectionAtPosition(1);
 				break;
 			case MANAGE_TEACHERS_TAG:
 				toolbar.setTitle(getString(R.string.action_teachers));
 				tabLayout.setVisibility(View.GONE);
-				result.setSelectionAtPosition(2, false);
+				result.setSelectionAtPosition(2);
 				break;
 			case MANAGE_SUBJECTS_TAG:
 				toolbar.setTitle(getString(R.string.action_subjects));
 				tabLayout.setVisibility(View.GONE);
-				result.setSelectionAtPosition(3, false);
+				result.setSelectionAtPosition(3);
 				break;
-			case SETTINGS_FRAGMENT_TAG:
-				toolbar.setTitle(getString(R.string.action_settings));
-				tabLayout.setVisibility(View.GONE);
-				result.setSelectionAtPosition(4, false);
+			case GRADE_CALCULATOR_TAG:
+				result.setSelectionAtPosition(4);
 				break;
+			//case SETTINGS_FRAGMENT_TAG:
+			//	toolbar.setTitle(getString(R.string.action_settings));
+			//	tabLayout.setVisibility(View.GONE);
+			//	result.setSelectionAtPosition(4);
+			//	break;
 		}
 	}
 
@@ -221,7 +235,7 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
 			case R.id.drawer_teachers_item:
 				if (getSupportFragmentManager().findFragmentByTag(MANAGE_TEACHERS_TAG) == null) {
 					getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ManageTeachersFragment(), MANAGE_TEACHERS_TAG).commit();
-					toolbar.setTitle("Lehrer");
+					toolbar.setTitle(getString(R.string.action_teachers));
 					tabLayout.setVisibility(View.GONE);
 					lastFragmentTag = MANAGE_TEACHERS_TAG;
 				}
@@ -251,6 +265,7 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
 				}
 				break;*/
 		}
+		result.setSelection(drawerItem, false);
 		result.closeDrawer();
 		return true;
 	}

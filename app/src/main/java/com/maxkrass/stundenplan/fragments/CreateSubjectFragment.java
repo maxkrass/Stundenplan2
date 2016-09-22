@@ -177,7 +177,7 @@ public class CreateSubjectFragment extends Fragment implements View.OnClickListe
 
 	@Override
 	public void onClick(View v) {
-		mPresenter.validateSubject(subject.getName(), subject.getAbbreviation(), subject.getColor(), subject.getTeacher());
+		mPresenter.validateSubject(subject.getName().trim(), subject.getAbbreviation().trim(), subject.getColor(), subject.getTeacher());
 	}
 
 

@@ -1,14 +1,11 @@
-package com.maxkrass.stundenplan.objects;
-
-import android.content.res.ColorStateList;
-import android.databinding.BindingConversion;
+package com.maxkrass.stundenplan.backend;
 
 import java.util.Objects;
 
 /**
- * Max made this for Stundenplan2 on 30.08.2016.
+ * Max made this for Stundenplan2 on 17.09.2016.
  */
-public class LarsSubstitutionEvent {
+public class SubstitutionEvent {
 
 	private Grade            grade;
 	private String           period;
@@ -20,7 +17,7 @@ public class LarsSubstitutionEvent {
 
 	private String annotation;
 
-	public LarsSubstitutionEvent(Grade grade, String period, String subject, SubstitutionType type, String oldTeacher, String sub, String newLocation) {
+	public SubstitutionEvent(Grade grade, String period, String subject, SubstitutionType type, String oldTeacher, String sub, String newLocation) {
 		this.grade = grade;
 		this.period = period;
 		this.subject = subject;
@@ -30,44 +27,12 @@ public class LarsSubstitutionEvent {
 		this.newLocation = newLocation;
 	}
 
-	public LarsSubstitutionEvent() {
+	public SubstitutionEvent() {
 		period = "";
 		subject = "";
 		oldTeacher = "";
 		sub = "";
 		newLocation = "";
-	}
-
-	@BindingConversion
-	public static ColorStateList getSubstitutionTypeColor(SubstitutionType type) {
-		String color;
-		switch (type) {
-			case Cancelled:
-				color = "#FF4CAF50";
-				break;
-			case Substitution:
-				color = "#FFCDDC39";
-				break;
-			case ClassChange:
-				color = "#FFCDDC39";
-				break;
-			case LocationChange:
-				color = "#FFCDDC39";
-				break;
-			case Special:
-				color = "#FF3F51B5";
-				break;
-			default:
-				return null;
-		}
-		return new ColorStateList(
-				new int[][]{
-						new int[]{}
-				},
-				new int[]{
-						android.graphics.Color.parseColor(color)
-				}
-		);
 	}
 
 	public String getDisplayString() {
@@ -144,7 +109,7 @@ public class LarsSubstitutionEvent {
 	}
 
 	public enum Grade {
-		EF, Q1, Q2, LR, SL
+		EF, Q1, Q2, LR
 	}
 
 	public enum SubstitutionType {

@@ -41,6 +41,9 @@
     <string name="subject_name_invalid">The name can\'t be empty</string>
     <string name="grade_calculator">Grade Calculator</string>
     <string name="grade_back" translatable="false"><![CDATA[<-]]></string>
+    <string name="no_saved_subject">You haven\'t saved any subjects yet…</string>
+    <string name="points_average">Points Ø: %.2f</string>
+    <string name="grade_average">Grade Ø: %.2f</string>
     <string-array name="weekday">
         <item>Mondays</item>
         <item>Tuesdays</item>

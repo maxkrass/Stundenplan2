@@ -12,7 +12,7 @@
 		android:layout_height="1dp"
 		android:layout_centerVertical="true"
 		android:layout_margin="5dp"
-		android:layout_toLeftOf="@+id/textViewHeader"
+		android:layout_toStartOf="@+id/textViewHeader"
 		android:background="#939393" />
 
 	<TextView
@@ -28,6 +28,6 @@
 		android:layout_height="1dp"
 		android:layout_centerVertical="true"
 		android:layout_margin="5dp"
-		android:layout_toRightOf="@+id/textViewHeader"
+		android:layout_toEndOf="@+id/textViewHeader"
 		android:background="#939393" />
 </RelativeLayout>

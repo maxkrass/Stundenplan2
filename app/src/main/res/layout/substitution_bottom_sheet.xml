@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<data>
+
+		<variable
+			name="substitutionEvent"
+			type="com.maxkrass.stundenplan.objects.LarsSubstitutionEvent" />
+
+	</data>
+
+	<android.support.design.widget.CoordinatorLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		app:layout_behavior="@string/bottom_sheet_behavior">
+
+		<android.support.design.widget.AppBarLayout
+			android:id="@+id/substitution_bottom_sheet_app_bar"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<android.support.v7.widget.Toolbar
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:background="@color/material_teal"
+				app:title='@{substitutionEvent.grade + ": " + substitutionEvent.period + " Std.", default="Q2 3. Std"}'
+				app:titleTextAppearance="@style/TextAppearance.AppCompat.Display2"
+				app:titleTextColor="@color/material_white" />
+
+			<android.support.v7.widget.Toolbar
+				android:layout_width="match_parent"
+				android:layout_height="48dp"
+				android:background="@color/material_teal"
+				app:title='@{substitutionEvent.oldTeacher + " " + substitutionEvent.subject, default="MAR M"}'
+				app:titleTextAppearance="@style/TextAppearance.AppCompat.Display1"
+				app:titleTextColor="@color/material_white" />
+
+		</android.support.design.widget.AppBarLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"
+			app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@{substitutionEvent.type.toString()}" />
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@{substitutionEvent.annotation}" />
+
+		</LinearLayout>
+
+		<android.support.design.widget.FloatingActionButton
+			android:id="@+id/edit_teacher"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginEnd="16dp"
+			android:src="@drawable/ic_add_24dp"
+			android:tint="@color/material_white"
+			android:visibility="visible"
+			app:fabSize="mini"
+			app:layout_anchor="@id/substitution_bottom_sheet_app_bar"
+			app:layout_anchorGravity="top|end"
+			app:layout_behavior="" />
+
+	</android.support.design.widget.CoordinatorLayout>
+
+</layout>

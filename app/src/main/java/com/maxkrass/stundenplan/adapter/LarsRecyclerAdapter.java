@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -23,19 +22,20 @@ import com.maxkrass.stundenplan.databinding.RecyclerRowBinding;
 import com.maxkrass.stundenplan.objects.LarsSubstitutionEvent;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Objects;
 
 public class LarsRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
 	private static final int VIEW_TYPE_HEADER = 111;
 	private static final int VIEW_TYPE_ITEM   = 222;
-	private ArrayList<ItemGroup>      mItemGroups;
-	private OnLoadingFinishedListener mListener;
+	private ArrayList<ItemGroup>            mItemGroups;
+	private OnLoadingFinishedListener       mListener;
+	private OnSubstitutionItemClickListener mClickListener;
 
-	public LarsRecyclerAdapter(OnLoadingFinishedListener listener) {
+	public LarsRecyclerAdapter(OnLoadingFinishedListener listener, OnSubstitutionItemClickListener clickListener) {
 		mItemGroups = new ArrayList<>();
 		mListener = listener;
+		mClickListener = clickListener;
 	}
 
 	public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -104,7 +104,6 @@ public class LarsRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
 		//Map<String, Boolean> settings = MainActivity.settingsMap;
 		this.mItemGroups.clear();
 		if (list != null) {
-			//TODO get the real saved subjects
 			FirebaseDatabase
 					.getInstance()
 					.getReference()
@@ -121,8 +120,8 @@ public class LarsRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
 							ItemGroup q1Subs = new ItemGroup("Q1");
 							ItemGroup q2Subs = new ItemGroup("Q2");
 							for (LarsSubstitutionEvent event : list) {
-								if (mySavedSubjects.containsKey(event.getSubject()) && Objects.equals(mySavedSubjects.get(event.getSubject()), event.getGrade().name())
-										|| Objects.equals(event.getType(), LarsSubstitutionEvent.SubstitutionType.Special) && mySavedSubjects.containsValue(event.getGrade().name())) {
+								if (mySavedSubjects != null && !mySavedSubjects.isEmpty() && (mySavedSubjects.containsKey(event.getSubject()) && Objects.equals(mySavedSubjects.get(event.getSubject()), event.getGrade().name())
+										|| Objects.equals(event.getType(), LarsSubstitutionEvent.SubstitutionType.Special) && mySavedSubjects.containsValue(event.getGrade().name()))) {
 									mySubjects.items.add(event);
 								} else {
 									switch (event.getGrade()) {
@@ -156,33 +155,12 @@ public class LarsRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
 		}
 	}
 
+	public interface OnSubstitutionItemClickListener {
+		void onItemClick(LarsSubstitutionEvent event);
+	}
+
 	public interface OnLoadingFinishedListener {
 		void onLoadingFinished();
-	}
-
-	/* renamed from: de.mpgdusseldorf.lpewewq.mpgdsseldorf.MyRecyclerAdapter.1 */
-	class C04981 implements OnClickListener {
-		final /* synthetic */ ArrayList val$dataList;
-		final /* synthetic */ String    val$headerText;
-
-		C04981(String str, ArrayList arrayList) {
-			this.val$headerText = str;
-			this.val$dataList = arrayList;
-		}
-
-		public void onClick(View view) {
-			//MainActivity.showSheet(LarsRecyclerAdapter.this.index, this.val$headerText, this.val$dataList);
-		}
-	}
-
-	/* renamed from: de.mpgdusseldorf.lpewewq.mpgdsseldorf.MyRecyclerAdapter.2 */
-	class C04992 implements Comparator<ArrayList<String>> {
-		C04992() {
-		}
-
-		public int compare(ArrayList<String> list1, ArrayList<String> list2) {
-			return list1.get(1).trim().substring(0, 1).compareToIgnoreCase(list2.get(1).trim().substring(0, 1));
-		}
 	}
 
 	private class ItemGroup {
@@ -208,14 +186,15 @@ public class LarsRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
 		}
 	}
 
-	class RecyclerItemViewHolder extends ViewHolder {
+	class RecyclerItemViewHolder extends ViewHolder implements View.OnClickListener {
 
 		private final RecyclerRowBinding binding;
 
 		public RecyclerItemViewHolder(View parent) {
 			super(parent);
 			binding = DataBindingUtil.bind(parent);
-			this.itemView.setOnTouchListener(new OnTouchListener() {
+			itemView.setOnClickListener(this);
+			itemView.setOnTouchListener(new OnTouchListener() {
 				@Override
 				public boolean onTouch(View view, MotionEvent motionEvent) {
 					switch (motionEvent.getAction()) {
@@ -232,6 +211,11 @@ public class LarsRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
 					return false;
 				}
 			});
+		}
+
+		@Override
+		public void onClick(View view) {
+			mClickListener.onItemClick(binding.getEvent());
 		}
 	}
 }

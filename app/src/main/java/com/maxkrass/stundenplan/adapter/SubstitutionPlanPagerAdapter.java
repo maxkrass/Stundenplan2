@@ -1,5 +1,6 @@
 package com.maxkrass.stundenplan.adapter;
 
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -14,12 +15,14 @@ public class SubstitutionPlanPagerAdapter extends FragmentPagerAdapter {
 	private final LarsSingleDaySubstitutionFragment fragment1;
 	private final LarsSingleDaySubstitutionFragment fragment2;
 	private final LarsSingleDaySubstitutionFragment fragment3;
+	private       TabLayout                         mTabLayout;
 
-	public SubstitutionPlanPagerAdapter(FragmentManager fm, String uId) {
+	public SubstitutionPlanPagerAdapter(FragmentManager fm, String uId, TabLayout tabLayout) {
 		super(fm);
-		fragment1 = LarsSingleDaySubstitutionFragment.newInstance(1);
-		fragment2 = LarsSingleDaySubstitutionFragment.newInstance(2);
-		fragment3 = LarsSingleDaySubstitutionFragment.newInstance(3);
+		mTabLayout = tabLayout;
+		fragment1 = LarsSingleDaySubstitutionFragment.newInstance(1, uId, this);
+		fragment2 = LarsSingleDaySubstitutionFragment.newInstance(2, uId, this);
+		fragment3 = LarsSingleDaySubstitutionFragment.newInstance(3, uId, this);
 	}
 
 	@Override
@@ -42,16 +45,25 @@ public class SubstitutionPlanPagerAdapter extends FragmentPagerAdapter {
 	}
 
 	@Override
+	public int getItemPosition(Object object) {
+		return POSITION_NONE;
+	}
+
+	@Override
 	public CharSequence getPageTitle(int position) {
 		switch (position) {
 			case 0:
-				return "Heute";
+				return fragment1.getTitle();
 			case 1:
-				return "Morgen";
+				return fragment2.getTitle();
 			case 2:
-				return "Übermorgen";
+				return fragment3.getTitle();
 			default:
 				return "";
 		}
+	}
+
+	public TabLayout getTabLayout() {
+		return mTabLayout;
 	}
 }

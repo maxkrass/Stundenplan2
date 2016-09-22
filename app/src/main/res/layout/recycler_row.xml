@@ -16,13 +16,13 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_gravity="center_horizontal"
-		android:layout_marginBottom="5dp"
-		android:layout_marginLeft="13dp"
-		android:layout_marginRight="13dp"
-		android:layout_marginTop="5dp"
+		android:layout_marginBottom="4dp"
+		android:layout_marginEnd="8dp"
+		android:layout_marginStart="8dp"
+		android:layout_marginTop="4dp"
 		android:clickable="true"
 		android:foreground="?attr/selectableItemBackground"
-		app:cardCornerRadius="6dp">
+		app:cardCornerRadius="4dp">
 
 		<RelativeLayout
 			android:layout_width="match_parent"
@@ -40,8 +40,8 @@
 				android:layout_marginTop="3dp"
 				android:ellipsize="marquee"
 				android:marqueeRepeatLimit="marquee_forever"
-				android:singleLine="true"
-				android:text="@{event.displayString}"
+				android:maxLines="1"
+				android:text='@{event.displayString, default="Some Line Here"}'
 				android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
 			<TextView
@@ -55,7 +55,7 @@
 				android:layout_marginRight="5dp"
 				android:ellipsize="marquee"
 				android:marqueeRepeatLimit="marquee_forever"
-				android:singleLine="true"
+				android:maxLines="1"
 				android:text="@{event.annotation}"
 				android:visibility="@{event.annotation.empty ? View.GONE : View.VISIBLE}" />
 		</RelativeLayout>

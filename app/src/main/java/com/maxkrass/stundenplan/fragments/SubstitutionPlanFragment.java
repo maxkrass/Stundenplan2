@@ -15,7 +15,7 @@ import com.maxkrass.stundenplan.databinding.FragmentSubstitutionPlanBinding;
 
 public class SubstitutionPlanFragment extends Fragment {
 
-	private MainActivity                  mActivity;
+	private MainActivity mActivity;
 
 	public static SubstitutionPlanFragment newInstance(String uId) {
 
@@ -43,7 +43,7 @@ public class SubstitutionPlanFragment extends Fragment {
 		FragmentSubstitutionPlanBinding binding = FragmentSubstitutionPlanBinding.inflate(inflater);
 		ViewPager viewPager = binding.substitutionPlanViewPager;
 		TabLayout tabLayout = mActivity.tabLayout;
-		viewPager.setAdapter(new SubstitutionPlanPagerAdapter(getChildFragmentManager(), getArguments().getString("uId")));
+		viewPager.setAdapter(new SubstitutionPlanPagerAdapter(getChildFragmentManager(), getArguments().getString("uId"), tabLayout));
 		viewPager.setOffscreenPageLimit(2);
 		tabLayout.setupWithViewPager(viewPager);
 
