@@ -35,6 +35,7 @@ public class SubstitutionEvent {
 		newLocation = "";
 	}
 
+	
 	public String getDisplayString() {
 		String s = period + " Std. ";
 		if (Objects.equals(type, SubstitutionType.Special)) s = s.concat(type.toString());

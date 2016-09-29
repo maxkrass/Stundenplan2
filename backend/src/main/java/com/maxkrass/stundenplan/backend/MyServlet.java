@@ -83,8 +83,7 @@ public class MyServlet extends HttpServlet {
 				firebase.addListenerForSingleValueEvent(new ValueEventListener() {
 					@Override
 					public void onDataChange(DataSnapshot dataSnapshot) {
-						try {
-							resp.getWriter().println("Here");
+						/*try {
 							URL firebase = new URL("https://fcm.googleapis.com/fcm/send");
 							HttpURLConnection connection = (HttpURLConnection) firebase.openConnection();
 							connection.setRequestProperty("Content-Type", "application/json");
@@ -116,8 +115,8 @@ public class MyServlet extends HttpServlet {
 							resp.getWriter().println(response.toString());
 						} catch (IOException e) {
 							e.printStackTrace();
-						}
-						if (dataSnapshot.exists() && dataSnapshot.hasChildren()) {
+						}*/
+						//if (dataSnapshot.exists() && dataSnapshot.hasChildren()) {
 							// the plan has already been checked at some point
 							try {
 								Connection.Response response = Jsoup.connect("http://www.mpg-plan.max-planck-gymnasium-duesseldorf.de/Vertretungsplan/Moodle/SII/t1/subst_001.htm").execute();
@@ -150,14 +149,27 @@ public class MyServlet extends HttpServlet {
 									String date2 = fetchDateFromDocument(day2);
 									String date3 = fetchDateFromDocument(day3);
 
+									HashMap<String, String> datesMap = new HashMap<>();
+									datesMap.put("date1", date1);
+									datesMap.put("date2", date2);
+									datesMap.put("date3", date3);
 
+									firebase.child("dates").setValue(datesMap);
+
+									HashMap<String, ArrayList<SubstitutionEvent>> plans = new HashMap<>();
+
+									plans.put("day1", substitutionEventsDay1);
+									plans.put("day2", substitutionEventsDay2);
+									plans.put("day3", substitutionEventsDay3);
+
+									firebase.child("plans").setValue(plans);
 								}
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
 
-						} else {
-						}
+						//} else {
+						//}
 					}
 
 					@Override
