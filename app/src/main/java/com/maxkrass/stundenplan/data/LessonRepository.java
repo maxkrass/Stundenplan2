@@ -47,7 +47,7 @@ public class LessonRepository {
 		//TODO addLessonToSubject
 	}
 
-	public void updateLesson(String subject, Weekday oldWeekday, Weekday newWeekday, Integer oldPeriod, Integer newPeriod, String location, boolean wasDoublePeriod, boolean isDoublePeriod, OnCompleteListener<Void> listener) {
+	public void updateLesson(String subject, Weekday oldWeekday, Weekday newWeekday, Integer oldPeriod, Integer newPeriod, String location, Boolean wasDoublePeriod, Boolean isDoublePeriod, OnCompleteListener<Void> listener) {
 		mLessonRef
 				.child(oldWeekday.toString())
 				.child(String.valueOf(oldPeriod))

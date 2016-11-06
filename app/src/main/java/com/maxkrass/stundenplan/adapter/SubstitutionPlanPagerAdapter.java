@@ -5,22 +5,22 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.maxkrass.stundenplan.fragments.LarsSingleDaySubstitutionFragment;
+import com.maxkrass.stundenplan.fragments.SingleDaySubstitutionFragment;
 
 /**
  * Max made this for Stundenplan2 on 16.07.2016.
  */
 public class SubstitutionPlanPagerAdapter extends FragmentPagerAdapter {
 
-	private final LarsSingleDaySubstitutionFragment fragment1, fragment2, fragment3;
+	private final SingleDaySubstitutionFragment fragment1, fragment2, fragment3;
 	private       TabLayout                         mTabLayout;
 
 	public SubstitutionPlanPagerAdapter(FragmentManager fm, String uId, TabLayout tabLayout) {
 		super(fm);
 		mTabLayout = tabLayout;
-		fragment1 = LarsSingleDaySubstitutionFragment.newInstance(1, uId, this);
-		fragment2 = LarsSingleDaySubstitutionFragment.newInstance(2, uId, this);
-		fragment3 = LarsSingleDaySubstitutionFragment.newInstance(3, uId, this);
+		fragment1 = SingleDaySubstitutionFragment.newInstance(1, uId, this);
+		fragment2 = SingleDaySubstitutionFragment.newInstance(2, uId, this);
+		fragment3 = SingleDaySubstitutionFragment.newInstance(3, uId, this);
 	}
 
 	@Override

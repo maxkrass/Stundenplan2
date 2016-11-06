@@ -50,4 +50,10 @@
 	<string name="no_saved_subject">Keine Fächer in den Einstellungen eingetragen…</string>
 	<string name="points_average">Punkte Ø: %.2f</string>
 	<string name="grade_average">Noten Ø: %.2f</string>
+	<string name="substitution_plan">Vertretungsplan</string>
+	<string name="substitutions_receive_notification">Benachrichtigungen zum Vertretungplan erhalten</string>
+	<string name="notification_settings">Benachrichtigungen</string>
+	<string name="my_saved_subjects">Meine Gespeicherten Fächer</string>
+	<string name="my_subjects">Meine Fächer</string>
+	<string name="visible_substitution_plans">Sichtbare Vertretungspläne</string>
 </resources>

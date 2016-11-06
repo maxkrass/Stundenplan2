@@ -1,4 +1,4 @@
-package com.maxkrass.stundenplan;
+package com.maxkrass.stundenplan.customViews;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -16,11 +16,11 @@ import android.widget.FrameLayout;
 @SuppressWarnings("unused")
 public class RevealLayout extends FrameLayout{
 
+    private static final int DEFAULT_DURATION = 600;
     private Path mClipPath;
     private float mClipRadius = 0;
     private int mClipCenterX, mClipCenterY = 0;
     private Animation mAnimation;
-    private static final int DEFAULT_DURATION = 600;
     private boolean mIsContentShown = true;
 
     public RevealLayout(Context context) {
@@ -131,19 +131,20 @@ public class RevealLayout extends FrameLayout{
         mAnimation.setDuration(duration);
         mAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onAnimationRepeat(Animation animation) {
-                if (listener != null) {
-                    listener.onAnimationRepeat(animation);
-                }
-            }
-
-            @Override
             public void onAnimationStart(Animation animation) {
                 mIsContentShown = true;
                 if (listener != null) {
                     listener.onAnimationStart(animation);
                 }
             }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+                if (listener != null) {
+                    listener.onAnimationRepeat(animation);
+                }
+            }
+
 
             @Override
             public void onAnimationEnd(Animation animation) {

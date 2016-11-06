@@ -16,8 +16,8 @@
 	<item
 		android:id="@+id/drawer_grade_calculator_item"
 		android:title="@string/grade_calculator" />
-	<!--<item
+	<item
 		android:id="@+id/drawer_settings_item"
-		android:title="@string/action_settings" />-->
+		android:title="@string/action_settings" />
 
 </menu>

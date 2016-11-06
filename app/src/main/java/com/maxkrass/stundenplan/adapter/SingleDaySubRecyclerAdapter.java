@@ -1,6 +1,9 @@
 package com.maxkrass.stundenplan.adapter;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
@@ -10,7 +13,6 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.android.gms.common.ConnectionResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -19,19 +21,22 @@ import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.maxkrass.stundenplan.R;
 import com.maxkrass.stundenplan.databinding.RecyclerRowBinding;
-import com.maxkrass.stundenplan.objects.LarsSubstitutionEvent;
+import com.maxkrass.stundenplan.fragments.SettingsFragment;
+import com.maxkrass.stundenplan.objects.SubstitutionEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class LarsRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
+public class SingleDaySubRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
 	private static final int VIEW_TYPE_HEADER = 111, VIEW_TYPE_ITEM = 222;
 	private ArrayList<ItemGroup>            mItemGroups;
 	private OnLoadingFinishedListener       mListener;
+	private Context                         mContext;
 	private OnSubstitutionItemClickListener mClickListener;
 
-	public LarsRecyclerAdapter(OnLoadingFinishedListener listener, OnSubstitutionItemClickListener clickListener) {
+	public SingleDaySubRecyclerAdapter(Context context, OnLoadingFinishedListener listener, OnSubstitutionItemClickListener clickListener) {
+		mContext = context;
 		mItemGroups = new ArrayList<>();
 		mListener = listener;
 		mClickListener = clickListener;
@@ -57,7 +62,7 @@ public class LarsRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
 			}
 			size += g.getGroupSize();
 			if (position < size) {
-				bindItem((RecyclerItemViewHolder) viewHolder, g.items.get((g.getGroupSize() - 1) - (size - position)));
+				bindItem((RecyclerItemViewHolder) viewHolder, g.items.get((g.items.size()) - (size - position)));
 				return;
 			}
 		}
@@ -90,17 +95,19 @@ public class LarsRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
 		return size;
 	}
 
-	private void bindItem(RecyclerItemViewHolder viewHolder, LarsSubstitutionEvent event) {
+	private void bindItem(RecyclerItemViewHolder viewHolder, SubstitutionEvent event) {
 		viewHolder.binding.setEvent(event);
-		//TODO viewHolder.itemView.setOnClickListener(new C04981(headerText, dataList));
 	}
 
 	private void bindHeader(RecyclerHeaderViewHolder viewHolder, ItemGroup g) {
-		viewHolder.header.setText(g.headerText);
+		String headerText = g.headerText;
+		if (g.items.size() > 0) headerText += " (" + g.items.size() + ")";
+		viewHolder.header.setText(headerText);
 	}
 
-	public void setNewContent(final ArrayList<LarsSubstitutionEvent> list) {
+	public void setNewContent(final ArrayList<SubstitutionEvent> list) {
 		//Map<String, Boolean> settings = MainActivity.settingsMap;
+		final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
 		this.mItemGroups.clear();
 		if (list != null) {
 			FirebaseDatabase
@@ -118,12 +125,12 @@ public class LarsRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
 							ItemGroup efSubs = new ItemGroup("EF");
 							ItemGroup q1Subs = new ItemGroup("Q1");
 							ItemGroup q2Subs = new ItemGroup("Q2");
-							for (LarsSubstitutionEvent event : list) {
-								if (mySavedSubjects != null && !mySavedSubjects.isEmpty() && (mySavedSubjects.containsKey(event.getSubject()) && Objects.equals(mySavedSubjects.get(event.getSubject()), event.getGrade().name())
-										|| Objects.equals(event.getType(), LarsSubstitutionEvent.SubstitutionType.Special) && mySavedSubjects.containsValue(event.getGrade().name()))) {
+							for (SubstitutionEvent event : list) {
+								if (mySavedSubjects != null && !mySavedSubjects.isEmpty() && (mySavedSubjects.containsKey(event.getSubject()) && Objects.equals(mySavedSubjects.get(event.getSubject()), event.getGrade())
+										&& mySavedSubjects.containsValue(event.getGrade()))) {
 									mySubjects.items.add(event);
 								} else {
-									switch (event.getGrade()) {
+									switch (event.getGradeVal()) {
 										case EF:
 											efSubs.items.add(event);
 											break;
@@ -136,10 +143,14 @@ public class LarsRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
 									}
 								}
 							}
-							if (!mySubjects.items.isEmpty()) mItemGroups.add(mySubjects);
-							if (!efSubs.items.isEmpty()) mItemGroups.add(efSubs);
-							if (!q1Subs.items.isEmpty()) mItemGroups.add(q1Subs);
-							if (!q2Subs.items.isEmpty()) mItemGroups.add(q2Subs);
+							if (preferences.getBoolean(SettingsFragment.MY_SUBJECTS, true) && !mySubjects.items.isEmpty())
+								mItemGroups.add(mySubjects);
+							if (preferences.getBoolean(SettingsFragment.EF, true) && !efSubs.items.isEmpty())
+								mItemGroups.add(efSubs);
+							if (preferences.getBoolean(SettingsFragment.Q1, true) && !q1Subs.items.isEmpty())
+								mItemGroups.add(q1Subs);
+							if (preferences.getBoolean(SettingsFragment.Q2, true) && !q2Subs.items.isEmpty())
+								mItemGroups.add(q2Subs);
 							if (mItemGroups.isEmpty())
 								mItemGroups.add(new ItemGroup("keine Vertretungen"));
 							notifyDataSetChanged();
@@ -155,7 +166,7 @@ public class LarsRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
 	}
 
 	public interface OnSubstitutionItemClickListener {
-		void onItemClick(LarsSubstitutionEvent event);
+		void onItemClick(SubstitutionEvent event);
 	}
 
 	public interface OnLoadingFinishedListener {
@@ -163,33 +174,33 @@ public class LarsRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
 	}
 
 	private class ItemGroup {
-		String                           headerText;
-		ArrayList<LarsSubstitutionEvent> items;
+		String                       headerText;
+		ArrayList<SubstitutionEvent> items;
 
-		public ItemGroup(String headerText) {
+		ItemGroup(String headerText) {
 			this.headerText = headerText;
 			this.items = new ArrayList<>();
 		}
 
-		public int getGroupSize() {
+		int getGroupSize() {
 			return this.items.size() + 1;
 		}
 	}
 
-	class RecyclerHeaderViewHolder extends ViewHolder {
+	private class RecyclerHeaderViewHolder extends ViewHolder {
 		private TextView header;
 
-		public RecyclerHeaderViewHolder(View parent) {
+		RecyclerHeaderViewHolder(View parent) {
 			super(parent);
 			this.header = (TextView) parent.findViewById(R.id.textViewHeader);
 		}
 	}
 
-	class RecyclerItemViewHolder extends ViewHolder implements View.OnClickListener {
+	private class RecyclerItemViewHolder extends ViewHolder implements View.OnClickListener {
 
 		private final RecyclerRowBinding binding;
 
-		public RecyclerItemViewHolder(View parent) {
+		RecyclerItemViewHolder(View parent) {
 			super(parent);
 			binding = DataBindingUtil.bind(parent);
 			itemView.setOnClickListener(this);
@@ -197,12 +208,12 @@ public class LarsRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
 				@Override
 				public boolean onTouch(View view, MotionEvent motionEvent) {
 					switch (motionEvent.getAction()) {
-						case ConnectionResult.SUCCESS /*0*/:
+						case MotionEvent.ACTION_DOWN:
 							binding.textViewUpper.setSelected(true);
 							binding.textViewLower.setSelected(true);
 							break;
-						case ConnectionResult.SERVICE_MISSING /*1*/:
-						case ConnectionResult.SERVICE_DISABLED /*3*/:
+						case MotionEvent.ACTION_UP:
+						case MotionEvent.ACTION_CANCEL:
 							binding.textViewUpper.setSelected(false);
 							binding.textViewLower.setSelected(false);
 							break;

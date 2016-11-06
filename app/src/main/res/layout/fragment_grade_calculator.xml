@@ -52,7 +52,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="end|center_vertical"
-				android:singleLine="true"
+				android:maxLines="1"
 				android:text="Sehr Gut" />
 
 			<Button
@@ -89,7 +89,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="end|center_vertical"
-				android:singleLine="true"
+				android:maxLines="1"
 				android:text="Gut" />
 
 			<Button
@@ -126,7 +126,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="end|center_vertical"
-				android:singleLine="true"
+				android:maxLines="1"
 				android:text="Befriedigend" />
 
 			<Button
@@ -163,7 +163,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="end|center_vertical"
-				android:singleLine="true"
+				android:maxLines="1"
 				android:text="Ausreichend" />
 
 			<Button
@@ -200,7 +200,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="end|center_vertical"
-				android:singleLine="true"
+				android:maxLines="1"
 				android:text="Mangelhaft" />
 
 			<Button
@@ -237,7 +237,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="end|center_vertical"
-				android:singleLine="true"
+				android:maxLines="1"
 				android:text="Ungenügend" />
 
 			<Button

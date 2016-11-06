@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.util.ArrayMap;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -55,12 +56,13 @@ public class CustomFirebaseLessonAdapter {
 		mSnapshots = new CustomFirebaseArray(ref);
 		mSnapshots.setOnChangedListener(new CustomFirebaseArray.OnChangedListener() {
 			@Override
-			public void onChanged(HashMap<Integer, Lesson> lessons, HashMap<String, Subject> subjects) {
+			public void onChanged(SparseArray<Lesson> lessons, HashMap<String, Subject> subjects) {
 				mColumn.removeAllViews();
 				originalMeasurements.clear();
-				for (HashMap.Entry<Integer, Lesson> entry : lessons.entrySet()) {
-					if (!isSucceedingLesson(entry.getValue()))
-						addLesson(entry.getValue(), subjects.get(entry.getValue().getSubject()));
+				for (int i = 0; i < lessons.size(); i++) {
+					Lesson lesson = lessons.valueAt(i);
+					if (!isSucceedingLesson(lesson))
+						addLesson(lesson, subjects.get(lesson.getSubject()));
 				}
 			}
 		});

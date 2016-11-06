@@ -18,6 +18,7 @@ import com.maxkrass.stundenplan.activities.MainActivity;
 import com.maxkrass.stundenplan.objects.Lesson;
 import com.maxkrass.stundenplan.objects.Period;
 import com.maxkrass.stundenplan.objects.Weekday;
+import com.maxkrass.stundenplan.tools.Tools;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -55,8 +56,7 @@ public class NotificationService extends IntentService {
 		final int NO_REQUEST_CODE = 0x000;
 //
 		final NotificationManager mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-//
-		final int mNotificationId = 1;
+
 		if (lesson != null) {
 			int requestCode = intent.getIntExtra("requestCode", NO_REQUEST_CODE);
 //
@@ -119,7 +119,7 @@ public class NotificationService extends IntentService {
 											}
 										}
 //
-										mNotificationManager.notify(mNotificationId, builder.build());
+										mNotificationManager.notify(Tools.UPCOMING_LESSON_NOTIFICATION_ID, builder.build());
 //
 										Log.d(TAG, "onHandleIntent: notification updated");
 										Calendar calendar = Calendar.getInstance();

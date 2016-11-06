@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,7 +38,6 @@ public class ManageSubjectsFragment extends Fragment implements View.OnClickList
 	public  OnSubjectChosenListener mOnSubjectChosenListener;
 	private DatabaseReference       mSubjectRef;
 	private DatabaseReference       mTeachersRef;
-	private FirebaseSubjectAdapter  subjectAdapter;
 	private RecyclerView            recyclerView;
 
 	@Override
@@ -79,31 +77,12 @@ public class ManageSubjectsFragment extends Fragment implements View.OnClickList
 	public void onStart() {
 		super.onStart();
 
-		subjectAdapter = new FirebaseSubjectAdapter(
+		recyclerView.setAdapter(new FirebaseSubjectAdapter(
 				Subject.class,
 				FirebaseSubjectAdapter.SubjectViewHolder.class,
 				mSubjectRef,
 				this
-		);
-
-		subjectAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-			@Override
-			public void onItemRangeInserted(int positionStart, int itemCount) {
-				super.onItemRangeInserted(positionStart, itemCount);
-				int friendlyMessageCount = subjectAdapter.getItemCount();
-				int lastVisiblePosition =
-						((LinearLayoutManager) recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
-				// If the recycler view is initially being loaded or the
-				// user is at the bottom of the list, scroll to the bottom
-				// of the list to show the newly added message.
-				if (lastVisiblePosition == -1 ||
-						(positionStart >= (friendlyMessageCount - 1) &&
-								lastVisiblePosition == (positionStart - 1))) {
-					recyclerView.scrollToPosition(positionStart);
-				}
-			}
-		});
-		recyclerView.setAdapter(subjectAdapter);
+		));
 	}
 
 	@Override

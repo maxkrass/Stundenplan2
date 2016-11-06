@@ -6,7 +6,15 @@ package com.maxkrass.stundenplan.objects;
 
 public class SubstitutionSubject {
 
-	String grade, subject;
+	private String grade, subject;
+
+	public SubstitutionSubject() {
+	}
+
+	public SubstitutionSubject(String grade, String subject) {
+		this.grade = grade;
+		this.subject = subject;
+	}
 
 	public String getGrade() {
 		return grade;

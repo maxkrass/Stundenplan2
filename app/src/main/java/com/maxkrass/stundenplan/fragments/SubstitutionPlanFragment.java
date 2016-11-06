@@ -1,6 +1,7 @@
 package com.maxkrass.stundenplan.fragments;
 
 import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.maxkrass.stundenplan.R;
 import com.maxkrass.stundenplan.activities.MainActivity;
 import com.maxkrass.stundenplan.adapter.SubstitutionPlanPagerAdapter;
 import com.maxkrass.stundenplan.databinding.FragmentSubstitutionPlanBinding;
@@ -40,7 +42,7 @@ public class SubstitutionPlanFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
-		FragmentSubstitutionPlanBinding binding = FragmentSubstitutionPlanBinding.inflate(inflater);
+		FragmentSubstitutionPlanBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_substitution_plan, container, false);
 		ViewPager viewPager = binding.substitutionPlanViewPager;
 		TabLayout tabLayout = mActivity.tabLayout;
 		viewPager.setAdapter(new SubstitutionPlanPagerAdapter(getChildFragmentManager(), getArguments().getString("uId"), tabLayout));

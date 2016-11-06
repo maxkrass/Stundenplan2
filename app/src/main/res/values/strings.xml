@@ -44,6 +44,15 @@
     <string name="no_saved_subject">You haven\'t saved any subjects yet…</string>
     <string name="points_average">Points Ø: %.2f</string>
     <string name="grade_average">Grade Ø: %.2f</string>
+    <string name="substitution_plan">Substitution plan</string>
+    <string name="substitutions_receive_notification">Receive notifications for the substitution plan</string>
+    <string name="notification_settings">Notifications</string>
+    <string name="q2" translatable="false">Q2</string>
+    <string name="q1" translatable="false">Q1</string>
+    <string name="ef" translatable="false">EF</string>
+    <string name="my_subjects">My Subjects</string>
+    <string name="visible_substitution_plans">Visible substitution plans</string>
+    <string name="my_saved_subjects">My saved subjects</string>
     <string-array name="weekday">
         <item>Mondays</item>
         <item>Tuesdays</item>

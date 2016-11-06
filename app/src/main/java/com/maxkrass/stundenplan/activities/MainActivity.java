@@ -1,14 +1,15 @@
 package com.maxkrass.stundenplan.activities;
 
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Display;
 import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -20,6 +21,7 @@ import com.maxkrass.stundenplan.fragments.GradeCalculatorFragment;
 import com.maxkrass.stundenplan.fragments.MainActivityFragment;
 import com.maxkrass.stundenplan.fragments.ManageSubjectsFragment;
 import com.maxkrass.stundenplan.fragments.ManageTeachersFragment;
+import com.maxkrass.stundenplan.fragments.SettingsFragment;
 import com.maxkrass.stundenplan.fragments.SubstitutionPlanFragment;
 import com.maxkrass.stundenplan.tools.Tools;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -30,14 +32,15 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemClickListener {
 
-	private static final String TAG                   = "MainActivity";
-	private static final String GRADE_CALCULATOR_TAG  = "grade_calculator_fragment";
-	private final        String MAIN_FRAGMENT_TAG     = "main_fragment";
-	private final        String SUBSTITUTION_PLAN_TAG = "substitution_plan_fragment";
-	private final        String MANAGE_TEACHERS_TAG   = "manage_teachers_fragment";
-	private final        String SETTINGS_FRAGMENT_TAG = "settings_fragment";
-	private final        String MANAGE_SUBJECTS_TAG   = "manage_subjects_fragment";
-	public  TabLayout                      tabLayout;
+	public static final  int    OPEN_SUBSTITUTIONS_REQUEST_CODE = 0x0431;
+	private static final String TAG                             = "MainActivity";
+	private static final String GRADE_CALCULATOR_TAG            = "grade_calculator_fragment";
+	private final        String MAIN_FRAGMENT_TAG               = "main_fragment";
+	private final        String SUBSTITUTION_PLAN_TAG           = "substitution_plan_fragment";
+	private final        String MANAGE_TEACHERS_TAG             = "manage_teachers_fragment";
+	private final        String SETTINGS_FRAGMENT_TAG           = "settings_fragment";
+	private final        String MANAGE_SUBJECTS_TAG             = "manage_subjects_fragment";
+	public TabLayout tabLayout;
 	int width;
 	private String                         lastFragmentTag;
 	private Toolbar                        toolbar;
@@ -55,12 +58,6 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
 	}
 
 	@Override
-	protected void onStart() {
-		super.onStart();
-		mFirebaseAuth.addAuthStateListener(mAuthListener);
-	}
-
-	@Override
 	protected void onStop() {
 		super.onStop();
 		mFirebaseAuth.removeAuthStateListener(mAuthListener);
@@ -74,18 +71,18 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
 	}
 
 	@Override
+	protected void onStart() {
+		super.onStart();
+		mFirebaseAuth.addAuthStateListener(mAuthListener);
+	}
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Display display = getWindowManager().getDefaultDisplay();
-		width = display.getWidth();
-		if (width <= 480) {
-			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		}
 		ActivityMainBinding activityMainBinding = DataBindingUtil.setContentView(MainActivity.this, R.layout.activity_main);
 		activityMainBinding.mainAppBarLayout.setPadding(0, Tools.getStatusBarHeight(MainActivity.this), 0, 0);
 		toolbar = activityMainBinding.mainToolbar;
 		tabLayout = activityMainBinding.mainTabLayout;
-		//setSupportActionBar(toolbar);
 
 		result = new DrawerBuilder(this)
 				.withToolbar(toolbar)
@@ -97,7 +94,12 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
 				.withSavedInstance(savedInstanceState)
 				.build();
 
-		FirebaseMessaging.getInstance().subscribeToTopic("checkPlan");
+		//Log.d(TAG, FirebaseInstanceId.getInstance().getToken());
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		if (!preferences.contains(SettingsFragment.RECEIVE_SUBSTITUTION_NOTIFICATIONS)) {
+			preferences.edit().putBoolean(SettingsFragment.RECEIVE_SUBSTITUTION_NOTIFICATIONS, true).apply();
+			FirebaseMessaging.getInstance().subscribeToTopic("checkPlan");
+		}
 
 		mFirebaseAuth = FirebaseAuth.getInstance();
 		mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -154,6 +156,9 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
 		if (savedInstanceState != null) {
 			lastFragmentTag = savedInstanceState.getString("lastFragment");
 		}
+		if (getIntent().hasExtra("requestCode") && getIntent().getIntExtra("requestCode", 0) == OPEN_SUBSTITUTIONS_REQUEST_CODE) {
+			lastFragmentTag = SUBSTITUTION_PLAN_TAG;
+		}
 		//if (getSupportFragmentManager().findFragmentByTag(lastFragmentTag) == null) {
 		//	getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new MainActivityFragment(), MAIN_FRAGMENT_TAG).commit();
 		//	lastFragmentTag = MAIN_FRAGMENT_TAG;
@@ -178,7 +183,7 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
 				result.setSelectionAtPosition(0);
 				break;
 			case SUBSTITUTION_PLAN_TAG:
-				toolbar.setTitle("Vertretungsplan");
+				toolbar.setTitle(R.string.substitution_plan);
 				tabLayout.setVisibility(View.VISIBLE);
 				result.setSelectionAtPosition(1);
 				break;
@@ -195,11 +200,11 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
 			case GRADE_CALCULATOR_TAG:
 				result.setSelectionAtPosition(4);
 				break;
-			//case SETTINGS_FRAGMENT_TAG:
-			//	toolbar.setTitle(getString(R.string.action_settings));
-			//	tabLayout.setVisibility(View.GONE);
-			//	result.setSelectionAtPosition(4);
-			//	break;
+			case SETTINGS_FRAGMENT_TAG:
+				toolbar.setTitle(getString(R.string.action_settings));
+				tabLayout.setVisibility(View.GONE);
+				result.setSelectionAtPosition(5);
+				break;
 		}
 	}
 
@@ -243,7 +248,7 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
 			case R.id.drawer_subjects_item:
 				if (getSupportFragmentManager().findFragmentByTag(MANAGE_SUBJECTS_TAG) == null) {
 					getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ManageSubjectsFragment(), MANAGE_SUBJECTS_TAG).commit();
-					toolbar.setTitle("Fächer");
+					toolbar.setTitle(getString(R.string.action_subjects));
 					tabLayout.setVisibility(View.GONE);
 					lastFragmentTag = MANAGE_SUBJECTS_TAG;
 				}
@@ -256,14 +261,14 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
 					lastFragmentTag = GRADE_CALCULATOR_TAG;
 				}
 				break;
-			/*case R.id.drawer_settings_item:
+			case R.id.drawer_settings_item:
 				if (getSupportFragmentManager().findFragmentByTag(SETTINGS_FRAGMENT_TAG) == null) {
-					getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new SettingsFragment(), SETTINGS_FRAGMENT_TAG).commit();
-					toolbar.setTitle("Einstellungen");
+					getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, SettingsFragment.newInstance(getUid()), SETTINGS_FRAGMENT_TAG).commit();
+					toolbar.setTitle(getString(R.string.action_settings));
 					tabLayout.setVisibility(View.GONE);
 					lastFragmentTag = SETTINGS_FRAGMENT_TAG;
 				}
-				break;*/
+				break;
 		}
 		result.setSelection(drawerItem, false);
 		result.closeDrawer();

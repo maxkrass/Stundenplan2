@@ -3,12 +3,18 @@ package com.maxkrass.stundenplan.objects;
 import android.content.res.ColorStateList;
 import android.databinding.BindingConversion;
 
-import java.io.Serializable;
+import com.google.firebase.database.Exclude;
+
+import java.util.Objects;
+
+import static com.maxkrass.stundenplan.objects.SubstitutionEvent.SubstitutionType.LocationChange;
+import static com.maxkrass.stundenplan.objects.SubstitutionEvent.SubstitutionType.Special;
+import static com.maxkrass.stundenplan.objects.SubstitutionEvent.SubstitutionType.Substitution;
 
 /**
- * Max made this for Stundenplan2 on 26.07.2016.
+ * Max made this for Stundenplan2 on 30.08.2016.
  */
-public class SubstitutionEvent implements Serializable {
+public class SubstitutionEvent {
 
 	private Grade            grade;
 	private String           period;
@@ -17,6 +23,7 @@ public class SubstitutionEvent implements Serializable {
 	private String           oldTeacher;
 	private String           sub;
 	private String           newLocation;
+	private String           annotation;
 
 	public SubstitutionEvent(Grade grade, String period, String subject, SubstitutionType type, String oldTeacher, String sub, String newLocation) {
 		this.grade = grade;
@@ -34,6 +41,7 @@ public class SubstitutionEvent implements Serializable {
 		oldTeacher = "";
 		sub = "";
 		newLocation = "";
+		annotation = "";
 	}
 
 	@BindingConversion
@@ -68,11 +76,39 @@ public class SubstitutionEvent implements Serializable {
 		);
 	}
 
-	public Grade getGrade() {
+	public String getDisplayString() {
+		String s = period + " Std. ";
+		if (Objects.equals(type, Special))
+			s = s.concat(type.toString() + " " + sub + " " + newLocation);
+		else s = s.concat(oldTeacher + " " + subject + " " + type);
+		if (Objects.equals(type, LocationChange)) s = s.concat(" " + newLocation);
+		else if (Objects.equals(type, Substitution)) s = s.concat(" " + sub);
+		return s;
+	}
+
+	public String getAnnotation() {
+		return annotation;
+	}
+
+	public void setAnnotation(String annotation) {
+		this.annotation = annotation;
+	}
+
+	public String getGrade() {
+		return grade == null ? null : grade.name();
+	}
+
+	public void setGrade(String grade) {
+		this.grade = grade == null ? null : Grade.valueOf(grade);
+	}
+
+	@Exclude
+	public Grade getGradeVal() {
 		return grade;
 	}
 
-	public void setGrade(Grade grade) {
+	@Exclude
+	public void setGradeVal(Grade grade) {
 		this.grade = grade;
 	}
 
@@ -92,12 +128,17 @@ public class SubstitutionEvent implements Serializable {
 		this.subject = subject;
 	}
 
-	public SubstitutionType getType() {
-		return type;
+	public String getType() {
+		return type == null ? "" : type.toString();
 	}
 
+	@Exclude
 	public void setType(SubstitutionType type) {
 		this.type = type;
+	}
+
+	public void setType(String type) {
+		this.type = SubstitutionType.getTypeByString(type);
 	}
 
 	public String getOldTeacher() {
@@ -125,7 +166,24 @@ public class SubstitutionEvent implements Serializable {
 	}
 
 	public enum Grade {
-		EF, Q1, Q2
+		EF, Q1, Q2, LR, SL;
+
+		public static Grade getGradeByString(String s) {
+			switch (s) {
+				case "EF":
+					return EF;
+				case "Q1":
+					return Q1;
+				case "Q2":
+					return Q2;
+				case "LR":
+					return LR;
+				case "SL":
+					return SL;
+				default:
+					return null;
+			}
+		}
 	}
 
 	public enum SubstitutionType {
@@ -133,7 +191,8 @@ public class SubstitutionEvent implements Serializable {
 		Substitution("Vertr."),
 		ClassChange("Unter.-Änd."),
 		LocationChange("Raum-Änd."),
-		Special("Sond");
+		Special("Sond"),
+		Release("Freisetzung");
 
 		final String mType;
 
@@ -153,6 +212,8 @@ public class SubstitutionEvent implements Serializable {
 					return LocationChange;
 				case "Sond":
 					return Special;
+				case "Freisetzung":
+					return Release;
 				default:
 					return null;
 			}

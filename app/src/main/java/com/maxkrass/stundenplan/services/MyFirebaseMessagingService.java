@@ -1,23 +1,38 @@
 package com.maxkrass.stundenplan.services;
 
 
-import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.ContextCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.maxkrass.stundenplan.R;
 import com.maxkrass.stundenplan.activities.MainActivity;
+import com.maxkrass.stundenplan.tools.Tools;
+
+import java.util.Map;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
-	private static final String TAG = "MyFirebaseMsgService";
+	private static String[] stringsFromString(String string) {
+		String[] strings = string.replace("[", "").replace("]", "").split(",");
+		for (int i = 0; i < strings.length; i++) {
+			strings[i] = strings[i].replaceAll("\"", "");
+		}
+		return strings;
+	}
+
+	private static Integer[] intsFromString(String string) {
+		String[] strings = string.replace("[", "").replace("]", "").split(",");
+		Integer result[] = new Integer[strings.length];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = Integer.parseInt(strings[i]);
+		}
+		return result;
+	}
 
 	/**
 	 * Called when message is received.
@@ -27,60 +42,57 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 	// [START receive_message]
 	@Override
 	public void onMessageReceived(RemoteMessage remoteMessage) {
-		// [START_EXCLUDE]
-		// There are two types of messages data messages and notification messages. Data messages are handled
-		// here in onMessageReceived whether the app is in the foreground or background. Data messages are the type
-		// traditionally used with GCM. Notification messages are only received here in onMessageReceived when the app
-		// is in the foreground. When the app is in the background an automatically generated notification is displayed.
-		// When the user taps on the notification they are returned to the app. Messages containing both notification
-		// and data payloads are treated as notification messages. The Firebase console always sends notification
-		// messages. For more see: https://firebase.google.com/docs/cloud-messaging/concept-options
-		// [END_EXCLUDE]
 
-		// TODO(developer): Handle FCM messages here.
-		// Not getting messages here? See why this may be: https://goo.gl/39bRNJ
-		Log.d(TAG, "From: " + remoteMessage.getFrom());
-
-		// Check if message contains a data payload.
+		// Check if message contains a data payload. (Aka is from the heroku server)
 		if (remoteMessage.getData().size() > 0) {
-			Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+
+			Map<String, String> data = remoteMessage.getData();
+
+			String stand = data.get("stand");
+			Integer amountsOfEvents[] = intsFromString(data.get("amountsOfEvents"));
+			String[] dates = stringsFromString(data.get("dates"));
+
+			String bigText = "";
+			int substitutions = 0;
+
+			for (int i = 0; i < amountsOfEvents.length; i++) {
+
+				String dateArray[] = dates[i].split(" ");
+				String dateWeekday = dateArray[1];
+				String dateTime = dateArray[0];
+				String shortDate = dateTime.substring(0, dateTime.lastIndexOf(".")) + ".";
+
+				if (amountsOfEvents[i] > 0) {
+					bigText = bigText.concat("Vertretungen für " + dateWeekday + ", " + shortDate + ": " + amountsOfEvents[i] + "\n");
+					substitutions++;
+				} else {
+					bigText = bigText.concat("Keine Vertretungen für " + dateWeekday + ", " + shortDate + "\n");
+				}
+			}
+
+			Intent resultIntent = new Intent(this, MainActivity.class);
+
+			resultIntent.putExtra("requestCode", MainActivity.OPEN_SUBSTITUTIONS_REQUEST_CODE);
+
+			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, MainActivity.OPEN_SUBSTITUTIONS_REQUEST_CODE, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+			NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
+			notificationBuilder
+					.setStyle(
+							new NotificationCompat.BigTextStyle(notificationBuilder)
+									.setBigContentTitle("Neue Vertretungspläne")
+									.bigText(bigText.trim())
+									.setSummaryText("Stand: " + stand))
+					.setSmallIcon(R.drawable.ic_launcher_notification_small)
+					.setColor(ContextCompat.getColor(this, R.color.material_teal))
+					//.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+					.setContentTitle("Neue Vertretungspläne (" + substitutions + ")")
+					.setContentText("Aktualisiert: " + stand)
+					.setAutoCancel(true)
+					.setContentIntent(resultPendingIntent);
+
+			NotificationManagerCompat.from(this).notify(Tools.SUBSTITUTION_NOTIFICATION_ID, notificationBuilder.build());
+
 		}
-
-		// Check if message contains a notification payload.
-		if (remoteMessage.getNotification() != null) {
-			Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-		}
-
-		sendNotification(remoteMessage.getNotification());
-
-		// Also if you intend on generating your own notifications as a result of a received FCM
-		// message, here is where that should be initiated. See sendNotification method below.
-	}
-	// [END receive_message]
-
-	/**
-	 * Create and show a simple notification containing the received FCM message.
-	 *
-	 * @param notification FCM notification received.
-	 */
-	private void sendNotification(RemoteMessage.Notification notification) {
-		Intent intent = new Intent(this, MainActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-				PendingIntent.FLAG_ONE_SHOT);
-
-		Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-				.setSmallIcon(R.mipmap.ic_launcher)
-				.setContentTitle(notification.getTitle())
-				.setContentText(notification.getBody())
-				.setAutoCancel(true)
-				.setSound(defaultSoundUri)
-				.setContentIntent(pendingIntent);
-
-		NotificationManager notificationManager =
-				(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-		notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
 	}
 }

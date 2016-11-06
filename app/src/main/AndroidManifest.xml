@@ -1,71 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.maxkrass.stundenplan">
+	package="com.maxkrass.stundenplan">
 
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.GET_ACCOUNTS" />
 
-    <application
-        android:name=".StundenplanApplication"
-        android:allowBackup="true"
-        android:fullBackupContent="@xml/backupscheme"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+	<application
+		android:name=".StundenplanApplication"
+		android:allowBackup="true"
+		android:fullBackupContent="@xml/backupscheme"
+		android:icon="@mipmap/ic_launcher"
+		android:label="@string/app_name"
+		android:supportsRtl="true"
+		android:theme="@style/AppTheme">
+		<meta-data
+			android:name="com.google.android.gms.version"
+			android:value="@integer/google_play_services_version" />
 
-        <activity
-            android:name=".activities.MainActivity"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".activities.SplashActivity"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait"
-            android:theme="@style/SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+		<activity
+			android:name=".activities.MainActivity"
+			android:launchMode="singleTop"
+			android:screenOrientation="portrait"
+			android:theme="@style/AppTheme" />
+		<activity
+			android:name=".activities.SplashActivity"
+			android:launchMode="singleTop"
+			android:screenOrientation="portrait"
+			android:theme="@style/SplashTheme">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".activities.CreateSubjectActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activities.ViewTeacherActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.ViewTeacher" />
-        <activity
-            android:name=".activities.ViewSubjectActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activities.ViewLessonActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activities.CreateLessonActivity"
-            android:screenOrientation="portrait" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+		<activity
+			android:name=".activities.CreateSubjectActivity"
+			android:screenOrientation="portrait" />
+		<activity
+			android:name=".activities.ViewTeacherActivity"
+			android:screenOrientation="portrait"
+			android:theme="@style/AppTheme.ViewTeacher" />
+		<activity
+			android:name=".activities.ViewSubjectActivity"
+			android:screenOrientation="portrait" />
+		<activity
+			android:name=".activities.ViewLessonActivity"
+			android:screenOrientation="portrait" />
+		<activity
+			android:name=".activities.CreateLessonActivity"
+			android:screenOrientation="portrait" />
 
-        <service android:name=".services.NotificationService" />
+		<service android:name=".services.NotificationService" />
+		<service android:name=".services.MyFirebaseMessagingService">
+			<intent-filter>
+				<action android:name="com.google.firebase.MESSAGING_EVENT" />
+			</intent-filter>
+		</service>
 
-        <receiver android:name=".receiver.BootReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-        <!--
+		<receiver android:name=".receiver.BootReceiver">
+			<intent-filter>
+				<action android:name="android.intent.action.BOOT_COMPLETED" />
+			</intent-filter>
+		</receiver>
+		<!--
 	 ATTENTION: This was auto-generated to add Google Play services to your project for
 	 App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
-        -->
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-    </application>
+		-->
+		<meta-data
+			android:name="com.google.android.gms.version"
+			android:value="@integer/google_play_services_version" />
+	</application>
 
 </manifest>

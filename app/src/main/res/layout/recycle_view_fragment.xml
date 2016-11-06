@@ -6,7 +6,7 @@
 
 		<variable
 			name="substitutionEvent"
-			type="com.maxkrass.stundenplan.objects.LarsSubstitutionEvent" />
+			type="com.maxkrass.stundenplan.objects.SubstitutionEvent" />
 
 	</data>
 

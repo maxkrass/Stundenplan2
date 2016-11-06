@@ -1,4 +1,4 @@
-package com.maxkrass.stundenplan;
+package com.maxkrass.stundenplan.customViews;
 
 import android.view.animation.Interpolator;
 

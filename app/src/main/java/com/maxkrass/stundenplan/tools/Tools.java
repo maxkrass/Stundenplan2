@@ -6,6 +6,9 @@ import android.util.TypedValue;
 
 public class Tools {
 
+    public static final int SUBSTITUTION_NOTIFICATION_ID    = 0x0840;
+    public static final int UPCOMING_LESSON_NOTIFICATION_ID = 0x0460;
+
     public static float getPixels(int densityIndependentPixels, Context context) {
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, densityIndependentPixels, context.getResources().getDisplayMetrics());
     }
